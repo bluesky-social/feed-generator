@@ -2,7 +2,7 @@
 
 ## Overview
 
-Feed Generators are services that provide custom algorithms to users through the AT Protocool.
+Feed Generators are services that provide custom algorithms to users through the AT protocol.
 
 They work very simply: the server receives a request from a user's server and returns a list of post uris with some optional metadata attached. Those posts are then "hydrated" into full objects by the requesting server and sent back to the client. This route is described in the `com.atproto.feed.getFeedSkeleton` lexicon. (@TODO insert link)
 
