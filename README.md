@@ -72,7 +72,6 @@ This metadata serves two purposes:
 1. To aid the PDS in hydrating all relevant post information
 2. To give a cue to the client in terms of context to display when rendering a post
 
-
 ### Authentication
 
 If you are creating a generic feed that does not differ for different users, you do not need to check auth. But if a user's state (such as follows or likes) is taken into account, we _strongly_ encourage you to validate their auth token.
@@ -93,6 +92,16 @@ const payload = {
 ```
 
 We provide utilities for verifying user JWTs in `@TODO_PACKAGE`
+
+### Pagination
+You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
+
+This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply pased through he PDS directly to & from the client.
+
+We strongly encourage that the cursor be _unique per feed item_ to prevent unexpected behavior in pagination.
+
+We recommend, for instance, a compound cursor with a timestamp + a CID:
+`1683654690921::bafyreia3tbsfxe3cc75xrxyyn6qc42oupi73fxiox76prlyi5bpx7hr72u`
 
 ## Suggestions for Implementation
 
