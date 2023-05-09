@@ -4,6 +4,7 @@ import { ids, lexicons } from './lexicon/lexicons'
 import { Record as PostRecord } from './lexicon/types/app/bsky/feed/post'
 
 import {
+  Commit,
   OutputSchema as RepoEvent,
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
@@ -19,7 +20,7 @@ export class FirehoseSubscription {
       service: service,
       method: METHOD,
       // signal: signal,
-      getParams: () => this.getState(),
+      getParams: () => this.getCursor(),
       validate: (value) => {
         try {
           return lexicons.assertValidXrpcMessage<RepoEvent>(METHOD, value)
@@ -31,7 +32,9 @@ export class FirehoseSubscription {
   }
 
   async run() {
+    await this.ensureCursor()
     for await (const evt of this.sub) {
+      if (!isCommit(evt)) continue
       const postEvts = await getPostEventsFromEvt(evt)
       const toDelete: string[] = []
       const toCreate: PostTable[] = []
@@ -40,7 +43,7 @@ export class FirehoseSubscription {
           toDelete.push(evt.uri)
         } else {
           // only alf related posts
-          if (evt.text.includes('alf') || evt.text.includes('Alf')) {
+          if (evt.text.toLowerCase().includes('alf')) {
             toCreate.push({
               uri: evt.uri,
               cid: evt.cid,
@@ -62,10 +65,34 @@ export class FirehoseSubscription {
           .onConflict((oc) => oc.doNothing())
           .execute()
       }
+
+      // update stored cursor every 20 events or so
+      if (evt.seq % 20 === 0) {
+        await this.updateCursor(evt.seq)
+      }
     }
   }
 
-  async getState(): Promise<{ cursor: number }> {
+  async ensureCursor() {
+    await this.db
+      .insertInto('sub_state')
+      .values({
+        service: this.service,
+        cursor: 0,
+      })
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
+
+  async updateCursor(cursor: number) {
+    await this.db
+      .updateTable('sub_state')
+      .set({ cursor })
+      .where('service', '=', this.service)
+      .execute()
+  }
+
+  async getCursor(): Promise<{ cursor: number }> {
     const res = await this.db
       .selectFrom('sub_state')
       .selectAll()
@@ -92,8 +119,7 @@ type DeletePost = {
   uri: string
 }
 
-const getPostEventsFromEvt = async (evt: unknown): Promise<PostEvent[]> => {
-  if (!isCommit(evt)) return []
+const getPostEventsFromEvt = async (evt: Commit): Promise<PostEvent[]> => {
   const postOps = evt.ops.filter(
     (op) => op.path.split('/')[1] === 'app.bsky.feed.post',
   )
