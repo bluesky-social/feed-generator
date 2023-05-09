@@ -1,5 +1,11 @@
 # ATProto Feed Generator
 
+🚧 Work in Progress 🚧 
+
+We are actively developing Feed Generator integration into the Bluesky PDS. Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
+
+We are planning to create a starter kit for devs, but this section is currently speculative & not yet developed. However, we wanted to get this document out as soon as possible to encourage folks to start experimenting.
+
 ## Overview
 
 Feed Generators are services that provide custom algorithms to users through the AT protocol.
@@ -21,10 +27,30 @@ The general flow of providing a custom algorithm to a user is as follows:
 To the user this should feel like visiting a page in the app. Once they subscribe, it will appear in their home interface as one of their available feeds.
 
 ## Getting Started
+
+🚧 Not yet implemented 🚧
+
 For now, your algorithm will need to have an account & repository on the `bsky.social` PDS. 
 
-@TODO
+First, edit the provided `setup.json` to include your preferred handle, password & invite code, along with the hostname that you will be running this server at. Then run with `yarn setup`.
 
+If you need an invite code, please reach out to a Bluesky team member & inform them that you are building a Feed Generator
+
+Note: _do not_ use your handle/password from you personal bluesky account. This is a _new account_ for the Feed Generator.
+
+We've setup this simple server with sqlite to store & query data. Feel free to switch this out for whichever database you prefer.
+
+Next you will need to do two things:
+
+- Implement indexing logic in `src/subscription.ts`. 
+
+This will subscribe to the repo subscription stream on startup, parse event & index them according to your provided logic
+
+- Implement feed generation logic in `src/feed-generation.ts`
+
+The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type
+
+For inspiration, we've provided a very simple feed algorithm that returns recent posts from the Bluesky team.
 
 ## Some Details
 
