@@ -26,31 +26,21 @@ The general flow of providing a custom algorithm to a user is as follows:
 
 To the user this should feel like visiting a page in the app. Once they subscribe, it will appear in their home interface as one of their available feeds.
 
-## Getting Started
+## How this will work, when ready
 
 🚧 Not yet implemented 🚧
 
-For now, your algorithm will need to have an account & repository on the `bsky.social` PDS. 
+For now, your algorithm will need to have an account & repository on the `bsky.social` PDS. We will provide a starter kit and you will follow these steps:
 
-First, edit the provided `setup.json` to include your preferred handle, password & invite code, along with the hostname that you will be running this server at. Then run with `yarn setup`.
+1. First, you will edit a provided `setup.json` to include your preferred handle, password & invite code, along with the hostname that you will be running this server at. Then run with `yarn setup`.
+2. If you need an invite code, you'll be able reach out to a Bluesky team member & inform them that you are building a Feed Generator. Note: _do not_ use your handle/password from you personal bluesky account. This is a _new account_ for the Feed Generator.
 
-If you need an invite code, please reach out to a Bluesky team member & inform them that you are building a Feed Generator
+The starter kit will include a simple server with sqlite to store & query data. Feel free to switch this out for whichever database you prefer. From there you will:
 
-Note: _do not_ use your handle/password from you personal bluesky account. This is a _new account_ for the Feed Generator.
+- Implement indexing logic in `src/subscription.ts`. This will subscribe to the repo subscription stream on startup, parse event & index them according to your provided logic
+- Implement feed generation logic in `src/feed-generation.ts`. The types will be in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type.
 
-We've setup this simple server with sqlite to store & query data. Feel free to switch this out for whichever database you prefer.
-
-Next you will need to do two things:
-
-- Implement indexing logic in `src/subscription.ts`. 
-
-This will subscribe to the repo subscription stream on startup, parse event & index them according to your provided logic
-
-- Implement feed generation logic in `src/feed-generation.ts`
-
-The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type
-
-For inspiration, we've provided a very simple feed algorithm that returns recent posts from the Bluesky team.
+For inspiration, we'll provided a very simple feed algorithm that returns recent posts from the Bluesky team.
 
 ## Some Details
 
