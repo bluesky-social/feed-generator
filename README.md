@@ -6,7 +6,7 @@ Bluesky Feed Generators are composable AT Protocol (atproto) services that provi
 
 A Feed Generator fulfills a very simple interface: it receives requests from a user's Personal Data Server (PDS) and returns a skeleton of a feed - a list of post uris with some optional metadata attached.
 
-This route is described in the `com.atproto.feed.getFeedSkeleton` lexicon.
+This route is described in the `com.atproto.feed.getFeedSkeleton` lexicon. (@TODO insert link)
 
 Similar to Atproto user accounts, Feed Generators are identified by a DID/handle pair and have a corresponding repository. This repository holds information such as the Feed Generator's profile.
 
@@ -50,6 +50,38 @@ const payload = {
 
 We provide utilities for verifying user JWTs in `@TODO_PACKAGE`
 
+### Skeleton metadata
+The skeleton that a Feed Generator puts together is, in its simplest form, a list or post uris. 
+
+However we include two locations to attach some additional context to a postUri.
+
+Each skeleton post is of the form:
+```ts
+type SkeletonItem = {
+  post: string // post uri
+  // optional metadata about the thread that this post is in reply to
+  replyTo?: {
+    root: string, // reply root uri
+    parent: string, // reply parent uri
+  }
+  // optional reason for inclusion in the feed
+  // (generally to be displayed in client)
+  reason?: Reason
+}
+
+// for now, the only defined reason is a repost, but this is open to extension
+type Reason = ReasonRepost
+
+type ReasonRepost = {
+  by: string // the did of the reposting user
+  indexedAt: string // the time that the repost took place
+}
+```
+
+This metadata serves two purposes:
+- aid the PDS in hydrating all relevant post information
+- give a cue to the client in terms of context to display when rendering a post
+
 ## Suggestions for implementation
 
 How a feed generator fulfills the `getFeedSkeleton` request is completely at their discretion.
@@ -64,11 +96,11 @@ Depending on your algorithm, you likely do not need to keep posts around for lon
 
 Some examples:
 
-#### Reimplementing what's hot
+### Reimplementing what's hot
 To reimplement "What's Hot", you may subscribe to the firehose & filter for all posts & likes (ignoring profiles/reposts/follows/etc). You would keep a running tally of likes per post & when a PDS requests a feed, you would send the most recent posts that pass some threshold of likes.
 
-#### A community feed
+### A community feed
 You might create a feed for a given community by compiling a list of DIDs within that community & filtering the firehose for all posts from users within that list.
 
-#### A topical feed
+### A topical feed
 To implement a topical feed, you might filter the algorithm for posts and pass the post text through some filtering mechanism (an LLM, a keyword matcher, etc) that filters for the topic of your choice.
