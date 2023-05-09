@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "browser": {
+    "./car.js": "./car-browser.js",
+    "./lib/reader.js": "./lib/reader-browser.js",
+    "./lib/indexed-reader.js": "./lib/indexed-reader-browser.js",
+    "./lib/writer.js": "./lib/writer-browser.js"
+  }
+}

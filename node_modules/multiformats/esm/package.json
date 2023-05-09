@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "browser": {
+    "./src/hashes/sha2.js": "./src/hashes/sha2-browser.js"
+  }
+}

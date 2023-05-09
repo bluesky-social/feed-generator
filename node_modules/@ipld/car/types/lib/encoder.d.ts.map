@@ -1,0 +1,1 @@
+{"version":3,"file":"encoder.d.ts","sourceRoot":"","sources":["../../lib/encoder.js"],"names":[],"mappings":"AAGA;;;;;GAKG;AAEH;;;;;GAKG;AACH,oCAHW,GAAG,EAAE,GACH,UAAU,CAStB;kBAnBY,OAAO,cAAc,EAAE,GAAG;oBAC1B,OAAO,QAAQ,EAAE,KAAK;yBACtB,OAAO,UAAU,EAAE,UAAU;qCAC7B,OAAO,UAAU,EAAE,sBAAsB,CAAC,UAAU,CAAC;AAkBlE;;;GAGG;AACH,8FAFa,UAAU,CAuCtB"}

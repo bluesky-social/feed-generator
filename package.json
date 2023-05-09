@@ -1,0 +1,22 @@
+{
+  "name": "feed-generator",
+  "version": "1.0.0",
+  "description": "atproto feed generator starter kit",
+  "main": "index.js",
+  "repository": "git@github.com:bluesky-social/feed-generator.git",
+  "author": "dholms <dtholmgren@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.1.1",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "@atproto/repo": "^0.1.0",
+    "@atproto/uri": "^0.0.2",
+    "@atproto/xrpc-server": "^0.1.0",
+    "better-sqlite3": "^8.3.0",
+    "express": "^4.18.2",
+    "http-terminator": "^3.2.0",
+    "kysely": "^0.22.0"
+  }
+}

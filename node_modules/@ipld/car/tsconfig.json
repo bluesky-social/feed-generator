@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictFunctionTypes": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "strict": true,
+    "useUnknownInCatchVariables": false,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "target": "ES2018",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "types",
+    "skipLibCheck": true,
+    "stripInternal": true,
+    "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ipld/car": [ "car.js", "car-browser.js", "lib/" ],
+      "@ipld/car/writer": [ "./lib/writer.js" ],
+      "@ipld/car/reader": [ "./lib/reader.js" ],
+      "@ipld/car/indexed-reader": [ "./lib/indexed-reader.js" ],
+      "@ipld/car/iterator": [ "./lib/iterator.js" ],
+      "@ipld/car/indexer": [ "./lib/indexer.js" ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "examples"
+  ],
+  "compileOnSave": false
+}

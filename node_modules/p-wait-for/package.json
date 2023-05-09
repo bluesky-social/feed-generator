@@ -1,0 +1,47 @@
+{
+	"name": "p-wait-for",
+	"version": "3.2.0",
+	"description": "Wait for a condition to be true",
+	"license": "MIT",
+	"repository": "sindresorhus/p-wait-for",
+	"funding": "https://github.com/sponsors/sindresorhus",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "https://sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava && tsd"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"keywords": [
+		"promise",
+		"wait",
+		"for",
+		"waits",
+		"condition",
+		"poll",
+		"polling",
+		"boolean",
+		"async",
+		"await",
+		"promises",
+		"bluebird"
+	],
+	"dependencies": {
+		"p-timeout": "^3.0.0"
+	},
+	"devDependencies": {
+		"ava": "^1.4.1",
+		"delay": "^4.1.0",
+		"time-span": "^3.0.0",
+		"tsd": "^0.7.1",
+		"xo": "^0.24.0"
+	}
+}

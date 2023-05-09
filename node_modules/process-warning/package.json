@@ -1,0 +1,41 @@
+{
+  "name": "process-warning",
+  "version": "2.2.0",
+  "description": "A small utility for creating warnings and emitting them.",
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "test": "npm run test:unit && npm run test:jest && npm run test:typescript",
+    "test:jest": "jest jest.test.js",
+    "test:unit": "tap",
+    "test:typescript": "tsd"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/process-warning.git"
+  },
+  "keywords": [
+    "fastify",
+    "error",
+    "warning",
+    "utility",
+    "plugin",
+    "emit",
+    "once"
+  ],
+  "author": "Tomas Della Vedova",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fastify/fastify-warning/issues"
+  },
+  "homepage": "https://github.com/fastify/fastify-warning#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "jest": "^29.0.1",
+    "standard": "^17.0.0",
+    "tap": "^16.3.0",
+    "tsd": "^0.28.0"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "name": "uint8arrays",
+  "version": "3.0.0",
+  "description": "Utility functions to make dealing with Uint8Arrays easier",
+  "main": "./cjs/src/index.js",
+  "author": "Alex Potsides <alex@achingbrain.net>",
+  "homepage": "https://github.com/achingbrain/uint8arrays",
+  "bugs": "https://github.com/achingbrain/uint8arrays/issues",
+  "types": "types/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/achingbrain/uint8arrays.git"
+  },
+  "scripts": {
+    "test": "aegir test",
+    "lint": "aegir ts -p check && aegir lint",
+    "release": "aegir release",
+    "release-minor": "aegir release --type minor",
+    "release-major": "aegir release --type major",
+    "build": "aegir build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "multiformats": "^9.4.2"
+  },
+  "devDependencies": {
+    "aegir": "^35.0.0",
+    "util": "^0.12.4"
+  },
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "!.aegir.js"
+    ]
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/src",
+        "types/src/*"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "browser": "./esm/src/index.js",
+      "require": "./cjs/src/index.js",
+      "import": "./esm/src/index.js"
+    },
+    "./compare": {
+      "browser": "./esm/src/compare.js",
+      "require": "./cjs/src/compare.js",
+      "import": "./esm/src/compare.js"
+    },
+    "./concat": {
+      "browser": "./esm/src/concat.js",
+      "require": "./cjs/src/concat.js",
+      "import": "./esm/src/concat.js"
+    },
+    "./equals": {
+      "browser": "./esm/src/equals.js",
+      "require": "./cjs/src/equals.js",
+      "import": "./esm/src/equals.js"
+    },
+    "./from-string": {
+      "browser": "./esm/src/from-string.js",
+      "require": "./cjs/src/from-string.js",
+      "import": "./esm/src/from-string.js"
+    },
+    "./to-string": {
+      "browser": "./esm/src/to-string.js",
+      "require": "./cjs/src/to-string.js",
+      "import": "./esm/src/to-string.js"
+    },
+    "./xor": {
+      "browser": "./esm/src/xor.js",
+      "require": "./cjs/src/xor.js",
+      "import": "./esm/src/xor.js"
+    }
+  },
+  "contributors": [
+    "achingbrain <alex@achingbrain.net>",
+    "Irakli Gozalishvili <contact@gozala.io>",
+    "Cayman <caymannava@gmail.com>",
+    "Hugo Dias <hugomrdias@gmail.com>",
+    "Mircea Nistor <mirceanis@gmail.com>",
+    "Rafael Ramalho <rafazelramalho19@gmail.com>",
+    "Vasco Santos <vasco.santos@ua.pt>"
+  ],
+  "browser": {
+    ".": "./cjs/src/index.js",
+    "./compare": "./cjs/src/compare.js",
+    "./concat": "./cjs/src/concat.js",
+    "./equals": "./cjs/src/equals.js",
+    "./from-string": "./cjs/src/from-string.js",
+    "./to-string": "./cjs/src/to-string.js",
+    "./xor": "./cjs/src/xor.js"
+  }
+}

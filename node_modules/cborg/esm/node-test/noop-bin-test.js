@@ -1,0 +1,1 @@
+import bin from '../lib/bin.js';

@@ -1,0 +1,64 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "files": [
+      "test/fast-printf/**/*"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ]
+  },
+  "dependencies": {
+    "boolean": "^3.1.4"
+  },
+  "description": "Fast and spec-compliant printf implementation for Node.js and browser.",
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/mathjs": "^9.4.1",
+    "ava": "^3.15.0",
+    "benchmark": "^2.1.4",
+    "coveralls": "^3.1.1",
+    "eslint": "^7.32.0",
+    "eslint-config-canonical": "^26.2.3",
+    "husky": "^4",
+    "nyc": "^15.1.0",
+    "semantic-release": "^17.4.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5"
+  },
+  "engines": {
+    "node": ">=10.0"
+  },
+  "husky": {
+    "scripts": {
+      "pre-commit": "npm run lint && npm run test && npm run build"
+    }
+  },
+  "keywords": [
+    "printf",
+    "sprintf"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/src/printf.js",
+  "name": "fast-printf",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gajus/fast-printf.git"
+  },
+  "scripts": {
+    "benchmark": "ROARR_LOG=true ts-node --transpile-only test/benchmark.ts",
+    "build": "rm -fr ./dist && tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src ./test && tsc --noEmit",
+    "test": "NODE_ENV=test ava --serial --verbose"
+  },
+  "typings": "./dist/src/printf.d.ts",
+  "version": "1.6.9"
+}

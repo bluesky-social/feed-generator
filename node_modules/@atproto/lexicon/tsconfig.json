@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist", // Your outDir,
+    "emitDeclarationOnly": true
+  },
+  "include": ["./src"],
+  "references": [
+    { "path": "../common/tsconfig.build.json" },
+    { "path": "../nsid/tsconfig.build.json" },
+    { "path": "../uri/tsconfig.build.json" }
+  ]
+}

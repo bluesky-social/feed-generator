@@ -1,0 +1,77 @@
+{
+  "name": "did-resolver",
+  "version": "4.1.0",
+  "description": "Resolve DID documents",
+  "type": "module",
+  "source": "src/resolver.ts",
+  "main": "./lib/resolver.cjs",
+  "module": "./lib/resolver.module.js",
+  "types": "./lib/resolver.d.ts",
+  "files": [
+    "lib",
+    "dist",
+    "src",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./lib/resolver.d.ts",
+      "require": "./lib/resolver.cjs",
+      "import": "./lib/resolver.module.js"
+    }
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:decentralized-identity/did-resolver.git"
+  },
+  "author": "Pelle Braendgaard",
+  "contributors": [
+    "Mircea Nistor <mircea.nistor@mesh.xyz>",
+    "Jack Tanner <jack+public@tonomy.foundation>",
+    "Rebal Alhaqash <rebal@tonomy.foundation>"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest",
+    "test:ci": "jest --coverage",
+    "build": "microbundle --compress=false",
+    "format": "prettier --write \"src/**/*.[jt]s\"",
+    "lint": "eslint --ignore-pattern \"src/**/*.test.[jt]s\" \"src/**/*.[jt]s\"",
+    "prepublishOnly": "yarn test:ci && yarn format && yarn lint",
+    "release": "semantic-release --debug"
+  },
+  "jest": {
+    "clearMocks": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/__tests__/**"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.[jt]s"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "7.19.3",
+    "@babel/preset-env": "7.19.4",
+    "@babel/preset-typescript": "7.18.6",
+    "@semantic-release/changelog": "6.0.1",
+    "@semantic-release/git": "10.0.1",
+    "@types/jest": "29.1.2",
+    "@typescript-eslint/eslint-plugin": "5.40.0",
+    "@typescript-eslint/parser": "5.40.0",
+    "babel-jest": "29.2.0",
+    "eslint": "8.25.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-jest": "27.1.2",
+    "eslint-plugin-prettier": "4.2.1",
+    "jest": "29.2.0",
+    "microbundle": "0.15.1",
+    "prettier": "2.7.1",
+    "semantic-release": "19.0.5",
+    "typescript": "4.8.4"
+  }
+}
