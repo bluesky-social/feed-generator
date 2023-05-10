@@ -4,7 +4,7 @@
 
 We are actively developing Feed Generator integration into the Bluesky PDS. Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
 
-We are planning to create a starter kit for devs, but this section is currently speculative & not yet developed. However, we wanted to get this document out as soon as possible to encourage folks to start experimenting.
+We've put together a starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system & started building!
 
 ## Overview
 
@@ -27,8 +27,6 @@ The general flow of providing a custom algorithm to a user is as follows:
 To the user this should feel like visiting a page in the app. Once they subscribe, it will appear in their home interface as one of their available feeds.
 
 ## Getting Started
-
-🚧 Not yet implemented 🚧
 
 For now, your algorithm will need to have an account & repository on the `bsky.social` PDS. 
 

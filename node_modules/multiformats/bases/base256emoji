@@ -1,1 +1,0 @@
-module.exports = require('./../cjs/src/bases/base256emoji.js')

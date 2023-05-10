@@ -21,7 +21,7 @@ export class FirehoseSubscription {
       method: METHOD,
       // signal: signal,
       getParams: () => this.getCursor(),
-      validate: (value) => {
+      validate: (value: unknown) => {
         try {
           return lexicons.assertValidXrpcMessage<RepoEvent>(METHOD, value)
         } catch (err) {
