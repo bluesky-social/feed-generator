@@ -1,104 +1,46 @@
-import { Subscription } from '@atproto/xrpc-server'
 import { cborToLexRecord, readCar } from '@atproto/repo'
 import { ids, lexicons } from './lexicon/lexicons'
 import { Record as PostRecord } from './lexicon/types/app/bsky/feed/post'
-
 import {
   Commit,
   OutputSchema as RepoEvent,
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
-import { Database, PostTable } from './db'
+import { PostTable } from './db'
+import { FirehoseSubscriptionBase } from './util/subscription'
 
-const METHOD = ids.ComAtprotoSyncSubscribeRepos
-
-export class FirehoseSubscription {
-  public sub: Subscription
-
-  constructor(public db: Database, public service: string) {
-    this.sub = new Subscription({
-      service: service,
-      method: METHOD,
-      // signal: signal,
-      getParams: () => this.getCursor(),
-      validate: (value: unknown) => {
-        try {
-          return lexicons.assertValidXrpcMessage<RepoEvent>(METHOD, value)
-        } catch (err) {
-          console.error('repo subscription skipped invalid message', err)
+export class FirehoseSubscription extends FirehoseSubscriptionBase {
+  async handleEvent(evt: RepoEvent) {
+    if (!isCommit(evt)) return
+    const postEvts = await getPostEventsFromEvt(evt)
+    const toDelete: string[] = []
+    const toCreate: PostTable[] = []
+    for (const evt of postEvts) {
+      if (evt.type === 'delete') {
+        toDelete.push(evt.uri)
+      } else {
+        // only alf related posts
+        if (evt.text.toLowerCase().includes('alf')) {
+          toCreate.push({
+            uri: evt.uri,
+            cid: evt.cid,
+            replyParent: evt.replyParent ?? null,
+            replyRoot: evt.replyRoot ?? null,
+            indexedAt: new Date().toISOString(),
+          })
         }
-      },
-    })
-  }
-
-  async run() {
-    await this.ensureCursor()
-    for await (const evt of this.sub) {
-      if (!isCommit(evt)) continue
-      const postEvts = await getPostEventsFromEvt(evt)
-      const toDelete: string[] = []
-      const toCreate: PostTable[] = []
-      for (const evt of postEvts) {
-        if (evt.type === 'delete') {
-          toDelete.push(evt.uri)
-        } else {
-          // only alf related posts
-          if (evt.text.toLowerCase().includes('alf')) {
-            toCreate.push({
-              uri: evt.uri,
-              cid: evt.cid,
-              replyParent: evt.replyParent ?? null,
-              replyRoot: evt.replyRoot ?? null,
-              indexedAt: new Date().toISOString(),
-            })
-          }
-        }
-      }
-
-      if (toDelete.length > 0) {
-        await this.db.deleteFrom('posts').where('uri', 'in', toDelete).execute()
-      }
-      if (toCreate.length > 0) {
-        await this.db
-          .insertInto('posts')
-          .values(toCreate)
-          .onConflict((oc) => oc.doNothing())
-          .execute()
-      }
-
-      // update stored cursor every 20 events or so
-      if (evt.seq % 20 === 0) {
-        await this.updateCursor(evt.seq)
       }
     }
-  }
-
-  async ensureCursor() {
-    await this.db
-      .insertInto('sub_state')
-      .values({
-        service: this.service,
-        cursor: 0,
-      })
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-  }
-
-  async updateCursor(cursor: number) {
-    await this.db
-      .updateTable('sub_state')
-      .set({ cursor })
-      .where('service', '=', this.service)
-      .execute()
-  }
-
-  async getCursor(): Promise<{ cursor: number }> {
-    const res = await this.db
-      .selectFrom('sub_state')
-      .selectAll()
-      .where('service', '=', this.service)
-      .executeTakeFirst()
-    return res ? { cursor: res.cursor } : { cursor: 0 }
+    if (toDelete.length > 0) {
+      await this.db.deleteFrom('posts').where('uri', 'in', toDelete).execute()
+    }
+    if (toCreate.length > 0) {
+      await this.db
+        .insertInto('posts')
+        .values(toCreate)
+        .onConflict((oc) => oc.doNothing())
+        .execute()
+    }
   }
 }
 
