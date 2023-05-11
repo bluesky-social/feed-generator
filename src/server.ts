@@ -3,7 +3,7 @@ import events from 'events'
 import express from 'express'
 import { createServer } from './lexicon'
 import feedGeneration from './feed-generation'
-import { createDb, Database } from './db'
+import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 
 export type Config = {
@@ -32,7 +32,7 @@ export class FeedGenerator {
   }
 
   static create(config?: Partial<Config>) {
-    const cfg = {
+    const cfg: Config = {
       port: config?.port ?? 3000,
       sqliteLocation: config?.sqliteLocation ?? 'test.sqlite',
       subscriptionEndpoint: config?.subscriptionEndpoint ?? 'wss://bsky.social',
@@ -56,12 +56,11 @@ export class FeedGenerator {
   }
 
   async start(): Promise<http.Server> {
-    await this.firehose.run()
-    const server = this.app.listen(this.cfg.port)
-    server.keepAliveTimeout = 90000
-    this.server = server
-    await events.once(server, 'listening')
-    return server
+    await migrateToLatest(this.db)
+    this.firehose.run()
+    this.server = this.app.listen(this.cfg.port)
+    await events.once(this.server, 'listening')
+    return this.server
   }
 }
 

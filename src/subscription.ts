@@ -36,13 +36,13 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
     if (postsToDelete.length > 0) {
       await this.db
-        .deleteFrom('posts')
+        .deleteFrom('post')
         .where('uri', 'in', postsToDelete)
         .execute()
     }
     if (postsToCreate.length > 0) {
       await this.db
-        .insertInto('posts')
+        .insertInto('post')
         .values(postsToCreate)
         .onConflict((oc) => oc.doNothing())
         .execute()
