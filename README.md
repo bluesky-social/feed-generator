@@ -8,11 +8,11 @@ In the meantime, we've put together this starter kit for devs. It doesn't do eve
 
 ## Overview
 
-Feed Generators are services that provide custom algorithms to users through the AT protocol.
+Feed Generators are services that provide custom algorithms to users through the AT Protocol.
 
 They work very simply: the server receives a request from a user's server and returns a list of [post URIs](https://atproto.com/specs/at-uri-scheme) with some optional metadata attached. Those posts are then hydrated into full views by the requesting server and sent back to the client. This route is described in the [`app.bsky.feed.getFeedSkeleton` lexicon](https://atproto.com/lexicons/app-bsky-feed#appbskyfeedgetfeedskeleton).
 
-A Feed Generator service can host one or more algorithms. The service itself is identified by DID, however each algorithm that it hosts is declared by a record in the repo of the account that created it. For instance feeds offered by Bluesky will likely be declared in `@bsky.app`'s repo. Therefore, a given algorithm is identified by the at-uri of the declaration record. This declaration record includes a pointer to the service's DID along with some profile information for the feed.
+A Feed Generator service can host one or more algorithms. The service itself is identified by DID, while each algorithm that it hosts is declared by a record in the repo of the account that created it. For instance, feeds offered by Bluesky will likely be declared in `@bsky.app`'s repo. Therefore, a given algorithm is identified by the at-uri of the declaration record. This declaration record includes a pointer to the service's DID along with some profile information for the feed.
 
 The general flow of providing a custom algorithm to a user is as follows:
 - A user requests a feed from their server (PDS) using the at-uri of the declared feed
@@ -24,21 +24,21 @@ The general flow of providing a custom algorithm to a user is as follows:
   - In the future, the PDS will hydrate the feed with the help of an App View, but for now the PDS handles hydration itself
 - The PDS returns the hydrated feed to the user
 
-To the user this should feel like visiting a page in the app. Once they subscribe, it will appear in their home interface as one of their available feeds.
+For users, this should feel like visiting a page in the app. Once they subscribe to a custom algorithm, it will appear in their home interface as one of their available feeds.
 
 ## Getting Started
 
-We've setup this simple server with sqlite to store & query data. Feel free to switch this out for whichever database you prefer.
+We've set up this simple server with SQLite to store & query data. Feel free to switch this out for whichever database you prefer.
 
 Next you will need to do two things:
 
-- Implement indexing logic in `src/subscription.ts`. 
+1. Implement indexing logic in `src/subscription.ts`. 
+   
+   This will subscribe to the repo subscription stream on startup, parse events & index them according to your provided logic.
 
-This will subscribe to the repo subscription stream on startup, parse events & index them according to your provided logic.
-
-- Implement feed generation logic in `src/feed-generation.ts`
-
-The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type
+2. Implement feed generation logic in `src/feed-generation.ts`
+   
+   The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type.
 
 For inspiration, we've provided a very simple feed algorithm ("whats alf") that returns all posts related to the titular character of the TV show ALF.
 
@@ -50,7 +50,7 @@ Once the custom algorithms feature launches, you'll be able to publish your feed
 
 ### Skeleton Metadata
 
-The skeleton that a Feed Generator puts together is, in its simplest form, a list of post uris.
+The skeleton that a Feed Generator puts together is, in its simplest form, a list of post URIs.
 
 ```ts
 [
@@ -116,7 +116,7 @@ We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` packa
 ### Pagination
 You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
 
-This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply pased through he PDS directly to & from the client.
+This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply pased through the PDS directly to & from the client.
 
 We strongly encourage that the cursor be _unique per feed item_ to prevent unexpected behavior in pagination.
 
@@ -127,7 +127,7 @@ We recommend, for instance, a compound cursor with a timestamp + a CID:
 
 How a feed generator fulfills the `getFeedSkeleton` request is completely at their discretion. At the simplest end, a Feed Generator could supply a "feed" that only contains some hardcoded posts.
 
-For most usecases, we recommend subscribing to the firehose at `com.atproto.sync.subscribeRepos`. This websocket will send you every record that is published on the network. Since Feed Generators do not need to provide hydrated posts, you can index as much or as little of the firehose as necessary.
+For most use cases, we recommend subscribing to the firehose at `com.atproto.sync.subscribeRepos`. This websocket will send you every record that is published on the network. Since Feed Generators do not need to provide hydrated posts, you can index as much or as little of the firehose as necessary.
 
 Depending on your algorithm, you likely do not need to keep posts around for long. Unless your algorithm is intended to provide "posts you missed" or something similar, you can likely garbage collect any data that is older than 48 hours.
 
@@ -140,4 +140,4 @@ To reimplement "What's Hot", you may subscribe to the firehose & filter for all 
 You might create a feed for a given community by compiling a list of DIDs within that community & filtering the firehose for all posts from users within that list.
 
 ### A Topical Feed
-To implement a topical feed, you might filter the algorithm for posts and pass the post text through some filtering mechanism (an LLM, a keyword matcher, etc) that filters for the topic of your choice.
+To implement a topical feed, you might filter the algorithm for posts and pass the post text through some filtering mechanism (an LLM, a keyword matcher, etc.) that filters for the topic of your choice.
