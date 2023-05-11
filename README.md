@@ -4,20 +4,20 @@
 
 We are actively developing Feed Generator integration into the Bluesky PDS. Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
 
-We've put together a starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system & started building!
+In the meantime, we've put together this starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system & started building!
 
 ## Overview
 
 Feed Generators are services that provide custom algorithms to users through the AT protocol.
 
-They work very simply: the server receives a request from a user's server and returns a list of [post URIs](https://atproto.com/specs/at-uri-scheme) with some optional metadata attached. Those posts are then "hydrated" into full objects by the requesting server and sent back to the client. This route is described in the `com.atproto.feed.getFeedSkeleton` lexicon. (@TODO insert link)
+They work very simply: the server receives a request from a user's server and returns a list of [post URIs](https://atproto.com/specs/at-uri-scheme) with some optional metadata attached. Those posts are then hydrated into full views by the requesting server and sent back to the client. This route is described in the [`com.atproto.feed.getFeedSkeleton` lexicon](https://github.com/bluesky-social/atproto/blob/custom-feeds/lexicons/app/bsky/feed/getFeedSkeleton.json).
 
-Think of Feed Generators like a user with an API attached. Like atproto users, a Feed Generator is identified by a DID/handle and uses a data repository which holds information like its profile. However, a Feed Generator's DID Document also declares a `#bsky_fg` service endpoint that fulfills the interface for a Feed Generator.
+A Feed Generator service can host one or more algorithms. The service itself is identified by DID, however each algorithm that it hosts is declared by a record in the repo of the account that created it. For instance feeds offered by Bluesky will likely be declared in `@bsky.app`'s repo. Therefore, a given algorithm is identified by the at-uri of the declaration record. This declaration record includes a pointer to the service's DID along with some profile information for the feed.
 
 The general flow of providing a custom algorithm to a user is as follows:
-- A user requests a feed from their server (PDS). Let's say the feed is identified by `@custom-algo.xyz`
-- The PDS resolves `@custom-algo.xyz` to its corresponding DID document
-- The PDS sends a `getFeedSkeleton` request to the service endpoint with ID `#bsky_fg`
+- A user requests a feed from their server (PDS) using the at-uri of the declared feed
+- The PDS resolves the at-uri and finds the DID doc of the Feed Generator
+- The PDS sends a `getFeedSkeleton` request to the service endpoint declared in the Feed Generator's DID doc
   - This request is authenticated by a JWT signed by the user's repo signing key
 - The Feed Generator returns a skeleton of the feed to the user's PDS
 - The PDS hydrates the feed (user info, post contents, aggregates, etc)
@@ -28,27 +28,23 @@ To the user this should feel like visiting a page in the app. Once they subscrib
 
 ## Getting Started
 
-For now, your algorithm will need to have an account & repository on the `bsky.social` PDS. 
-
-First, edit the provided `setup.json` to include your preferred handle, password & invite code, along with the hostname that you will be running this server at. Then run with `yarn setup`.
-
-If you need an invite code, please reach out to a Bluesky team member & inform them that you are building a Feed Generator
-
-Note: _do not_ use your handle/password from you personal bluesky account. This is a _new account_ for the Feed Generator.
-
 We've setup this simple server with sqlite to store & query data. Feel free to switch this out for whichever database you prefer.
 
 Next you will need to do two things:
 
 - Implement indexing logic in `src/subscription.ts`. 
 
-This will subscribe to the repo subscription stream on startup, parse event & index them according to your provided logic
+This will subscribe to the repo subscription stream on startup, parse events & index them according to your provided logic.
 
 - Implement feed generation logic in `src/feed-generation.ts`
 
 The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type
 
-For inspiration, we've provided a very simple feed algorithm that returns recent posts from the Bluesky team.
+For inspiration, we've provided a very simple feed algorithm ("whats alf") that returns all posts related to the titular character of the TV show ALF.
+
+We've taken care of setting this server up with a did:web. However, you're free to switch this out for did:plc if you like - you may want to if you expect this Feed Generator to be long-standing and possibly migrating domains.
+
+Once the custom algorithms feature launches, you'll be able to publish your feed in-app by providing the DID of your service.
 
 ## Some Details
 
@@ -115,7 +111,7 @@ const payload = {
 }
 ```
 
-We provide utilities for verifying user JWTs in `@TODO_PACKAGE`
+We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` package.
 
 ### Pagination
 You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
