@@ -7,6 +7,7 @@ import feedGeneration from './feed-generation'
 import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 import { AppContext, Config } from './config'
+import wellKnown from './well-known'
 
 export class FeedGenerator {
   public app: express.Application
@@ -30,6 +31,7 @@ export class FeedGenerator {
   static create(config?: Partial<Config>) {
     const cfg: Config = {
       port: config?.port ?? 3000,
+      hostname: config?.hostname ?? 'feed-generator.test',
       sqliteLocation: config?.sqliteLocation ?? ':memory:',
       subscriptionEndpoint: config?.subscriptionEndpoint ?? 'wss://bsky.social',
       serviceDid: config?.serviceDid ?? 'did:example:test',
@@ -59,6 +61,7 @@ export class FeedGenerator {
     }
     feedGeneration(server, ctx)
     app.use(server.xrpc.router)
+    app.use(wellKnown(cfg.hostname))
 
     return new FeedGenerator(app, db, firehose, cfg)
   }
