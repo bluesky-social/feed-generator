@@ -9,7 +9,7 @@ const run = async () => {
     subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT),
   })
   await server.start()
-  console.log(`🤖 running feed generator at localhost${server.cfg.port}`)
+  console.log(`🤖 running feed generator at localhost:${server.cfg.port}`)
 }
 
 const maybeStr = (val?: string) => {

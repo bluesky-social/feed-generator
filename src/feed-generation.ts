@@ -8,7 +8,7 @@ export default function (server: Server, db: Database) {
       throw new InvalidRequestError('algorithm unsupported')
     }
     let builder = db
-      .selectFrom('posts')
+      .selectFrom('post')
       .selectAll()
       .orderBy('indexedAt', 'desc')
       .orderBy('cid', 'desc')
@@ -20,9 +20,9 @@ export default function (server: Server, db: Database) {
       }
       const timeStr = new Date(parseInt(indexedAt, 10)).toISOString()
       builder = builder
-        .where('posts.indexedAt', '<', timeStr)
-        .orWhere((qb) => qb.where('posts.indexedAt', '=', timeStr))
-        .where('posts.cid', '<', cid)
+        .where('post.indexedAt', '<', timeStr)
+        .orWhere((qb) => qb.where('post.indexedAt', '=', timeStr))
+        .where('post.cid', '<', cid)
     }
     const res = await builder.execute()
 

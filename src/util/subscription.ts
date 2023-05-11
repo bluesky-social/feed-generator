@@ -78,7 +78,7 @@ export abstract class FirehoseSubscriptionBase {
 export const getPostOperations = async (evt: Commit): Promise<Operations> => {
   const ops: Operations = { creates: [], deletes: [] }
   const postOps = evt.ops.filter(
-    (op) => op.path.split('/')[1] === ids.AppBskyFeedPost,
+    (op) => op.path.split('/')[0] === ids.AppBskyFeedPost,
   )
 
   if (postOps.length < 1) return ops
