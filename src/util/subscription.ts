@@ -36,7 +36,6 @@ export abstract class FirehoseSubscriptionBase {
   abstract handleEvent(evt: RepoEvent): Promise<void>
 
   async run() {
-    await this.ensureCursor()
     for await (const evt of this.sub) {
       try {
         await this.handleEvent(evt)
@@ -50,17 +49,6 @@ export abstract class FirehoseSubscriptionBase {
     }
   }
 
-  async ensureCursor() {
-    await this.db
-      .insertInto('sub_state')
-      .values({
-        service: this.service,
-        cursor: 0,
-      })
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-  }
-
   async updateCursor(cursor: number) {
     await this.db
       .updateTable('sub_state')
@@ -69,13 +57,13 @@ export abstract class FirehoseSubscriptionBase {
       .execute()
   }
 
-  async getCursor(): Promise<{ cursor: number }> {
+  async getCursor(): Promise<{ cursor?: number }> {
     const res = await this.db
       .selectFrom('sub_state')
       .selectAll()
       .where('service', '=', this.service)
       .executeTakeFirst()
-    return res ? { cursor: res.cursor } : { cursor: 0 }
+    return res ? { cursor: res.cursor } : {}
   }
 }
 
