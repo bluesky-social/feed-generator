@@ -35,8 +35,7 @@ export class FeedGenerator {
     const cfg = {
       port: config?.port ?? 3000,
       sqliteLocation: config?.sqliteLocation ?? 'test.sqlite',
-      subscriptionEndpoint:
-        config?.subscriptionEndpoint ?? 'https://bsky.social',
+      subscriptionEndpoint: config?.subscriptionEndpoint ?? 'wss://bsky.social',
     }
     const app = express()
     const db = createDb(cfg.sqliteLocation)
