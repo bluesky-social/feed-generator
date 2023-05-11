@@ -10,9 +10,10 @@
     "start": "ts-node src/index.ts"
   },
   "dependencies": {
+    "@atproto/did-resolver": "^0.1.0",
     "@atproto/repo": "^0.1.0",
     "@atproto/uri": "^0.0.2",
-    "@atproto/xrpc-server": "^0.1.0",
+    "@atproto/xrpc-server": "^0.2.0",
     "better-sqlite3": "^8.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

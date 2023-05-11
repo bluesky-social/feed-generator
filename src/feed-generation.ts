@@ -1,13 +1,22 @@
 import { InvalidRequestError } from '@atproto/xrpc-server'
-import { Database } from './db'
 import { Server } from './lexicon'
+import { AppContext } from './config'
+import { validateAuth } from './auth'
 
-export default function (server: Server, db: Database) {
-  server.app.bsky.feed.getFeedSkeleton(async ({ params, auth }) => {
-    if (params.feed !== 'alf.bsky.social') {
+export default function (server: Server, ctx: AppContext) {
+  server.app.bsky.feed.getFeedSkeleton(async ({ params, req }) => {
+    if (params.feed !== 'did:example:alice/app.bsky.feed.generator/whats-alf') {
       throw new InvalidRequestError('algorithm unsupported')
     }
-    let builder = db
+    // example of how to check auth
+    // feel free to remove if requesterDid is not used
+    const requesterDid = await validateAuth(
+      req,
+      ctx.cfg.serviceDid,
+      ctx.didResolver,
+    )
+
+    let builder = ctx.db
       .selectFrom('post')
       .selectAll()
       .orderBy('indexedAt', 'desc')
