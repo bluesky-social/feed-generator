@@ -1,7 +1,7 @@
 import SqliteDb from 'better-sqlite3'
 import { Kysely, Migrator, SqliteDialect } from 'kysely'
 import { DatabaseSchema } from './schema'
-import { Migrations } from './migrations'
+import { migrationProvider } from './migrations'
 
 export const createDb = (location: string): Database => {
   return new Kysely<DatabaseSchema>({
@@ -12,10 +12,7 @@ export const createDb = (location: string): Database => {
 }
 
 export const migrateToLatest = async (db: Database) => {
-  const migrator = new Migrator({
-    db,
-    provider: new Migrations(),
-  })
+  const migrator = new Migrator({ db, provider: migrationProvider })
   const { error } = await migrator.migrateToLatest()
   if (error) throw error
 }

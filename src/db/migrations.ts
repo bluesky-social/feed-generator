@@ -1,12 +1,14 @@
 import { Kysely, Migration, MigrationProvider } from 'kysely'
 
-export class Migrations implements MigrationProvider {
-  async getMigrations(): Promise<Record<string, Migration>> {
-    return { migration001 }
-  }
+const migrations: Record<string, Migration> = {}
+
+export const migrationProvider: MigrationProvider = {
+  async getMigrations() {
+    return migrations
+  },
 }
 
-const migration001: Migration = {
+migrations['001'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
       .createTable('post')
