@@ -6,7 +6,10 @@ import { validateAuth } from './auth'
 export default function (server: Server, ctx: AppContext) {
   server.app.bsky.feed.getFeedSkeleton(async ({ params, req }) => {
     if (params.feed !== 'did:example:alice/app.bsky.feed.generator/whats-alf') {
-      throw new InvalidRequestError('algorithm unsupported')
+      throw new InvalidRequestError(
+        'Unsupported algorithm',
+        'UnsupportedAlgorithm',
+      )
     }
     /**
      * Example of how to check auth if giving user-specific results:
