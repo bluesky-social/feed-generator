@@ -8,13 +8,15 @@ export default function (server: Server, ctx: AppContext) {
     if (params.feed !== 'did:example:alice/app.bsky.feed.generator/whats-alf') {
       throw new InvalidRequestError('algorithm unsupported')
     }
-    // example of how to check auth
-    // feel free to remove if requesterDid is not used
-    const requesterDid = await validateAuth(
-      req,
-      ctx.cfg.serviceDid,
-      ctx.didResolver,
-    )
+    /**
+     * Example of how to check auth if giving user-specific results:
+     *
+     * const requesterDid = await validateAuth(
+     *   req,
+     *   ctx.cfg.serviceDid,
+     *   ctx.didResolver,
+     * )
+     */
 
     let builder = ctx.db
       .selectFrom('post')
