@@ -8,11 +8,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
-    if (ops.posts.creates.length > 0) {
-      for (const op of ops.posts.creates) {
-        console.log(op.record.text)
-      }
-    }
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
