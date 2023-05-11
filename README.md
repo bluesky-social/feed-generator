@@ -81,7 +81,7 @@ type SkeletonItem = {
 type Reason = ReasonRepost
 
 type ReasonRepost = {
-  $type: @TODO
+  $type: 'app.bsky.feed.defs#skeletonReasonRepost'
   by: string // the did of the reposting user
   indexedAt: string // the time that the repost took place
 }
@@ -111,7 +111,7 @@ const payload = {
 }
 ```
 
-We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` package.
+We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` package, and you can see them in action in `src/auth.ts`.
 
 ### Pagination
 You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
