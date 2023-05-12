@@ -42,13 +42,6 @@ export default function (server: Server, ctx: AppContext) {
 
     const feed = res.map((row) => ({
       post: row.uri,
-      replyTo:
-        row.replyParent && row.replyRoot
-          ? {
-              root: row.replyRoot,
-              parent: row.replyParent,
-            }
-          : undefined,
     }))
 
     let cursor: string | undefined
