@@ -48,7 +48,7 @@ Once the custom algorithms feature launches, you'll be able to publish your feed
 
 ## Running the Server
 
-You can start the server with `yarn start`. This will start the server on port 3000, or what's defined in `.env`. You can then access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf).
+Install dependencies with `yarn` and then run the server with `yarn start`. This will start the server on port 3000, or what's defined in `.env`. You can then watch the firehose output in the console and access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf).
 
 ## Some Details
 
