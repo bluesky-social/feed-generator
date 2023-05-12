@@ -7,6 +7,7 @@ const run = async () => {
     port: maybeInt(process.env.FEEDGEN_PORT),
     sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION),
     subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT),
+    serviceDid: maybeStr(process.env.FEEDGEN_SERVICE_DID),
   })
   await server.start()
   console.log(
