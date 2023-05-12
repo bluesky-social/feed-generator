@@ -46,6 +46,10 @@ We've taken care of setting this server up with a did:web. However, you're free 
 
 Once the custom algorithms feature launches, you'll be able to publish your feed in-app by providing the DID of your service.
 
+## Running the Server
+
+Install dependencies with `yarn` and then run the server with `yarn start`. This will start the server on port 3000, or what's defined in `.env`. You can then watch the firehose output in the console and access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=did:example:alice/app.bsky.feed.generator/whats-alf).
+
 ## Some Details
 
 ### Skeleton Metadata
