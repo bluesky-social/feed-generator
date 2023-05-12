@@ -9,7 +9,9 @@ import {
   StreamAuthVerifier,
 } from '@atproto/xrpc-server'
 import { schemas } from './lexicons'
+import * as ComAtprotoAdminDisableAccountInvites from './types/com/atproto/admin/disableAccountInvites'
 import * as ComAtprotoAdminDisableInviteCodes from './types/com/atproto/admin/disableInviteCodes'
+import * as ComAtprotoAdminEnableAccountInvites from './types/com/atproto/admin/enableAccountInvites'
 import * as ComAtprotoAdminGetInviteCodes from './types/com/atproto/admin/getInviteCodes'
 import * as ComAtprotoAdminGetModerationAction from './types/com/atproto/admin/getModerationAction'
 import * as ComAtprotoAdminGetModerationActions from './types/com/atproto/admin/getModerationActions'
@@ -35,6 +37,7 @@ import * as ComAtprotoRepoDescribeRepo from './types/com/atproto/repo/describeRe
 import * as ComAtprotoRepoGetRecord from './types/com/atproto/repo/getRecord'
 import * as ComAtprotoRepoListRecords from './types/com/atproto/repo/listRecords'
 import * as ComAtprotoRepoPutRecord from './types/com/atproto/repo/putRecord'
+import * as ComAtprotoRepoRebaseRepo from './types/com/atproto/repo/rebaseRepo'
 import * as ComAtprotoRepoUploadBlob from './types/com/atproto/repo/uploadBlob'
 import * as ComAtprotoServerCreateAccount from './types/com/atproto/server/createAccount'
 import * as ComAtprotoServerCreateAppPassword from './types/com/atproto/server/createAppPassword'
@@ -70,6 +73,7 @@ import * as AppBskyActorGetSuggestions from './types/app/bsky/actor/getSuggestio
 import * as AppBskyActorSearchActors from './types/app/bsky/actor/searchActors'
 import * as AppBskyActorSearchActorsTypeahead from './types/app/bsky/actor/searchActorsTypeahead'
 import * as AppBskyFeedBookmarkFeed from './types/app/bsky/feed/bookmarkFeed'
+import * as AppBskyFeedGetActorFeeds from './types/app/bsky/feed/getActorFeeds'
 import * as AppBskyFeedGetAuthorFeed from './types/app/bsky/feed/getAuthorFeed'
 import * as AppBskyFeedGetBookmarkedFeeds from './types/app/bsky/feed/getBookmarkedFeeds'
 import * as AppBskyFeedGetFeed from './types/app/bsky/feed/getFeed'
@@ -83,9 +87,14 @@ import * as AppBskyFeedUnbookmarkFeed from './types/app/bsky/feed/unbookmarkFeed
 import * as AppBskyGraphGetBlocks from './types/app/bsky/graph/getBlocks'
 import * as AppBskyGraphGetFollowers from './types/app/bsky/graph/getFollowers'
 import * as AppBskyGraphGetFollows from './types/app/bsky/graph/getFollows'
+import * as AppBskyGraphGetList from './types/app/bsky/graph/getList'
+import * as AppBskyGraphGetListMutes from './types/app/bsky/graph/getListMutes'
+import * as AppBskyGraphGetLists from './types/app/bsky/graph/getLists'
 import * as AppBskyGraphGetMutes from './types/app/bsky/graph/getMutes'
 import * as AppBskyGraphMuteActor from './types/app/bsky/graph/muteActor'
+import * as AppBskyGraphMuteActorList from './types/app/bsky/graph/muteActorList'
 import * as AppBskyGraphUnmuteActor from './types/app/bsky/graph/unmuteActor'
+import * as AppBskyGraphUnmuteActorList from './types/app/bsky/graph/unmuteActorList'
 import * as AppBskyNotificationGetUnreadCount from './types/app/bsky/notification/getUnreadCount'
 import * as AppBskyNotificationListNotifications from './types/app/bsky/notification/listNotifications'
 import * as AppBskyNotificationUpdateSeen from './types/app/bsky/notification/updateSeen'
@@ -105,9 +114,8 @@ export const COM_ATPROTO_MODERATION = {
   DefsReasonRude: 'com.atproto.moderation.defs#reasonRude',
   DefsReasonOther: 'com.atproto.moderation.defs#reasonOther',
 }
-export const APP_BSKY_ACTOR = {
-  DefsUser: 'app.bsky.actor.defs#user',
-  DefsFeedGenerator: 'app.bsky.actor.defs#feedGenerator',
+export const APP_BSKY_GRAPH = {
+  DefsModlist: 'app.bsky.graph.defs#modlist',
 }
 
 export function createServer(options?: XrpcOptions): Server {
@@ -165,6 +173,16 @@ export class AdminNS {
     this._server = server
   }
 
+  disableAccountInvites<AV extends AuthVerifier>(
+    cfg: ConfigOf<
+      AV,
+      ComAtprotoAdminDisableAccountInvites.Handler<ExtractAuth<AV>>
+    >,
+  ) {
+    const nsid = 'com.atproto.admin.disableAccountInvites' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   disableInviteCodes<AV extends AuthVerifier>(
     cfg: ConfigOf<
       AV,
@@ -172,6 +190,16 @@ export class AdminNS {
     >,
   ) {
     const nsid = 'com.atproto.admin.disableInviteCodes' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  enableAccountInvites<AV extends AuthVerifier>(
+    cfg: ConfigOf<
+      AV,
+      ComAtprotoAdminEnableAccountInvites.Handler<ExtractAuth<AV>>
+    >,
+  ) {
+    const nsid = 'com.atproto.admin.enableAccountInvites' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -409,6 +437,13 @@ export class RepoNS {
     cfg: ConfigOf<AV, ComAtprotoRepoPutRecord.Handler<ExtractAuth<AV>>>,
   ) {
     const nsid = 'com.atproto.repo.putRecord' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  rebaseRepo<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, ComAtprotoRepoRebaseRepo.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'com.atproto.repo.rebaseRepo' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -756,6 +791,13 @@ export class FeedNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  getActorFeeds<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyFeedGetActorFeeds.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.feed.getActorFeeds' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   getAuthorFeed<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyFeedGetAuthorFeed.Handler<ExtractAuth<AV>>>,
   ) {
@@ -855,6 +897,27 @@ export class GraphNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  getList<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyGraphGetList.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.graph.getList' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getListMutes<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyGraphGetListMutes.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.graph.getListMutes' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getLists<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyGraphGetLists.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.graph.getLists' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   getMutes<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyGraphGetMutes.Handler<ExtractAuth<AV>>>,
   ) {
@@ -869,10 +932,24 @@ export class GraphNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  muteActorList<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyGraphMuteActorList.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.graph.muteActorList' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   unmuteActor<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyGraphUnmuteActor.Handler<ExtractAuth<AV>>>,
   ) {
     const nsid = 'app.bsky.graph.unmuteActor' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  unmuteActorList<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyGraphUnmuteActorList.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.graph.unmuteActorList' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 }

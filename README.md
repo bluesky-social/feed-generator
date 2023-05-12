@@ -64,18 +64,12 @@ The skeleton that a Feed Generator puts together is, in its simplest form, a lis
 ]
 ```
 
-However, we include two locations to attach some additional context. Here is the full schema:
+However, we include an additionl location to attach some context. Here is the full schema:
 
 ```ts
 type SkeletonItem = {
   post: string // post URI
-  
-  // optional metadata about the thread that this post is in reply to
-  replyTo?: {
-    root: string, // reply root URI
-    parent: string, // reply parent URI
-  }
-  
+
   // optional reason for inclusion in the feed
   // (generally to be displayed in client)
   reason?: Reason
@@ -86,8 +80,7 @@ type Reason = ReasonRepost
 
 type ReasonRepost = {
   $type: 'app.bsky.feed.defs#skeletonReasonRepost'
-  by: string // the did of the reposting user
-  indexedAt: string // the time that the repost took place
+  repost: string // repost URI
 }
 ```
 
