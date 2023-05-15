@@ -31,7 +31,7 @@ export default function (server: Server, ctx: AppContext) {
       .limit(params.limit)
 
     if (params.cursor) {
-      const [indexedAt, cid] = params.cursor.split('..')
+      const [indexedAt, cid] = params.cursor.split('::')
       if (!indexedAt || !cid) {
         throw new InvalidRequestError('malformed cursor')
       }
