@@ -28,6 +28,7 @@ export default function (server: Server, ctx: AppContext) {
       .selectAll()
       .orderBy('indexedAt', 'desc')
       .orderBy('cid', 'desc')
+      .limit(params.limit)
 
     if (params.cursor) {
       const [indexedAt, cid] = params.cursor.split('..')
