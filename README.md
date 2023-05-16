@@ -36,11 +36,11 @@ Next you will need to do two things:
    
    This will subscribe to the repo subscription stream on startup, parse events & index them according to your provided logic.
 
-2. Implement feed generation logic in `src/feed-generation.ts`
-   
-   The types are in place and you will just need to return something that satisfies the `SkeletonFeedPost[]` type.
+2. Implement feed generation logic in `src/algos`
 
-For inspiration, we've provided a very simple feed algorithm ("whats alf") that returns all posts related to the titular character of the TV show ALF.
+   For inspiration, we've provided a very simple feed algorithm (`whats-alf`) that returns all posts related to the titular character of the TV show ALF. 
+
+   You can either edit it or add another algorithm alongside it. The types are in place an dyou will just need to return something that satisfies the `SkeletonFeedPost[]` type.
 
 We've taken care of setting this server up with a did:web. However, you're free to switch this out for did:plc if you like - you may want to if you expect this Feed Generator to be long-standing and possibly migrating domains.
 
