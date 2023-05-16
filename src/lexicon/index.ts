@@ -67,23 +67,27 @@ import * as ComAtprotoSyncListRepos from './types/com/atproto/sync/listRepos'
 import * as ComAtprotoSyncNotifyOfUpdate from './types/com/atproto/sync/notifyOfUpdate'
 import * as ComAtprotoSyncRequestCrawl from './types/com/atproto/sync/requestCrawl'
 import * as ComAtprotoSyncSubscribeRepos from './types/com/atproto/sync/subscribeRepos'
+import * as AppBskyActorGetPreferences from './types/app/bsky/actor/getPreferences'
 import * as AppBskyActorGetProfile from './types/app/bsky/actor/getProfile'
 import * as AppBskyActorGetProfiles from './types/app/bsky/actor/getProfiles'
 import * as AppBskyActorGetSuggestions from './types/app/bsky/actor/getSuggestions'
+import * as AppBskyActorPutPreferences from './types/app/bsky/actor/putPreferences'
 import * as AppBskyActorSearchActors from './types/app/bsky/actor/searchActors'
 import * as AppBskyActorSearchActorsTypeahead from './types/app/bsky/actor/searchActorsTypeahead'
-import * as AppBskyFeedBookmarkFeed from './types/app/bsky/feed/bookmarkFeed'
+import * as AppBskyFeedDescribeFeedGenerator from './types/app/bsky/feed/describeFeedGenerator'
 import * as AppBskyFeedGetActorFeeds from './types/app/bsky/feed/getActorFeeds'
 import * as AppBskyFeedGetAuthorFeed from './types/app/bsky/feed/getAuthorFeed'
-import * as AppBskyFeedGetBookmarkedFeeds from './types/app/bsky/feed/getBookmarkedFeeds'
 import * as AppBskyFeedGetFeed from './types/app/bsky/feed/getFeed'
+import * as AppBskyFeedGetFeedGenerator from './types/app/bsky/feed/getFeedGenerator'
 import * as AppBskyFeedGetFeedSkeleton from './types/app/bsky/feed/getFeedSkeleton'
 import * as AppBskyFeedGetLikes from './types/app/bsky/feed/getLikes'
 import * as AppBskyFeedGetPostThread from './types/app/bsky/feed/getPostThread'
 import * as AppBskyFeedGetPosts from './types/app/bsky/feed/getPosts'
 import * as AppBskyFeedGetRepostedBy from './types/app/bsky/feed/getRepostedBy'
+import * as AppBskyFeedGetSavedFeeds from './types/app/bsky/feed/getSavedFeeds'
 import * as AppBskyFeedGetTimeline from './types/app/bsky/feed/getTimeline'
-import * as AppBskyFeedUnbookmarkFeed from './types/app/bsky/feed/unbookmarkFeed'
+import * as AppBskyFeedSaveFeed from './types/app/bsky/feed/saveFeed'
+import * as AppBskyFeedUnsaveFeed from './types/app/bsky/feed/unsaveFeed'
 import * as AppBskyGraphGetBlocks from './types/app/bsky/graph/getBlocks'
 import * as AppBskyGraphGetFollowers from './types/app/bsky/graph/getFollowers'
 import * as AppBskyGraphGetFollows from './types/app/bsky/graph/getFollows'
@@ -730,6 +734,13 @@ export class ActorNS {
     this._server = server
   }
 
+  getPreferences<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyActorGetPreferences.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.actor.getPreferences' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   getProfile<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyActorGetProfile.Handler<ExtractAuth<AV>>>,
   ) {
@@ -748,6 +759,13 @@ export class ActorNS {
     cfg: ConfigOf<AV, AppBskyActorGetSuggestions.Handler<ExtractAuth<AV>>>,
   ) {
     const nsid = 'app.bsky.actor.getSuggestions' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  putPreferences<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyActorPutPreferences.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.actor.putPreferences' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -784,10 +802,13 @@ export class FeedNS {
     this._server = server
   }
 
-  bookmarkFeed<AV extends AuthVerifier>(
-    cfg: ConfigOf<AV, AppBskyFeedBookmarkFeed.Handler<ExtractAuth<AV>>>,
+  describeFeedGenerator<AV extends AuthVerifier>(
+    cfg: ConfigOf<
+      AV,
+      AppBskyFeedDescribeFeedGenerator.Handler<ExtractAuth<AV>>
+    >,
   ) {
-    const nsid = 'app.bsky.feed.bookmarkFeed' // @ts-ignore
+    const nsid = 'app.bsky.feed.describeFeedGenerator' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -805,17 +826,17 @@ export class FeedNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
-  getBookmarkedFeeds<AV extends AuthVerifier>(
-    cfg: ConfigOf<AV, AppBskyFeedGetBookmarkedFeeds.Handler<ExtractAuth<AV>>>,
-  ) {
-    const nsid = 'app.bsky.feed.getBookmarkedFeeds' // @ts-ignore
-    return this._server.xrpc.method(nsid, cfg)
-  }
-
   getFeed<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyFeedGetFeed.Handler<ExtractAuth<AV>>>,
   ) {
     const nsid = 'app.bsky.feed.getFeed' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getFeedGenerator<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyFeedGetFeedGenerator.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.feed.getFeedGenerator' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -854,6 +875,13 @@ export class FeedNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  getSavedFeeds<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyFeedGetSavedFeeds.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.feed.getSavedFeeds' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   getTimeline<AV extends AuthVerifier>(
     cfg: ConfigOf<AV, AppBskyFeedGetTimeline.Handler<ExtractAuth<AV>>>,
   ) {
@@ -861,10 +889,17 @@ export class FeedNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
-  unbookmarkFeed<AV extends AuthVerifier>(
-    cfg: ConfigOf<AV, AppBskyFeedUnbookmarkFeed.Handler<ExtractAuth<AV>>>,
+  saveFeed<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyFeedSaveFeed.Handler<ExtractAuth<AV>>>,
   ) {
-    const nsid = 'app.bsky.feed.unbookmarkFeed' // @ts-ignore
+    const nsid = 'app.bsky.feed.saveFeed' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  unsaveFeed<AV extends AuthVerifier>(
+    cfg: ConfigOf<AV, AppBskyFeedUnsaveFeed.Handler<ExtractAuth<AV>>>,
+  ) {
+    const nsid = 'app.bsky.feed.unsaveFeed' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 }
