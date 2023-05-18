@@ -29,14 +29,7 @@ export class FeedGenerator {
     this.cfg = cfg
   }
 
-  static create(config?: Partial<Config>) {
-    const cfg: Config = {
-      port: config?.port ?? 3000,
-      hostname: config?.hostname ?? 'feed-generator.test',
-      sqliteLocation: config?.sqliteLocation ?? ':memory:',
-      subscriptionEndpoint: config?.subscriptionEndpoint ?? 'wss://bsky.social',
-      serviceDid: config?.serviceDid ?? 'did:example:test',
-    }
+  static create(cfg: Config) {
     const app = express()
     const db = createDb(cfg.sqliteLocation)
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
@@ -63,7 +56,7 @@ export class FeedGenerator {
     feedGeneration(server, ctx)
     describeGenerator(server, ctx)
     app.use(server.xrpc.router)
-    app.use(wellKnown(cfg.hostname))
+    app.use(wellKnown(ctx))
 
     return new FeedGenerator(app, db, firehose, cfg)
   }
