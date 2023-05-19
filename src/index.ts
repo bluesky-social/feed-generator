@@ -3,11 +3,17 @@ import FeedGenerator from './server'
 
 const run = async () => {
   dotenv.config()
+  const hostname = maybeStr(process.env.FEEDGEN_HOSTNAME) ?? 'example.com'
+  const serviceDid =
+    maybeStr(process.env.FEEDGEN_SERVICE_DID) ?? `did:web:${hostname}`
   const server = FeedGenerator.create({
-    port: maybeInt(process.env.FEEDGEN_PORT),
-    sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION),
-    subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT),
-    serviceDid: maybeStr(process.env.FEEDGEN_SERVICE_DID),
+    port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
+    sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':memory:',
+    subscriptionEndpoint:
+      maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ??
+      'wss://bsky.social',
+    hostname,
+    serviceDid,
   })
   await server.start()
   console.log(
