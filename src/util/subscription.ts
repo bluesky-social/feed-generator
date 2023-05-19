@@ -1,5 +1,6 @@
 import { Subscription } from '@atproto/xrpc-server'
 import { cborToLexRecord, readCar } from '@atproto/repo'
+import { BlobRef } from '@atproto/lexicon'
 import { ids, lexicons } from '../lexicon/lexicons'
 import { Record as PostRecord } from '../lexicon/types/app/bsky/feed/post'
 import { Record as RepostRecord } from '../lexicon/types/app/bsky/feed/repost'
@@ -156,9 +157,29 @@ export const isFollow = (obj: unknown): obj is FollowRecord => {
 
 const isType = (obj: unknown, nsid: string) => {
   try {
-    lexicons.assertValidRecord(nsid, obj)
+    lexicons.assertValidRecord(nsid, fixBlobRefs(obj))
     return true
   } catch (err) {
     return false
   }
+}
+
+// @TODO right now record validation fails on BlobRefs
+// simply because multiple packages have their own copy
+// of the BlobRef class, causing instanceof checks to fail.
+// This is a temporary solution.
+const fixBlobRefs = (obj: unknown): unknown => {
+  if (Array.isArray(obj)) {
+    return obj.map(fixBlobRefs)
+  }
+  if (obj && typeof obj === 'object') {
+    if (obj.constructor.name === 'BlobRef') {
+      const blob = obj as BlobRef
+      return new BlobRef(blob.ref, blob.mimeType, blob.size, blob.original)
+    }
+    return Object.entries(obj).reduce((acc, [key, val]) => {
+      return Object.assign(acc, { [key]: fixBlobRefs(val) })
+    }, {} as Record<string, unknown>)
+  }
+  return obj
 }
