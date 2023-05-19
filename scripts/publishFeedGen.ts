@@ -29,7 +29,7 @@ const run = async () => {
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar = ''
+  const avatar: string = ''
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
@@ -47,8 +47,18 @@ const run = async () => {
 
   let avatarRef: BlobRef | undefined
   if (avatar) {
+    let encoding: string
+    if (avatar.endsWith('png')) {
+      encoding = 'image/png'
+    } else if (avatar.endsWith('jpg') || avatar.endsWith('jpeg')) {
+      encoding = 'image/jpeg'
+    } else {
+      throw new Error('expected png or jpeg')
+    }
     const img = await fs.readFile(avatar)
-    const blobRes = await agent.api.com.atproto.repo.uploadBlob(img)
+    const blobRes = await agent.api.com.atproto.repo.uploadBlob(img, {
+      encoding,
+    })
     avatarRef = blobRes.data.blob
   }
 
