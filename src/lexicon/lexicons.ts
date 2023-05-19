@@ -835,6 +835,15 @@ export const schemaDict = {
             resolved: {
               type: 'boolean',
             },
+            actionType: {
+              type: 'string',
+              knownValues: [
+                'com.atproto.admin.defs#takedown',
+                'com.atproto.admin.defs#flag',
+                'com.atproto.admin.defs#acknowledge',
+                'com.atproto.admin.defs#escalate',
+              ],
+            },
             limit: {
               type: 'integer',
               minimum: 1,
@@ -2114,6 +2123,10 @@ export const schemaDict = {
                 type: 'string',
                 format: 'handle',
               },
+              did: {
+                type: 'string',
+                format: 'did',
+              },
               inviteCode: {
                 type: 'string',
               },
@@ -2164,6 +2177,12 @@ export const schemaDict = {
           },
           {
             name: 'UnsupportedDomain',
+          },
+          {
+            name: 'UnresolvableDid',
+          },
+          {
+            name: 'IncompatibleDidDoc',
           },
         ],
       },
@@ -3509,6 +3528,66 @@ export const schemaDict = {
           },
         },
       },
+      preferences: {
+        type: 'array',
+        items: {
+          type: 'union',
+          refs: [
+            'lex:app.bsky.actor.defs#adultContentPref',
+            'lex:app.bsky.actor.defs#contentLabelPref',
+          ],
+        },
+      },
+      adultContentPref: {
+        type: 'object',
+        required: ['enabled'],
+        properties: {
+          enabled: {
+            type: 'boolean',
+            default: false,
+          },
+        },
+      },
+      contentLabelPref: {
+        type: 'object',
+        required: ['label', 'visibility'],
+        properties: {
+          label: {
+            type: 'string',
+          },
+          visibility: {
+            type: 'string',
+            knownValues: ['show', 'warn', 'hide'],
+          },
+        },
+      },
+    },
+  },
+  AppBskyActorGetPreferences: {
+    lexicon: 1,
+    id: 'app.bsky.actor.getPreferences',
+    defs: {
+      main: {
+        type: 'query',
+        description: 'Get private preferences attached to the account.',
+        parameters: {
+          type: 'params',
+          properties: {},
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['preferences'],
+            properties: {
+              preferences: {
+                type: 'ref',
+                ref: 'lex:app.bsky.actor.defs#preferences',
+              },
+            },
+          },
+        },
+      },
     },
   },
   AppBskyActorGetProfile: {
@@ -3649,6 +3728,29 @@ export const schemaDict = {
               type: 'blob',
               accept: ['image/png', 'image/jpeg'],
               maxSize: 1000000,
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyActorPutPreferences: {
+    lexicon: 1,
+    id: 'app.bsky.actor.putPreferences',
+    defs: {
+      main: {
+        type: 'procedure',
+        description: 'Sets the private preferences attached to the account.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['preferences'],
+            properties: {
+              preferences: {
+                type: 'ref',
+                ref: 'lex:app.bsky.actor.defs#preferences',
+              },
             },
           },
         },
@@ -3899,6 +4001,7 @@ export const schemaDict = {
               'lex:app.bsky.embed.record#viewRecord',
               'lex:app.bsky.embed.record#viewNotFound',
               'lex:app.bsky.embed.record#viewBlocked',
+              'lex:app.bsky.feed.defs#generatorView',
             ],
           },
         },
@@ -4003,29 +4106,6 @@ export const schemaDict = {
               'lex:app.bsky.embed.images#view',
               'lex:app.bsky.embed.external#view',
             ],
-          },
-        },
-      },
-    },
-  },
-  AppBskyFeedBookmarkFeed: {
-    lexicon: 1,
-    id: 'app.bsky.feed.bookmarkFeed',
-    defs: {
-      main: {
-        type: 'procedure',
-        description: 'Bookmark a 3rd party feed for use across clients',
-        input: {
-          encoding: 'application/json',
-          schema: {
-            type: 'object',
-            required: ['feed'],
-            properties: {
-              feed: {
-                type: 'string',
-                format: 'at-uri',
-              },
-            },
           },
         },
       },
@@ -4215,11 +4295,15 @@ export const schemaDict = {
       },
       generatorView: {
         type: 'object',
-        required: ['uri', 'creator', 'indexedAt'],
+        required: ['uri', 'cid', 'creator', 'indexedAt'],
         properties: {
           uri: {
             type: 'string',
             format: 'at-uri',
+          },
+          cid: {
+            type: 'string',
+            format: 'cid',
           },
           did: {
             type: 'string',
@@ -4247,6 +4331,10 @@ export const schemaDict = {
           avatar: {
             type: 'string',
           },
+          likeCount: {
+            type: 'integer',
+            minimum: 0,
+          },
           viewer: {
             type: 'ref',
             ref: 'lex:app.bsky.feed.defs#generatorViewerState',
@@ -4260,7 +4348,7 @@ export const schemaDict = {
       generatorViewerState: {
         type: 'object',
         properties: {
-          subscribed: {
+          saved: {
             type: 'boolean',
           },
           like: {
@@ -4290,6 +4378,62 @@ export const schemaDict = {
           repost: {
             type: 'string',
             ref: 'at-uri',
+          },
+        },
+      },
+    },
+  },
+  AppBskyFeedDescribeFeedGenerator: {
+    lexicon: 1,
+    id: 'app.bsky.feed.describeFeedGenerator',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Returns information about a given feed generator including TOS & offered feed URIs',
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['did', 'feeds'],
+            properties: {
+              did: {
+                type: 'string',
+                format: 'did',
+              },
+              feeds: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.feed.describeFeedGenerator#feed',
+                },
+              },
+              links: {
+                type: 'ref',
+                ref: 'lex:app.bsky.feed.describeFeedGenerator#links',
+              },
+            },
+          },
+        },
+      },
+      feed: {
+        type: 'object',
+        required: ['uri'],
+        properties: {
+          uri: {
+            type: 'string',
+            format: 'at-uri',
+          },
+        },
+      },
+      links: {
+        type: 'object',
+        properties: {
+          privacyPolicy: {
+            type: 'string',
+          },
+          termsOfService: {
+            type: 'string',
           },
         },
       },
@@ -4446,50 +4590,6 @@ export const schemaDict = {
       },
     },
   },
-  AppBskyFeedGetBookmarkedFeeds: {
-    lexicon: 1,
-    id: 'app.bsky.feed.getBookmarkedFeeds',
-    defs: {
-      main: {
-        type: 'query',
-        description:
-          "Retrieve a list of the authenticated user's bookmarked feeds",
-        parameters: {
-          type: 'params',
-          properties: {
-            limit: {
-              type: 'integer',
-              minimum: 1,
-              maximum: 100,
-              default: 50,
-            },
-            cursor: {
-              type: 'string',
-            },
-          },
-        },
-        output: {
-          encoding: 'application/json',
-          schema: {
-            type: 'object',
-            required: ['feeds'],
-            properties: {
-              cursor: {
-                type: 'string',
-              },
-              feeds: {
-                type: 'array',
-                items: {
-                  type: 'ref',
-                  ref: 'lex:app.bsky.feed.defs#generatorView',
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
   AppBskyFeedGetFeed: {
     lexicon: 1,
     id: 'app.bsky.feed.getFeed',
@@ -4532,6 +4632,51 @@ export const schemaDict = {
                   type: 'ref',
                   ref: 'lex:app.bsky.feed.defs#feedViewPost',
                 },
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'UnknownFeed',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyFeedGetFeedGenerator: {
+    lexicon: 1,
+    id: 'app.bsky.feed.getFeedGenerator',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Get information about a specific feed offered by a feed generator, such as its online status',
+        parameters: {
+          type: 'params',
+          required: ['feed'],
+          properties: {
+            feed: {
+              type: 'string',
+              format: 'at-uri',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['view', 'isOnline', 'isValid'],
+            properties: {
+              view: {
+                type: 'ref',
+                ref: 'lex:app.bsky.feed.defs#generatorView',
+              },
+              isOnline: {
+                type: 'boolean',
+              },
+              isValid: {
+                type: 'boolean',
               },
             },
           },
@@ -4584,6 +4729,11 @@ export const schemaDict = {
             },
           },
         },
+        errors: [
+          {
+            name: 'UnknownFeed',
+          },
+        ],
       },
     },
   },
@@ -4807,6 +4957,49 @@ export const schemaDict = {
       },
     },
   },
+  AppBskyFeedGetSavedFeeds: {
+    lexicon: 1,
+    id: 'app.bsky.feed.getSavedFeeds',
+    defs: {
+      main: {
+        type: 'query',
+        description: "Retrieve a list of the authenticated user's saved feeds",
+        parameters: {
+          type: 'params',
+          properties: {
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 100,
+              default: 50,
+            },
+            cursor: {
+              type: 'string',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['feeds'],
+            properties: {
+              cursor: {
+                type: 'string',
+              },
+              feeds: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.feed.defs#generatorView',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   AppBskyFeedGetTimeline: {
     lexicon: 1,
     id: 'app.bsky.feed.getTimeline',
@@ -5002,13 +5195,36 @@ export const schemaDict = {
       },
     },
   },
-  AppBskyFeedUnbookmarkFeed: {
+  AppBskyFeedSaveFeed: {
     lexicon: 1,
-    id: 'app.bsky.feed.unbookmarkFeed',
+    id: 'app.bsky.feed.saveFeed',
     defs: {
       main: {
         type: 'procedure',
-        description: 'Remove a bookmark for a 3rd party feed',
+        description: 'Save a 3rd party feed for use across clients',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['feed'],
+            properties: {
+              feed: {
+                type: 'string',
+                format: 'at-uri',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyFeedUnsaveFeed: {
+    lexicon: 1,
+    id: 'app.bsky.feed.unsaveFeed',
+    defs: {
+      main: {
+        type: 'procedure',
+        description: 'Unsave a 3rd party feed',
         input: {
           encoding: 'application/json',
           schema: {
@@ -6029,33 +6245,37 @@ export const ids = {
   ComAtprotoSyncRequestCrawl: 'com.atproto.sync.requestCrawl',
   ComAtprotoSyncSubscribeRepos: 'com.atproto.sync.subscribeRepos',
   AppBskyActorDefs: 'app.bsky.actor.defs',
+  AppBskyActorGetPreferences: 'app.bsky.actor.getPreferences',
   AppBskyActorGetProfile: 'app.bsky.actor.getProfile',
   AppBskyActorGetProfiles: 'app.bsky.actor.getProfiles',
   AppBskyActorGetSuggestions: 'app.bsky.actor.getSuggestions',
   AppBskyActorProfile: 'app.bsky.actor.profile',
+  AppBskyActorPutPreferences: 'app.bsky.actor.putPreferences',
   AppBskyActorSearchActors: 'app.bsky.actor.searchActors',
   AppBskyActorSearchActorsTypeahead: 'app.bsky.actor.searchActorsTypeahead',
   AppBskyEmbedExternal: 'app.bsky.embed.external',
   AppBskyEmbedImages: 'app.bsky.embed.images',
   AppBskyEmbedRecord: 'app.bsky.embed.record',
   AppBskyEmbedRecordWithMedia: 'app.bsky.embed.recordWithMedia',
-  AppBskyFeedBookmarkFeed: 'app.bsky.feed.bookmarkFeed',
   AppBskyFeedDefs: 'app.bsky.feed.defs',
+  AppBskyFeedDescribeFeedGenerator: 'app.bsky.feed.describeFeedGenerator',
   AppBskyFeedGenerator: 'app.bsky.feed.generator',
   AppBskyFeedGetActorFeeds: 'app.bsky.feed.getActorFeeds',
   AppBskyFeedGetAuthorFeed: 'app.bsky.feed.getAuthorFeed',
-  AppBskyFeedGetBookmarkedFeeds: 'app.bsky.feed.getBookmarkedFeeds',
   AppBskyFeedGetFeed: 'app.bsky.feed.getFeed',
+  AppBskyFeedGetFeedGenerator: 'app.bsky.feed.getFeedGenerator',
   AppBskyFeedGetFeedSkeleton: 'app.bsky.feed.getFeedSkeleton',
   AppBskyFeedGetLikes: 'app.bsky.feed.getLikes',
   AppBskyFeedGetPostThread: 'app.bsky.feed.getPostThread',
   AppBskyFeedGetPosts: 'app.bsky.feed.getPosts',
   AppBskyFeedGetRepostedBy: 'app.bsky.feed.getRepostedBy',
+  AppBskyFeedGetSavedFeeds: 'app.bsky.feed.getSavedFeeds',
   AppBskyFeedGetTimeline: 'app.bsky.feed.getTimeline',
   AppBskyFeedLike: 'app.bsky.feed.like',
   AppBskyFeedPost: 'app.bsky.feed.post',
   AppBskyFeedRepost: 'app.bsky.feed.repost',
-  AppBskyFeedUnbookmarkFeed: 'app.bsky.feed.unbookmarkFeed',
+  AppBskyFeedSaveFeed: 'app.bsky.feed.saveFeed',
+  AppBskyFeedUnsaveFeed: 'app.bsky.feed.unsaveFeed',
   AppBskyGraphBlock: 'app.bsky.graph.block',
   AppBskyGraphDefs: 'app.bsky.graph.defs',
   AppBskyGraphFollow: 'app.bsky.graph.follow',
