@@ -31,6 +31,7 @@ const run = async () => {
   // Ex: ~/path/to/avatar.jpeg
   const avatar = ''
 
+  // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
   // -------------------------------------
 
@@ -51,7 +52,7 @@ const run = async () => {
     avatarRef = blobRes.data.blob
   }
 
-  await agent.api.com.atproto.repo.createRecord({
+  await agent.api.com.atproto.repo.putRecord({
     repo: agent.session?.did ?? '',
     collection: ids.AppBskyFeedGenerator,
     rkey: recordName,
