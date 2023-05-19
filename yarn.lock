@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@atproto/api@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.3.4.tgz#6b70eb12ef319a7dd2237d6fb000da87ecb3df3e"
-  integrity sha512-DftCrVHRn7Bj+eAltpmAjkqOAYJpSEJPLt8/BO8oe+oMqTKKG+k2PCpOFC8G6NIwUsBsKyJjKKtBxi6ciw9K5Q==
+"@atproto/api@^0.3.7":
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.3.7.tgz#5cc4b0ccc5c6690eb0e5a3ae138a84ce20697e2f"
+  integrity sha512-JHN3rHNGro4AaJWU64hsmpTUzd2+FbfMBiDkqyBmoKtj972ueBJeH8tz6WdnPcsIRfCj1kRthKFj2yJwgt6aSQ==
   dependencies:
     "@atproto/common-web" "*"
     "@atproto/uri" "*"
@@ -1203,9 +1203,9 @@ ts-node@^10.9.1:
     yn "3.1.1"
 
 tslib@^2.1.0:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.1.tgz#f2ad78c367857d54e49a0ef9def68737e1a67b21"
-  integrity sha512-KaI6gPil5m9vF7DKaoXxx1ia9fxS4qG5YveErRRVknPDXXriu5M8h48YRjB6h5ZUOKuAKlSJYb0GaDe8I39fRw==
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.2.tgz#1b6f07185c881557b0ffa84b111a0106989e8338"
+  integrity sha512-5svOrSA2w3iGFDs1HibEVBGbDrAY82bFQ3HZ3ixB+88nsbsWQoKqDRb5UBYAUPEzbBn6dAp5gRNXglySbx1MlA==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
