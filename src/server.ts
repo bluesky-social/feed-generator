@@ -3,7 +3,8 @@ import events from 'events'
 import express from 'express'
 import { DidResolver, MemoryCache } from '@atproto/did-resolver'
 import { createServer } from './lexicon'
-import feedGeneration from './feed-generation'
+import feedGeneration from './methods/feed-generation'
+import describeGenerator from './methods/describe-generator'
 import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 import { AppContext, Config } from './config'
@@ -60,6 +61,7 @@ export class FeedGenerator {
       cfg,
     }
     feedGeneration(server, ctx)
+    describeGenerator(server, ctx)
     app.use(server.xrpc.router)
     app.use(wellKnown(cfg.hostname))
 

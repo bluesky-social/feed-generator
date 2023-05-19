@@ -7,24 +7,12 @@ import { lexicons } from '../../../../lexicons'
 import { isObj, hasProp } from '../../../../util'
 import { CID } from 'multiformats/cid'
 import { HandlerAuth } from '@atproto/xrpc-server'
+import * as AppBskyActorDefs from './defs'
 
 export interface QueryParams {}
 
 export interface InputSchema {
-  email: string
-  handle: string
-  did?: string
-  inviteCode?: string
-  password: string
-  recoveryKey?: string
-  [k: string]: unknown
-}
-
-export interface OutputSchema {
-  accessJwt: string
-  refreshJwt: string
-  handle: string
-  did: string
+  preferences: AppBskyActorDefs.Preferences
   [k: string]: unknown
 }
 
@@ -33,25 +21,12 @@ export interface HandlerInput {
   body: InputSchema
 }
 
-export interface HandlerSuccess {
-  encoding: 'application/json'
-  body: OutputSchema
-}
-
 export interface HandlerError {
   status: number
   message?: string
-  error?:
-    | 'InvalidHandle'
-    | 'InvalidPassword'
-    | 'InvalidInviteCode'
-    | 'HandleNotAvailable'
-    | 'UnsupportedDomain'
-    | 'UnresolvableDid'
-    | 'IncompatibleDidDoc'
 }
 
-export type HandlerOutput = HandlerError | HandlerSuccess
+export type HandlerOutput = HandlerError | void
 export type Handler<HA extends HandlerAuth = never> = (ctx: {
   auth: HA
   params: QueryParams

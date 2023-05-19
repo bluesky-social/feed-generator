@@ -7,31 +7,22 @@ import { lexicons } from '../../../../lexicons'
 import { isObj, hasProp } from '../../../../util'
 import { CID } from 'multiformats/cid'
 import { HandlerAuth } from '@atproto/xrpc-server'
+import * as AppBskyFeedDefs from './defs'
 
-export interface QueryParams {}
-
-export interface InputSchema {
-  email: string
-  handle: string
-  did?: string
-  inviteCode?: string
-  password: string
-  recoveryKey?: string
-  [k: string]: unknown
+export interface QueryParams {
+  feed: string
 }
+
+export type InputSchema = undefined
 
 export interface OutputSchema {
-  accessJwt: string
-  refreshJwt: string
-  handle: string
-  did: string
+  view: AppBskyFeedDefs.GeneratorView
+  isOnline: boolean
+  isValid: boolean
   [k: string]: unknown
 }
 
-export interface HandlerInput {
-  encoding: 'application/json'
-  body: InputSchema
-}
+export type HandlerInput = undefined
 
 export interface HandlerSuccess {
   encoding: 'application/json'
@@ -41,14 +32,6 @@ export interface HandlerSuccess {
 export interface HandlerError {
   status: number
   message?: string
-  error?:
-    | 'InvalidHandle'
-    | 'InvalidPassword'
-    | 'InvalidInviteCode'
-    | 'HandleNotAvailable'
-    | 'UnsupportedDomain'
-    | 'UnresolvableDid'
-    | 'IncompatibleDidDoc'
 }
 
 export type HandlerOutput = HandlerError | HandlerSuccess
