@@ -70,7 +70,7 @@ The skeleton that a Feed Generator puts together is, in its simplest form, a lis
 ]
 ```
 
-However, we include an additionl location to attach some context. Here is the full schema:
+However, we include an additional location to attach some context. Here is the full schema:
 
 ```ts
 type SkeletonItem = {
