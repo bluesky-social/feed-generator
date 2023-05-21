@@ -119,7 +119,7 @@ We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` packa
 ### Pagination
 You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
 
-This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply pased through the PDS directly to & from the client.
+This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply passed through the PDS directly to & from the client.
 
 We strongly encourage that the cursor be _unique per feed item_ to prevent unexpected behavior in pagination.
 
