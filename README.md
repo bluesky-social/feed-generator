@@ -4,7 +4,7 @@
 
 We are actively developing Feed Generator integration into the Bluesky Personal Data Server (PDS). Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
 
-In the meantime, we've put together this starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system & started building!
+In the meantime, we've put together this starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system and started building!
 
 ## Overview
 
@@ -20,35 +20,35 @@ The general flow of providing a custom algorithm to a user is as follows:
 - The PDS sends a `getFeedSkeleton` request to the service endpoint declared in the Feed Generator's DID doc
   - This request is authenticated by a JWT signed by the user's repo signing key
 - The Feed Generator returns a skeleton of the feed to the user's PDS
-- The PDS hydrates the feed (user info, post contents, aggregates, etc)
-  - In the future, the PDS will hydrate the feed with the help of an App View, but for now the PDS handles hydration itself
+- The PDS hydrates the feed (user info, post contents, aggregates, etc.)
+  - In the future, the PDS will hydrate the feed with the help of an App View, but for now, the PDS handles hydration itself
 - The PDS returns the hydrated feed to the user
 
 For users, this should feel like visiting a page in the app. Once they subscribe to a custom algorithm, it will appear in their home interface as one of their available feeds.
 
 ## Getting Started
 
-We've set up this simple server with SQLite to store & query data. Feel free to switch this out for whichever database you prefer.
+We've set up this simple server with SQLite to store and query data. Feel free to switch this out for whichever database you prefer.
 
-Next you will need to do two things:
+Next, you will need to do two things:
 
 1. Implement indexing logic in `src/subscription.ts`. 
    
-   This will subscribe to the repo subscription stream on startup, parse events & index them according to your provided logic.
+   This will subscribe to the repo subscription stream on startup, parse events and index them according to your provided logic.
 
 2. Implement feed generation logic in `src/algos`
 
    For inspiration, we've provided a very simple feed algorithm (`whats-alf`) that returns all posts related to the titular character of the TV show ALF. 
 
-   You can either edit it or add another algorithm alongside it. The types are in place an dyou will just need to return something that satisfies the `SkeletonFeedPost[]` type.
+   You can either edit it or add another algorithm alongside it. The types are in place, and you will just need to return something that satisfies the `SkeletonFeedPost[]` type.
 
 We've taken care of setting this server up with a did:web. However, you're free to switch this out for did:plc if you like - you may want to if you expect this Feed Generator to be long-standing and possibly migrating domains.
 
 ### Publishing your feed
 
-To publish your feed, go to the script at `scripts/publishFeedGen.ts` & fill in the variables at the top. Examples are included and some are optional. To publish your feed generator, simply run `yarn publishFeed`.
+To publish your feed, go to the script at `scripts/publishFeedGen.ts` and fill in the variables at the top. Examples are included, and some are optional. To publish your feed generator, simply run `yarn publishFeed`.
 
-To update your feed's display data (name, avatar, description, etc), just update the relevant variables & re-run the script.
+To update your feed's display data (name, avatar, description, etc.), just update the relevant variables and re-run the script.
 
 After successfully running the script, you should be able to see your feed from within the app, as well as share it by embedding a link in a post (similar to a quote post).
 
@@ -70,7 +70,7 @@ The skeleton that a Feed Generator puts together is, in its simplest form, a lis
 ]
 ```
 
-However, we include an additionl location to attach some context. Here is the full schema:
+However, we include an additional location to attach some context. Here is the full schema:
 
 ```ts
 type SkeletonItem = {
@@ -117,9 +117,9 @@ const payload = {
 We provide utilities for verifying user JWTs in the `@atproto/xrpc-server` package, and you can see them in action in `src/auth.ts`.
 
 ### Pagination
-You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response & takes a `cursor` param as input.
+You'll notice that the `getFeedSkeleton` method returns a `cursor` in its response and takes a `cursor` param as input.
 
-This cursor is treated as an opaque value & fully at the Feed Generator's discretion. It is simply pased through the PDS directly to & from the client.
+This cursor is treated as an opaque value and fully at the Feed Generator's discretion. It is simply passed through the PDS directly to and from the client.
 
 We strongly encourage that the cursor be _unique per feed item_ to prevent unexpected behavior in pagination.
 
@@ -137,10 +137,10 @@ Depending on your algorithm, you likely do not need to keep posts around for lon
 Some examples:
 
 ### Reimplementing What's Hot
-To reimplement "What's Hot", you may subscribe to the firehose & filter for all posts & likes (ignoring profiles/reposts/follows/etc). You would keep a running tally of likes per post & when a PDS requests a feed, you would send the most recent posts that pass some threshold of likes.
+To reimplement "What's Hot", you may subscribe to the firehose and filter for all posts and likes (ignoring profiles/reposts/follows/etc.). You would keep a running tally of likes per post and when a PDS requests a feed, you would send the most recent posts that pass some threshold of likes.
 
 ### A Community Feed
-You might create a feed for a given community by compiling a list of DIDs within that community & filtering the firehose for all posts from users within that list.
+You might create a feed for a given community by compiling a list of DIDs within that community and filtering the firehose for all posts from users within that list.
 
 ### A Topical Feed
 To implement a topical feed, you might filter the algorithm for posts and pass the post text through some filtering mechanism (an LLM, a keyword matcher, etc.) that filters for the topic of your choice.
