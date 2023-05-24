@@ -2,7 +2,7 @@
 
 🚧 Work in Progress 🚧 
 
-We are actively developing Feed Generator integration into the Bluesky PDS. Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
+We are actively developing Feed Generator integration into the Bluesky Personal Data Server (PDS). Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
 
 In the meantime, we've put together this starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system & started building!
 
