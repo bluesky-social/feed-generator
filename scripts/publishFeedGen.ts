@@ -30,7 +30,7 @@ const run = async () => {
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
   // https://avatars.githubusercontent.com/u/9011267?v=4
-  const avatar: string = '../images/dotnetavatar200nopadding.png'
+  const avatar: string = './images/dotnetavatar200nopadding.png'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
