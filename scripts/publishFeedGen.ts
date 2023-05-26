@@ -8,7 +8,7 @@ const run = async () => {
 
   // YOUR bluesky handle
   // Ex: user.bsky.social
-  const handle = ''
+  const handle = 'lance.boston'
 
   // YOUR bluesky password, or preferably an App Password (found in your client settings)
   // Ex: abcd-1234-efgh-5678
@@ -17,19 +17,20 @@ const run = async () => {
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
   // Ex: whats-hot
-  const recordName = ''
+  const recordName = 'dotnet'
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = ''
+  const displayName = '.NET'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description = ''
+  const description = 'A feed containing conversations about .NET development and topics.'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = ''
+  // https://avatars.githubusercontent.com/u/9011267?v=4
+  const avatar: string = '../images/dotnetavatar200nopadding.png'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
