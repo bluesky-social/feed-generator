@@ -1,10 +1,6 @@
 # ATProto Feed Generator
 
-🚧 Work in Progress 🚧 
-
-We are actively developing Feed Generator integration into the Bluesky Personal Data Server (PDS). Though we are reasonably confident about the general shape and interfaces laid out here, these interfaces and implementation details _are_ subject to change. 
-
-In the meantime, we've put together this starter kit for devs. It doesn't do everything, but it should be enough to get you familiar with the system and started building!
+This is a starter kit for creating ATProto Feed Generators. It's not feature complete, but should give you a good starting ground off of which to build and deploy a feed.
 
 ## Overview
 
@@ -43,6 +39,11 @@ Next, you will need to do two things:
    You can either edit it or add another algorithm alongside it. The types are in place, and you will just need to return something that satisfies the `SkeletonFeedPost[]` type.
 
 We've taken care of setting this server up with a did:web. However, you're free to switch this out for did:plc if you like - you may want to if you expect this Feed Generator to be long-standing and possibly migrating domains.
+
+### Deploying your feed
+Your feed will need to be accessible at the value supplied to the `FEEDGEN_HOSTNAME` environment variable.
+
+The service must be set up to respond to HTTPS queries over port 443.
 
 ### Publishing your feed
 
