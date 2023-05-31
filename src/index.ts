@@ -13,6 +13,8 @@ const run = async () => {
     subscriptionEndpoint:
       maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ??
       'wss://bsky.social',
+    publisherDid:
+      maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice',
     hostname,
     serviceDid,
   })
