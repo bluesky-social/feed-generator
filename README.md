@@ -145,3 +145,7 @@ You might create a feed for a given community by compiling a list of DIDs within
 
 ### A Topical Feed
 To implement a topical feed, you might filter the algorithm for posts and pass the post text through some filtering mechanism (an LLM, a keyword matcher, etc.) that filters for the topic of your choice.
+
+## Community Feed Generator Templates
+
+- [Python](https://github.com/MarshalX/bluesky-feed-generator) - [@MarshalX](https://github.com/MarshalX)
