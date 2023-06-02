@@ -9,21 +9,20 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
 
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        // only a11y-related posts
+        const filterWords = ['accessibility', 'a11y'];
+        
+        for (const word in filterWords) {
+          if (create.record.text.toLowerCase().includes(word)) return true;
+        }
+
+        return false;
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        // map a11y-related posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
