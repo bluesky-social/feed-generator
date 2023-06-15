@@ -15,4 +15,5 @@ export type Config = {
   subscriptionEndpoint: string
   serviceDid: string
   publisherDid: string
+  subscriptionReconnectDelay: number
 }
