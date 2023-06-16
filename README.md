@@ -149,3 +149,4 @@ To implement a topical feed, you might filter the algorithm for posts and pass t
 ## Community Feed Generator Templates
 
 - [Python](https://github.com/MarshalX/bluesky-feed-generator) - [@MarshalX](https://github.com/MarshalX)
+- [Ruby](https://github.com/mackuba/bluesky-feeds-rb) - [@mackuba](https://github.com/mackuba)
