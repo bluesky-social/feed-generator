@@ -12,7 +12,10 @@ const run = async () => {
 
   // YOUR bluesky password, or preferably an App Password (found in your client settings)
   // Ex: abcd-1234-efgh-5678
-  const password = ''
+  if (!process.env.FEEDGEN_PUBLISH_APP_PASSWORD) {
+    throw new Error('Please provide an app password in the .env file')
+  }
+  const password = process.env.FEEDGEN_PUBLISH_APP_PASSWORD
 
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
