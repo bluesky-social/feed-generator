@@ -10,7 +10,6 @@ const matchText: string[] = [
   'nsr',
   'cairn RPG',
   'cairnrpg',
-  'cairnttprg',
   'whitebox',
   'bx',
   'ose',
@@ -20,14 +19,12 @@ const matchText: string[] = [
   'old school roleplaying',
   'old school rpg',
   'old school essentials',
-  'DCC',
-  'DCC RPG',
+  'dcc',
   'mausritter',
   'osric',
 ]
 
 const matchPatterns: RegExp[] = [
-  /(^|[\s\W])osrpg($|[\W\s])/im,
   /(^|[\s\W])osr($|[\W\s])/im,
 ]
 
