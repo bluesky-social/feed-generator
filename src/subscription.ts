@@ -7,22 +7,23 @@ import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 const matchText: string[] = [
 ]
 
- const matchPatterns: RegExp[] = [
-  /(^|\s)cairnrpg(\s|$)/im,
-  /(^|\s)bx(\s|$)/im,
-  /(^|\s)whitebox(\s|$)/im,
-  /(^|\s)odnd(\s|$)/im,
-  /(^|\s)adnd(\s|$)/im,
-  /(^|\s)bfrpg(\s|$)/im,
-  /(^|\s)old school roleplaying(\s|$)/im,
-  /(^|\s)old school rpg(\s|$)/im,
-  /(^|\s)old school essentials(\s|$)/im,
-  /(^|\s)mausritter(\s|$)/im,
-  /(^|\s)osric(\s|$)/im,
-  /(^|\s)ose(\s|$)/im,
-  /(^|\s)osr(\s|$)/im,
-  /(^|\s)nsr(\s|$)/im,
-  /(^|\s)dcc(\s|$)/im,
+const matchPatterns: RegExp[] = [
+  /(^|\s)#?old school(\s|\W|$)/im,
+  /(^|\s)#?cairnrpg(\s|\W|$)/im,
+  /(^|\s)#?bx(\s|\W|$)/im,
+  /(^|\s)#?whitebox(\s|\W|$)/im,
+  /(^|\s)#?odnd(\s|\W|$)/im,
+  /(^|\s)#?adnd(\s|\W|$)/im,
+  /(^|\s)#?bfrpg(\s|\W|$)/im,
+  /(^|\s)#?old school roleplaying(\s|\W|$)/im,
+  /(^|\s)#?old school rpg(\s|\W|$)/im,
+  /(^|\s)#?old school essentials(\s|\W|$)/im,
+  /(^|\s)#?mausritter(\s|\W|$)/im,
+  /(^|\s)#?osric(\s|\W|$)/im,
+  /(^|\s)#?ose(\s|\W|$)/im,
+  /(^|\s)#?osr(\s|\W|$)/im,
+  /(^|\s)#?nsr(\s|\W|$)/im,
+  /(^|\s)#?dcc(\s|\W|$)/im,
 ]
 
 const matchUsers: string[] = [
