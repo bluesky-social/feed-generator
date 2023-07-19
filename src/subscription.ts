@@ -8,7 +8,6 @@ const matchText: string[] = [
 ]
 
  const matchPatterns: RegExp[] = [
-  /(^|\s)old school(\s|$)/im,
   /(^|\s)cairnrpg(\s|$)/im,
   /(^|\s)bx(\s|$)/im,
   /(^|\s)whitebox(\s|$)/im,
