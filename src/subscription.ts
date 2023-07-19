@@ -4,26 +4,62 @@ import {
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
+const matchText: string[] = [
+  'osr',
+  'osrttrpg',
+  'nsr',
+  'cairn RPG',
+  'cairnrpg',
+  'cairnttprg',
+  'whitebox',
+  'bx',
+  'ose',
+  'odnd',
+  'adnd',
+  'bfrpg',
+  'old school roleplaying',
+  'old school rpg',
+  'old school essentials',
+  'DCC',
+  'DCC RPG',
+  'mausritter',
+  'osric',
+]
+
+const matchPatterns: RegExp[] = [
+  /(^|[\s\W])osrpg($|[\W\s])/im,
+  /(^|[\s\W])osr($|[\W\s])/im,
+]
+
+// Include high profile TTRPG users here to always include their posts
+const matchUsers: string[] = [
+  //
+]
+
+// Exclude posts from these users
+const bannedUsers: string[] = [
+  //
+]
+
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
 
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        const txt = create.record.text.toLowerCase()
+        return (
+          (matchText.some((term) => txt.includes(term)) ||
+            matchPatterns.some((pattern) => pattern.test(txt)) ||
+            matchUsers.includes(create.author)) &&
+          !bannedUsers.includes(create.author)
+        )
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        console.log(`Found post by ${create.author}: ${create.record.text}`)
+
         return {
           uri: create.uri,
           cid: create.cid,
