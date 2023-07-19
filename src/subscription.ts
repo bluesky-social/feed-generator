@@ -28,7 +28,6 @@ const matchPatterns: RegExp[] = [
   /(^|[\s\W])osr($|[\W\s])/im,
 ]
 
-// Include high profile TTRPG users here to always include their posts
 const matchUsers: string[] = [
   //
 ]
