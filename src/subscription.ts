@@ -5,14 +5,10 @@ import {
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
 const matchText: string[] = [
-  'osr',
-  'osrttrpg',
-  'nsr',
-  'cairn RPG',
+  'old school',
   'cairnrpg',
-  'whitebox',
   'bx',
-  'ose',
+  'whitebox',
   'odnd',
   'adnd',
   'bfrpg',
@@ -22,11 +18,15 @@ const matchText: string[] = [
   'dcc',
   'mausritter',
   'osric',
+
 ]
 
-const matchPatterns: RegExp[] = [
-  /(^|[\s\W])osr($|[\W\s])/im,
-]
+ const matchPatterns: RegExp[] = [
+  /(^|\s)ose(\s|$)/im,
+  /(^|\s)osr(\s|$)/im,
+  /(^|\s)nsr(\s|$)/im,
+ ]
+
 
 const matchUsers: string[] = [
   //
