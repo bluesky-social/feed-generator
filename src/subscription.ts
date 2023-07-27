@@ -32,6 +32,11 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
   /(^|\s)#?bastionland(\s|\W|$)/im,
   /(^|\s)#?into the odd(\s|\W|$)/im,
+  /(^|\s)#?Dolmenwood(\s|\W|$)/im,
+  /(^|\s)#?Mothership(\s|\W|$)/im,
+  /(^|\s)#?World of Dungeons(\s|\W|$)/im,
+  /(^|\s)#?Classic Traveller(\s|\W|$)/im,
+  /(^|\s)#?Between Two Cairns(\s|\W|$)/im,
 ]
 
 const matchUsers: string[] = [
