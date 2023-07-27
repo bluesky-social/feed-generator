@@ -10,7 +10,12 @@ const matchText: string[] = [
 const matchPatterns: RegExp[] = [
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
   /(^|\s)#?bx(\s|\W|$)/im,
+  /(^|\s)#?cairnrpg(\s|\W|$)/im,
+  /(^|\s)#?bx(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
+  /(^|\s)#?BECMI(\s|\W|$)/im,
+  /(^|\s)#?DCCRPG(\s|\W|$)/im,
+  /(^|\s)#?MCCRPG(\s|\W|$)/im,
   /(^|\s)#?odnd(\s|\W|$)/im,
   /(^|\s)#?adnd(\s|\W|$)/im,
   /(^|\s)#?bfrpg(\s|\W|$)/im,
