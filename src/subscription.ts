@@ -19,10 +19,11 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?old school essentials(\s|\W|$)/im,
   /(^|\s)#?mausritter(\s|\W|$)/im,
   /(^|\s)#?osric(\s|\W|$)/im,
-  /(^|\s)#?ose(\s|\W|$)/im,
   /(^|\s)#?osr(\s|\W|$)/im,
   /(^|\s)#?nsr(\s|\W|$)/im,
-  /(^|\s)#?dcc(\s|\W|$)/im,
+  /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
+  /(^|\s)#?bastionland(\s|\W|$)/im,
+  /(^|\s)#?into the odd(\s|\W|$)/im,
 ]
 
 const matchUsers: string[] = [
