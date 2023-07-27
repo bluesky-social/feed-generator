@@ -37,7 +37,12 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?World of Dungeons(\s|\W|$)/im,
   /(^|\s)#?Classic Traveller(\s|\W|$)/im,
   /(^|\s)#?Between Two Cairns(\s|\W|$)/im,
+  /(^|\s)#?Knave(\s|\W|$)/im,
+  /(^|\s)#?Tunnel Goons(\s|\W|$)/im,
+  /(^|\s)#?fkr(\s|\W|$)/im,
+  /(^|\s)#?The Black Hack(\s|\W|$)/im,
 ]
+
 
 const matchUsers: string[] = [
   //
