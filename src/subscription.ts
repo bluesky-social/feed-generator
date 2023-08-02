@@ -40,6 +40,8 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?Tunnel Goons(\s|\W|$)/im,
   /(^|\s)#?fkr(\s|\W|$)/im,
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
+  /(^|\s)#?We Deal In Lead(\s|\W|$)/im,
+  /(^|\s)#?CRACK!(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
 ]
 
 
