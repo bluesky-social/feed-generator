@@ -8,8 +8,7 @@ const matchText: string[] = [
 ]
 
 const matchPatterns: RegExp[] = [
-  /(^|\s)#?cairnrpg(\s|\W|$)/im,
-  /(^|\s)#?bx(\s|\W|$)/im,
+  /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
   /(^|\s)#?bx(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
@@ -31,13 +30,13 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?nsr(\s|\W|$)/im,
   /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
   /(^|\s)#?bastionland(\s|\W|$)/im,
-  /(^|\s)#?into the odd(\s|\W|$)/im,
+  /(^|\s)#?into the odd(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?Dolmenwood(\s|\W|$)/im,
-  /(^|\s)Mothership(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
+  /(^|\s)#?Mothership(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?World of Dungeons(\s|\W|$)/im,
   /(^|\s)#?Classic Traveller(\s|\W|$)/im,
   /(^|\s)#?Between Two Cairns(\s|\W|$)/im,
-  /(^|\s)#?Knave(\s|\W|$)/im,
+  /(^|\s)#?Knave(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?Tunnel Goons(\s|\W|$)/im,
   /(^|\s)#?fkr(\s|\W|$)/im,
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
