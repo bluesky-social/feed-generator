@@ -10,7 +10,8 @@ const matchText: string[] = [
 const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
-  /(^|\s)#?bx(\s|\W|$)/im,
+  /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
+  /(^|\s)#?fkr\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
   /(^|\s)#?DCCRPG(\s|\W|$)/im,
@@ -38,7 +39,6 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?Between Two Cairns(\s|\W|$)/im,
   /(^|\s)#?Knave(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?Tunnel Goons(\s|\W|$)/im,
-  /(^|\s)#?fkr(\s|\W|$)/im,
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
   /(^|\s)#?We Deal In Lead(\s|\W|$)/im,
   /(^|\s)#?CRACK!(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
