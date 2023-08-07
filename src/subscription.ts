@@ -11,7 +11,6 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
   /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
-  /(^|\s)#?fkr\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
   /(^|\s)#?DCCRPG(\s|\W|$)/im,
