@@ -8,13 +8,18 @@ import { isObj, hasProp } from '../../../../util'
 import { CID } from 'multiformats/cid'
 import { HandlerAuth } from '@atproto/xrpc-server'
 
-export interface QueryParams {
+export interface QueryParams {}
+
+export interface InputSchema {
   /** Hostname of the service that is notifying of update. */
   hostname: string
+  [k: string]: unknown
 }
 
-export type InputSchema = undefined
-export type HandlerInput = undefined
+export interface HandlerInput {
+  encoding: 'application/json'
+  body: InputSchema
+}
 
 export interface HandlerError {
   status: number
@@ -22,10 +27,13 @@ export interface HandlerError {
 }
 
 export type HandlerOutput = HandlerError | void
-export type Handler<HA extends HandlerAuth = never> = (ctx: {
+export type HandlerReqCtx<HA extends HandlerAuth = never> = {
   auth: HA
   params: QueryParams
   input: HandlerInput
   req: express.Request
   res: express.Response
-}) => Promise<HandlerOutput> | HandlerOutput
+}
+export type Handler<HA extends HandlerAuth = never> = (
+  ctx: HandlerReqCtx<HA>,
+) => Promise<HandlerOutput> | HandlerOutput
