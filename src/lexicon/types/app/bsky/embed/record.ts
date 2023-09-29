@@ -7,6 +7,7 @@ import { isObj, hasProp } from '../../../../util'
 import { CID } from 'multiformats/cid'
 import * as ComAtprotoRepoStrongRef from '../../../com/atproto/repo/strongRef'
 import * as AppBskyFeedDefs from '../feed/defs'
+import * as AppBskyGraphDefs from '../graph/defs'
 import * as AppBskyActorDefs from '../actor/defs'
 import * as ComAtprotoLabelDefs from '../../../com/atproto/label/defs'
 import * as AppBskyEmbedImages from './images'
@@ -37,6 +38,7 @@ export interface View {
     | ViewNotFound
     | ViewBlocked
     | AppBskyFeedDefs.GeneratorView
+    | AppBskyGraphDefs.ListView
     | { $type: string; [k: string]: unknown }
   [k: string]: unknown
 }
@@ -82,6 +84,7 @@ export function validateViewRecord(v: unknown): ValidationResult {
 
 export interface ViewNotFound {
   uri: string
+  notFound: true
   [k: string]: unknown
 }
 
@@ -99,6 +102,8 @@ export function validateViewNotFound(v: unknown): ValidationResult {
 
 export interface ViewBlocked {
   uri: string
+  blocked: true
+  author: AppBskyFeedDefs.BlockedAuthor
   [k: string]: unknown
 }
 
