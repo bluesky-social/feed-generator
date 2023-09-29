@@ -1,6 +1,6 @@
 import express from 'express'
 import { verifyJwt, AuthRequiredError } from '@atproto/xrpc-server'
-import { DidResolver } from '@atproto/did-resolver'
+import { DidResolver } from '@atproto/identity'
 
 export const validateAuth = async (
   req: express.Request,
