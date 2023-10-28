@@ -27,7 +27,6 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?mausritter(\s|\W|$)/im,
   /(^|\s)#?osric(\s|\W|$)/im,
   /(^|\s)#?osr(\s|\W|$)/im,
-  /(^|\s)#?nsr(\s|\W|$)/im,
   /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
   /(^|\s)#?bastionland(\s|\W|$)/im,
   /(^|\s)#?into the odd(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
