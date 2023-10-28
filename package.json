@@ -1,13 +1,15 @@
 {
   "name": "feed-generator",
   "version": "1.0.0",
-  "description": "atproto feed generator starter kit",
+  "description": "atproto feed indexer and feed provider",
   "main": "index.js",
-  "repository": "git@github.com:bluesky-social/feed-generator.git",
-  "author": "dholms <dtholmgren@gmail.com>",
+  "repository": "git@github.com:afternooncurry/feed-generator.git",
+  "author": "Afternoon Curry <afternooncurry@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "publishFeed": "ts-node scripts/publishFeedGen.ts",
+    "list": "ts-node scripts/controlFeedGen.ts --operation list",
+    "publish": "ts-node scripts/controlFeedGen.ts --operation publish",
+    "unpublish": "ts-node scripts/controlFeedGen.ts --operation unpublish",
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
@@ -22,7 +24,8 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "kysely": "^0.22.0",
-    "multiformats": "^9.9.0"
+    "multiformats": "^9.9.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
