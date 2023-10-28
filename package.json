@@ -10,7 +10,9 @@
     "list": "ts-node scripts/controlFeedGen.ts --operation list",
     "publish": "ts-node scripts/controlFeedGen.ts --operation publish",
     "unpublish": "ts-node scripts/controlFeedGen.ts --operation unpublish",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node src/index.ts --operation all",
+    "start-feedgen":"ts-node src/index.ts --operation feed",
+    "start-indexer": "ts-node src/index.ts --operation index",
     "build": "tsc"
   },
   "dependencies": {

@@ -20,20 +20,16 @@ export class FeedGenerator {
   constructor(
     app: express.Application,
     db: Database,
-    firehose: FirehoseSubscription,
     cfg: Config,
   ) {
     this.app = app
     this.db = db
-    this.firehose = firehose
     this.cfg = cfg
   }
 
   static create(cfg: Config) {
     const app = express()
     const db = createDb(cfg.sqliteLocation)
-    const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
-
     const didCache = new MemoryCache()
     const didResolver = new DidResolver(
       { plcUrl: 'https://plc.directory' },
@@ -58,12 +54,11 @@ export class FeedGenerator {
     app.use(server.xrpc.router)
     app.use(wellKnown(ctx))
 
-    return new FeedGenerator(app, db, firehose, cfg)
+    return new FeedGenerator(app, db, cfg)
   }
 
   async start(): Promise<http.Server> {
     await migrateToLatest(this.db)
-    this.firehose.run(this.cfg.subscriptionReconnectDelay)
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
     return this.server
