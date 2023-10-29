@@ -14,6 +14,7 @@ export type Config = {
   sqliteLocation: string
   serviceDid: string
   publisherDid: string
+  ownHandleDid: string
 }
 
 export type IndexerConfig = {
