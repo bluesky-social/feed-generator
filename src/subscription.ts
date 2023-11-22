@@ -21,7 +21,20 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       .filter((create) => {
         // only alf-related posts
         return create.record.text.toLowerCase().includes('猛禽') || 
-        create.record.text.toLowerCase().includes('フクロウ')
+        create.record.text.toLowerCase().includes('フクロウ') ||
+        create.record.text.toLowerCase().includes('ふくろう') ||
+        create.record.text.toLowerCase().includes('オオタカ') ||
+        create.record.text.toLowerCase().includes('オオワシ') ||
+        create.record.text.toLowerCase().includes('トンビ') ||
+        create.record.text.toLowerCase().includes('オジロワシ') ||
+        create.record.text.toLowerCase().includes('チョウゲンボウ') ||
+        create.record.text.toLowerCase().includes('チュウヒ') ||
+        create.record.text.toLowerCase().includes('イヌワシ') ||
+        create.record.text.toLowerCase().includes('ノスリ') ||
+        create.record.text.toLowerCase().includes('ハヤブサ') ||
+        create.record.text.toLowerCase().includes('ハクトウワシ')||
+        create.record.text.toLowerCase().includes('ミミズク') ||
+        create.record.text.toLowerCase().includes('みみずく')
       })
       .map((create) => {
         // map alf-related posts to a db row
