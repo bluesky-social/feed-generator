@@ -11,7 +11,7 @@
     "publish": "ts-node scripts/controlFeedGen.ts --operation publish",
     "unpublish": "ts-node scripts/controlFeedGen.ts --operation unpublish",
     "start": "ts-node src/index.ts --operation all",
-    "start-feedgen":"ts-node src/index.ts --operation feed",
+    "start-feedgen": "ts-node src/index.ts --operation feed",
     "start-indexer": "ts-node src/index.ts --operation index",
     "build": "tsc"
   },
@@ -20,7 +20,7 @@
     "@atproto/did-resolver": "^0.1.0",
     "@atproto/lexicon": "^0.1.0",
     "@atproto/repo": "^0.1.0",
-    "@atproto/uri": "^0.0.2",
+    "@atproto/syntax": "^0.1.3",
     "@atproto/xrpc-server": "^0.2.0",
     "better-sqlite3": "^8.3.0",
     "dotenv": "^16.0.3",
