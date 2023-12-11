@@ -23,6 +23,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
       .where('post.indexedAt', '<', timeStr)
       .orWhere((qb) => qb.where('post.indexedAt', '=', timeStr))
       .where('post.cid', '<', cid)
+      .where('post.postText', 'like', '%alf%')
   }
   const res = await builder.execute()
 

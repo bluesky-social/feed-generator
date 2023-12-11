@@ -18,10 +18,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
-      .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
-      })
       .map((create) => {
         // map alf-related posts to a db row
         return {
@@ -30,6 +26,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           replyParent: create.record?.reply?.parent.uri ?? null,
           replyRoot: create.record?.reply?.root.uri ?? null,
           indexedAt: new Date().toISOString(),
+          postText: create.record.text.toLowerCase()
         }
       })
 
