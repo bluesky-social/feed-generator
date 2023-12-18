@@ -32,7 +32,6 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?into the odd(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?Dolmenwood(\s|\W|$)/im,
   /(^|\s)#?Mothership(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
-  /(^|\s)#?World of Dungeons(\s|\W|$)/im,
   /(^|\s)#?Classic Traveller(\s|\W|$)/im,
   /(^|\s)#?Between Two Cairns(\s|\W|$)/im,
   /(^|\s)#?Knave(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
