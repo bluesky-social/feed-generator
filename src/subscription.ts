@@ -20,21 +20,22 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         // only alf-related posts
-        return create.record.text.toLowerCase().includes('猛禽') || 
-        create.record.text.toLowerCase().includes('フクロウ') ||
-        create.record.text.toLowerCase().includes('ふくろう') ||
-        create.record.text.toLowerCase().includes('オオタカ') ||
-        create.record.text.toLowerCase().includes('オオワシ') ||
-        create.record.text.toLowerCase().includes('トンビ') ||
-        create.record.text.toLowerCase().includes('オジロワシ') ||
-        create.record.text.toLowerCase().includes('チョウゲンボウ') ||
-        create.record.text.toLowerCase().includes('チュウヒ') ||
-        create.record.text.toLowerCase().includes('イヌワシ') ||
-        create.record.text.toLowerCase().includes('ノスリ') ||
-        create.record.text.toLowerCase().includes('ハヤブサ') ||
-        create.record.text.toLowerCase().includes('ハクトウワシ')||
-        create.record.text.toLowerCase().includes('ミミズク') ||
-        create.record.text.toLowerCase().includes('みみずく')
+        const _text = create.record.text.toLowerCase();
+        return _text.includes('猛禽') || 
+          _text.includes('フクロウ') ||
+          _text.includes('ふくろう') ||
+          _text.includes('オオタカ') ||
+          _text.includes('オオワシ') ||
+          _text.includes('トンビ') ||
+          _text.includes('オジロワシ') ||
+          _text.includes('チョウゲンボウ') ||
+          _text.includes('チュウヒ') ||
+          _text.includes('イヌワシ') ||
+          _text.includes('ノスリ') ||
+         _text.includes('ハヤブサ') ||
+          _text.includes('ハクトウワシ')||
+          _text.includes('ミミズク') ||
+          _text.includes('みみずく');
       })
       .map((create) => {
         // map alf-related posts to a db row
