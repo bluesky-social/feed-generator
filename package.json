@@ -30,5 +30,6 @@
     "@types/node": "^20.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }

@@ -8,28 +8,28 @@ const run = async () => {
 
   // YOUR bluesky handle
   // Ex: user.bsky.social
-  const handle = ''
+  const handle = 'thcoutinho.bsky.social'
 
   // YOUR bluesky password, or preferably an App Password (found in your client settings)
   // Ex: abcd-1234-efgh-5678
-  const password = ''
+  const password = process.env.BSKY_PASSWORD ?? ''
 
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
   // Ex: whats-hot
-  const recordName = ''
+  const recordName = 'flamengo'
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = ''
+  const displayName = 'Flamengo'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description = ''
+  const description = 'Feed de torcedores do Clube de Regatas do Flamengo. Marque @thcoutinho.bsky.social se quiser ser adicionado.'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = ''
+  const avatar: string = './flamengo-feed.png'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE
@@ -44,6 +44,14 @@ const run = async () => {
   // only update this if in a test environment
   const agent = new AtpAgent({ service: 'https://bsky.social' })
   await agent.login({ identifier: handle, password })
+
+  try {
+    await agent.api.app.bsky.feed.describeFeedGenerator()
+  } catch (err) {
+    throw new Error(
+      'The bluesky server is not ready to accept published custom feeds yet',
+    )
+  }
 
   let avatarRef: BlobRef | undefined
   if (avatar) {
