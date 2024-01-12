@@ -35,7 +35,11 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
          _text.includes('ハヤブサ') ||
           _text.includes('ハクトウワシ')||
           _text.includes('ミミズク') ||
-          _text.includes('みみずく');
+          _text.includes('みみずく') ||
+          _text.includes('梟') ||
+          _text.includes('鴞') ||
+          _text.includes('鴟') ||
+          _text.includes('🦉');
       })
       .map((create) => {
         // map alf-related posts to a db row
