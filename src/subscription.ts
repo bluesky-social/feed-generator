@@ -19,7 +19,15 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
+        // Language filter for Japanese language
+        const _langs: string[] = create.record.langs as string[];
+        if (_langs !== null && _langs !== undefined) {
+          if (_langs.length === 0 || !_langs.includes('ja')) {
+            return false;
+          }
+        }
+
+        // only owl and similar kinds related posts
         const _text = create.record.text.toLowerCase();
         return _text.includes('猛禽') || 
           _text.includes('フクロウ') ||
@@ -42,7 +50,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           _text.includes('🦉');
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        // map owl-related posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
