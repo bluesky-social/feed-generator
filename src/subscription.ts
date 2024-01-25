@@ -23,6 +23,7 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?bfrpg(\s|\W|$)/im,
   /(^|\s)#?old school roleplaying(\s|\W|$)/im,
   /(^|\s)#?old school rpg(\s|\W|$)/im,
+  /(^|\s)#?beyond the wall(\s|\W|$)/im,
   /(^|\s)#?old school essentials(\s|\W|$)/im,
   /(^|\s)#?mausritter(\s|\W|$)/im,
   /(^|\s)#?osric(\s|\W|$)/im,
