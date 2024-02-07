@@ -39,11 +39,7 @@ export abstract class FirehoseSubscriptionBase {
   async run(subscriptionReconnectDelay: number) {
     try {
       for await (const evt of this.sub) {
-        try {
-          await this.handleEvent(evt)
-        } catch (err) {
-          console.error('repo subscription could not handle message', err)
-        }
+        this.handleEvent(evt)
         // update stored cursor every 20 events or so
         if (isCommit(evt) && evt.seq % 20 === 0) {
           await this.updateCursor(evt.seq)
