@@ -7,7 +7,17 @@ import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
-    const ops = await getOpsByType(evt)
+        
+    const ops = await (async () => {
+      try {
+        return await getOpsByType(evt)
+      } catch (e) {
+        console.error('repo subscription could not handle message', err)
+        return undefined
+      }
+    })()
+
+    if (!ops) return
 
     // This logs the text of every post off the firehose.
     // Just for fun :)
