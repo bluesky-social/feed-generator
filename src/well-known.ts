@@ -1,5 +1,6 @@
 import express from 'express'
 import { AppContext } from './config'
+const path = require('path');
 
 const makeRouter = (ctx: AppContext) => {
   const router = express.Router()
@@ -26,6 +27,14 @@ const makeRouter = (ctx: AppContext) => {
       return res.sendStatus(404)
     }
     res.send(ctx.cfg.ownHandleDid)
+  })
+
+  router.get('/images/feedgen_img', (_req, res) => {
+    if (!ctx.cfg.serviceDid.endsWith(ctx.cfg.hostname)) {
+      return res.sendStatus(404)  
+    }
+    res.type('image/jpeg')
+    return res.sendFile(path.join(__dirname, 'feedgen_img.jpg'))
   })
 
   return router
