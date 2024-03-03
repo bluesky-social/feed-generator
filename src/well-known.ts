@@ -22,13 +22,6 @@ const makeRouter = (ctx: AppContext) => {
     })
   })
 
-  router.get('/.well-known/atproto-did', (_req, res) => {
-    if (!ctx.cfg.serviceDid.endsWith(ctx.cfg.hostname)) {
-      return res.sendStatus(404)
-    }
-    res.send(ctx.cfg.ownHandleDid)
-  })
-
   router.get('/images/feedgen_img', (_req, res) => {
     if (!ctx.cfg.serviceDid.endsWith(ctx.cfg.hostname)) {
       return res.sendStatus(404)  

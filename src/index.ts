@@ -57,9 +57,7 @@ const run = async () => {
       publisherDid:
         maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice',
       hostname,
-      serviceDid,
-      ownHandleDid:
-        maybeStr(process.env.OWN_HANDLE_DID) ?? 'did:example:alice'
+      serviceDid
     })
 
     await server.start()
