@@ -1,12 +1,9 @@
-import {
-  OutputSchema as RepoEvent,
-  isCommit,
-} from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
+import { ComAtprotoSyncSubscribeRepos } from '@atproto/api'
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
-  async handleEvent(evt: RepoEvent) {
-    if (!isCommit(evt)) return
+  async handleEvent(evt: ComAtprotoSyncSubscribeRepos.Commit) {
+    if (!ComAtprotoSyncSubscribeRepos.isCommit(evt)) return
     const ops = await getOpsByType(evt)
 
     // This logs the text of every post off the firehose.
