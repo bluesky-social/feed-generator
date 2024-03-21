@@ -3,7 +3,6 @@ import {
   OutputSchema as LabelEvent,
   isLabels,
 } from '@atproto/bsky/src/lexicon/types/com/atproto/label/subscribeLabels'
-
 import { sql } from 'kysely'
 import { Database } from './db'
 
