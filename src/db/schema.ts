@@ -9,6 +9,8 @@ export type Post = {
   replyParent: string | null
   replyRoot: string | null
   indexedAt: string
+  hidden: boolean
+  moderationHistory: string | null
 }
 
 export type SubState = {
