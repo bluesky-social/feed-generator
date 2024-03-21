@@ -29,3 +29,22 @@ migrations['001'] = {
     await db.schema.dropTable('sub_state').execute()
   },
 }
+
+migrations['002'] = {
+  async up(db) {
+    await db.schema
+      .alterTable('post')
+      .addColumn('hidden', 'boolean', (col) => col.defaultTo(false).notNull())
+      .execute()
+
+    await db.schema
+      .alterTable('post')
+      .addColumn('moderationHistory', 'text')
+      .execute()
+  },
+
+  async down(db) {
+    await db.schema.alterTable('post').dropColumn('hidden').execute()
+    await db.schema.alterTable('post').dropColumn('moderationHistory').execute()
+  },
+}

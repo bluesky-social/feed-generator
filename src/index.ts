@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import FeedGenerator from './server'
+import { envList } from '@atproto/common'
 
 const run = async () => {
   dotenv.config()
@@ -19,6 +20,8 @@ const run = async () => {
       maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
     hostname,
     serviceDid,
+    labelerServices: envList('LABELER_HOSTNAMES'),
+    moderationLabels: envList('HIDE_POSTS_WITH_LABELS'),
   })
   await server.start()
   console.log(
