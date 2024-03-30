@@ -1,0 +1,11 @@
+[Unit]
+Description=Bluesky feed generator feed interface
+After=network-online.target
+
+[Service]
+Restart=on-success
+WorkingDirectory=/home/feedgen/git/afternooncurry/feed-generator
+ExecStart=/usr/bin/yarn start-feedgen
+
+[Install]
+WantedBy=multi-user.target
