@@ -1,7 +1,7 @@
 import http from 'http'
 import events from 'events'
 import express from 'express'
-import { DidResolver, MemoryCache } from '@atproto/did-resolver'
+import { DidResolver, MemoryCache } from '@atproto/identity'
 import { createServer } from './lexicon'
 import feedGeneration from './methods/feed-generation'
 import describeGenerator from './methods/describe-generator'
@@ -31,10 +31,10 @@ export class FeedGenerator {
     const app = express()
     const db = createDb(cfg.sqliteLocation)
     const didCache = new MemoryCache()
-    const didResolver = new DidResolver(
-      { plcUrl: 'https://plc.directory' },
+    const didResolver = new DidResolver({
+      plcUrl: 'https://plc.directory',
       didCache,
-    )
+    })
 
     const server = createServer({
       validateResponse: true,

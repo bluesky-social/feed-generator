@@ -11,7 +11,8 @@ import * as AppBskyFeedDefs from './defs'
 
 export interface QueryParams {
   uri: string
-  depth?: number
+  depth: number
+  parentHeight: number
 }
 
 export type InputSchema = undefined
@@ -30,6 +31,7 @@ export type HandlerInput = undefined
 export interface HandlerSuccess {
   encoding: 'application/json'
   body: OutputSchema
+  headers?: { [key: string]: string }
 }
 
 export interface HandlerError {
@@ -39,10 +41,13 @@ export interface HandlerError {
 }
 
 export type HandlerOutput = HandlerError | HandlerSuccess
-export type Handler<HA extends HandlerAuth = never> = (ctx: {
+export type HandlerReqCtx<HA extends HandlerAuth = never> = {
   auth: HA
   params: QueryParams
   input: HandlerInput
   req: express.Request
   res: express.Response
-}) => Promise<HandlerOutput> | HandlerOutput
+}
+export type Handler<HA extends HandlerAuth = never> = (
+  ctx: HandlerReqCtx<HA>,
+) => Promise<HandlerOutput> | HandlerOutput

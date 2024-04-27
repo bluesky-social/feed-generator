@@ -11,10 +11,14 @@ import { HandlerAuth } from '@atproto/xrpc-server'
 export interface QueryParams {}
 
 export interface InputSchema {
-  /** The handle or DID of the repo. */
-  repo: string
-  /** Compare and swap with the previous commit by cid. */
-  swapCommit?: string
+  recipientDid: string
+  content: string
+  subject?: string
+  [k: string]: unknown
+}
+
+export interface OutputSchema {
+  sent: boolean
   [k: string]: unknown
 }
 
@@ -23,17 +27,25 @@ export interface HandlerInput {
   body: InputSchema
 }
 
+export interface HandlerSuccess {
+  encoding: 'application/json'
+  body: OutputSchema
+  headers?: { [key: string]: string }
+}
+
 export interface HandlerError {
   status: number
   message?: string
-  error?: 'InvalidSwap'
 }
 
-export type HandlerOutput = HandlerError | void
-export type Handler<HA extends HandlerAuth = never> = (ctx: {
+export type HandlerOutput = HandlerError | HandlerSuccess
+export type HandlerReqCtx<HA extends HandlerAuth = never> = {
   auth: HA
   params: QueryParams
   input: HandlerInput
   req: express.Request
   res: express.Response
-}) => Promise<HandlerOutput> | HandlerOutput
+}
+export type Handler<HA extends HandlerAuth = never> = (
+  ctx: HandlerReqCtx<HA>,
+) => Promise<HandlerOutput> | HandlerOutput
