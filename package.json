@@ -17,7 +17,7 @@
     "@atproto/lexicon": "^0.2.2",
     "@atproto/repo": "^0.3.2",
     "@atproto/syntax": "^0.1.2",
-    "@atproto/xrpc-server": "^0.3.2",
+    "@atproto/xrpc-server": "^0.6.0",
     "better-sqlite3": "^8.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
