@@ -808,10 +808,10 @@ iso-datestring-validator@^2.2.2:
   resolved "https://registry.npmjs.org/iso-datestring-validator/-/iso-datestring-validator-2.2.2.tgz"
   integrity sha512-yLEMkBbLZTlVQqOnQ4FiMujR6T4DEcCb1xizmvXS+OxuhwcbtynoosRzdMA69zZCShCNAbi+gJ71FxZBBXx1SA==
 
-kysely@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.npmjs.org/kysely/-/kysely-0.22.0.tgz"
-  integrity sha512-ZE3qWtnqLOalodzfK5QUEcm7AEulhxsPNuKaGFsC3XiqO92vMLm+mAHk/NnbSIOtC4RmGm0nsv700i8KDp1gfQ==
+kysely@^0.27.4:
+  version "0.27.4"
+  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.27.4.tgz#96a0285467b380948b4de03b20d87e82d797449b"
+  integrity sha512-dyNKv2KRvYOQPLCAOCjjQuCk4YFd33BvGdf/o5bC7FiW+BB6snA81Zt+2wT9QDFzKqxKa5rrOmvlK/anehCcgA==
 
 lru-cache@^6.0.0:
   version "6.0.0"
