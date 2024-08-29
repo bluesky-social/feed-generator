@@ -53,6 +53,12 @@ To update your feed's display data (name, avatar, description, etc.), just updat
 
 After successfully running the script, you should be able to see your feed from within the app, as well as share it by embedding a link in a post (similar to a quote post).
 
+### Unpublishing your feed
+
+To unpublish your feed, go to the script at `scripts/unpublishFeedGen.ts` and fill in the variables at the top then simply run `yarn unpublishFeed`.
+
+After successfully running the script, your feed will be removed.
+
 ## Running the Server
 
 Install dependencies with `yarn` and then run the server with `yarn start`. This will start the server on port 3000, or what's defined in `.env`. You can then watch the firehose output in the console and access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf).
