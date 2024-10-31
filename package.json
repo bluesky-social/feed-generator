@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
+    "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
