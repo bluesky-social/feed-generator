@@ -37,9 +37,26 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           if (create.record.reply?.root !== null) return false
         }
 
+        // Check for author to add
+        // Filter for posts that include the #joinbeyhive hashtag
+        let hashtags: any[] = []
+        create?.record?.text
+          ?.toLowerCase()
+          ?.match(/#[^\s#\.\;]*/gim)
+          ?.map((hashtag) => {
+            hashtags.push(hashtag)
+          })
+
+        // Add the Author
+        if (hashtags.includes('#joinbeyhive')) {
+          this.authorTask.addAuthor({ did: create?.author })
+        }
+
         if (this.authorTask.Authors) {
           if (!this.authorTask.Authors.includes({ did: create.author }))
             return false
+        } else {
+          return false
         }
         // only alf-related posts
         const re =
