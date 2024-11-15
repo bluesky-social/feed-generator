@@ -22,7 +22,7 @@ export class AuthorTask {
           // Get Authors
           this.Authors = await this.getAuthors(db)
         } catch (e) {
-          console.log(`Authors: error running periodic task ${e.message}`)
+          console.log(`Authors: error running periodic task - ${e.message}`)
         }
       }, 20 * 1000)
     }
