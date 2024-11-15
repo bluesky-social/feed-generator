@@ -25,7 +25,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         if (create?.record?.hasOwnProperty('reply')) {
-          //console.log(create.record.createdAt)
           if (create.record.reply?.root !== null) return false
         }
         // only alf-related posts
@@ -39,7 +38,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         const normalizedString = removeAccents(matchString)
 
         if (normalizedString.match(re) !== null) {
-          console.log(create.record)
           match = true
         }
 
