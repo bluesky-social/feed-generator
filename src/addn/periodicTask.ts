@@ -6,7 +6,7 @@ export type Author = {
 
 export class AuthorTask {
   private periodicIntervalId: NodeJS.Timer | undefined
-  private AuthorsToAdd: Author[]
+  private AuthorsToAdd: Author[] = []
 
   public Authors: Author[]
 
@@ -43,7 +43,7 @@ export class AuthorTask {
   }
 
   private addAuthors = async (db: Database) => {
-    if (this.AuthorsToAdd.length === 0) return
+    if (this.AuthorsToAdd?.length === 0) return
 
     await db.insertInto('author').values(this.AuthorsToAdd).execute()
     this.AuthorsToAdd = []
