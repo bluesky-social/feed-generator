@@ -27,7 +27,8 @@
     "moize": "^6.1.6",
     "mongodb": "^6.3.0",
     "multiformats": "^9.9.0",
-    "p-ratelimit": "^1.0.1"
+    "p-ratelimit": "^1.0.1",
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
