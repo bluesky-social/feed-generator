@@ -44,7 +44,7 @@ export abstract class FirehoseSubscriptionBase {
         })
         // update stored cursor every 20 events or so
         if (isCommit(evt) && evt.seq % 20 === 0) {
-          await this.updateCursor(evt.seq)
+          await this.updateCursor(BigInt(evt.seq))
         }
       }
     } catch (err) {
@@ -56,7 +56,7 @@ export abstract class FirehoseSubscriptionBase {
     }
   }
 
-  async updateCursor(cursor: number) {
+  async updateCursor(cursor: bigint) {
     await this.db
       .updateTable('sub_state')
       .set({ cursor })
@@ -64,7 +64,7 @@ export abstract class FirehoseSubscriptionBase {
       .execute()
   }
 
-  async getCursor(): Promise<{ cursor?: number }> {
+  async getCursor(): Promise<{ cursor?: bigint }> {
     const res = await this.db
       .selectFrom('sub_state')
       .selectAll()

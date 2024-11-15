@@ -14,12 +14,14 @@ migrations['001'] = {
       .createTable('post')
       .addColumn('uri', 'varchar', (col) => col.primaryKey())
       .addColumn('cid', 'varchar', (col) => col.notNull())
+      .addColumn('replyParent', 'varchar')
+      .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
       .execute()
     await db.schema
       .createTable('sub_state')
       .addColumn('service', 'varchar', (col) => col.primaryKey())
-      .addColumn('cursor', 'integer', (col) => col.notNull())
+      .addColumn('cursor', 'bigint', (col) => col.notNull())
       .execute()
   },
   async down(db: Kysely<unknown>) {

@@ -11,7 +11,8 @@ export type Config = {
   port: number
   listenhost: string
   hostname: string
-  sqliteLocation: string
+  dbLocation: string
+  dbCert: string
   subscriptionEndpoint: string
   serviceDid: string
   publisherDid: string

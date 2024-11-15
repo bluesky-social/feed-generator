@@ -6,10 +6,12 @@ export type DatabaseSchema = {
 export type Post = {
   uri: string
   cid: string
+  replyParent: string | null
+  replyRoot: string | null
   indexedAt: string
 }
 
 export type SubState = {
   service: string
-  cursor: number
+  cursor: bigint
 }
