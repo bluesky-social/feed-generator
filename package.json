@@ -9,8 +9,8 @@
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
     "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
-    "start": "node src/index.ts",
-    "build": "tsc"
+    "start": "node ./dist/index.js",
+    "build": "tsc && tsc-alias"
   },
   "dependencies": {
     "@atproto/api": "^0.6.20",

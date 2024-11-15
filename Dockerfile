@@ -14,6 +14,7 @@ RUN yarn install --production
 
 FROM node:20
 WORKDIR /app
+COPY --from=build /app/dist ./dist
 COPY --from=deps /app/package.json .
 COPY --from=deps /app/yarn.lock .
 COPY --from=deps /app/node_modules ./node_modules
