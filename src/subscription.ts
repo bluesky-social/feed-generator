@@ -13,15 +13,15 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     // This logs the text of every post off the firehose.
     // Just for fun :)
     // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
+    //for (const post of ops.posts.creates) {
+    //console.log(post)
+    //}
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        return create.record.text.toLowerCase().includes('beyhive')
       })
       .map((create) => {
         // map alf-related posts to a db row
@@ -39,6 +39,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         .execute()
     }
     if (postsToCreate.length > 0) {
+      console.log(postsToCreate)
       await this.db
         .insertInto('post')
         .values(postsToCreate)
