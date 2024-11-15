@@ -21,7 +21,7 @@ export class AuthorTask {
         } catch (e) {
           console.log(`Authors: error running periodic task ${e.message}`)
         }
-      }, 10 * 1000)
+      }, 20 * 1000)
     }
   }
 
