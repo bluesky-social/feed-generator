@@ -59,7 +59,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
             //TODO: make this false when we are ready to guard the posts
             //return true
           }
-          console.log('Author access granted: ', create.author)
+          //console.log('Author access granted: ', create.author)
         } else {
           return false
         }

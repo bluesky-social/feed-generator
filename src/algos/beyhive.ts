@@ -12,6 +12,8 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .orderBy('cid', 'desc')
     .limit(params.limit)
 
+  console.log('PARAM LIMIT: ', params.limit)
+
   if (params.cursor) {
     const timeStr = new Date(parseInt(params.cursor, 10)).toISOString()
     builder = builder.where('post.indexedAt', '<', timeStr)
