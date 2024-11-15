@@ -6,9 +6,9 @@ export type Author = {
 
 export class AuthorTask {
   private periodicIntervalId: NodeJS.Timer | undefined
-  private AuthorsToAdd: Author[] = []
+  private AuthorsToAdd: string[] = []
 
-  public Authors: Author[]
+  public Authors: string[]
 
   public run = (db: Database) => {
     if (!this.periodicIntervalId) {
@@ -21,22 +21,23 @@ export class AuthorTask {
         } catch (e) {
           console.log(`Authors: error running periodic task ${e.message}`)
         }
-      }, 30 * 1000)
+      }, 10 * 1000)
     }
   }
 
-  public addAuthor = (author: Author) => {
+  public addAuthor = (author: string) => {
     if (this.AuthorsToAdd.includes(author)) return
+    if (this.Authors.includes(author)) return
     this.AuthorsToAdd.push(author)
   }
 
-  private getAuthors = async (db: Database): Promise<Author[]> => {
+  private getAuthors = async (db: Database): Promise<string[]> => {
     let builder = db.selectFrom('author').selectAll()
 
     const res = await builder.execute()
 
-    const authors: Author[] = res.map((row) => {
-      return { did: row.did }
+    const authors: string[] = res.map((row) => {
+      return row.did
     })
 
     return authors
@@ -45,7 +46,11 @@ export class AuthorTask {
   private addAuthors = async (db: Database) => {
     if (this.AuthorsToAdd?.length === 0) return
 
-    await db.insertInto('author').values(this.AuthorsToAdd).execute()
+    let authors = this.AuthorsToAdd.map((author) => {
+      return { did: author }
+    })
+
+    await db.insertInto('author').values(authors).execute()
     this.AuthorsToAdd = []
   }
 }

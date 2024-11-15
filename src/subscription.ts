@@ -33,10 +33,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        if (create?.record?.hasOwnProperty('reply')) {
-          if (create.record.reply?.root !== null) return false
-        }
-
         // Check for author to add
         // Filter for posts that include the #joinbeyhive hashtag
         let hashtags: any[] = []
@@ -50,18 +46,25 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         // Add the Author
         if (hashtags.includes('#joinbeyhive')) {
           console.log('Author: adding author = ', create?.author)
-          this.authorTask.addAuthor({ did: create?.author })
+          this.authorTask.addAuthor(create?.author)
         }
 
-        if (this.authorTask.Authors) {
-          if (!this.authorTask.Authors.includes({ did: create.author }))
+        // Check if this is a reply (if it is, don't process)
+        if (create?.record?.hasOwnProperty('reply')) {
+          if (create.record.reply?.root !== null) return false
+        }
+
+        if (this.authorTask.Authors?.length > 0) {
+          if (!this.authorTask.Authors.includes(create.author)) {
             return false
+          }
+          console.log('Author access granted: ', create.author)
         } else {
           return false
         }
         // only alf-related posts
         const re =
-          /^(?!.*(#beyboons|#haghive|haghive|hasbeyn)).*\b(beyonce|beyhive|beyoncé|yonce|yoncé|#beyonce)\b.*$/imu
+          /^(?!.*(#beyboons|#haghive|haghive|hasbeyn)).*\b(beyonce|beyhive|beyoncé|sasha fierce|bey|yonce|yoncé|#beyonce)\b.*$/imu
 
         let match = false
 
@@ -70,7 +73,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         const normalizedString = removeAccents(matchString)
 
         if (normalizedString.match(re) !== null) {
-          match = false
+          match = true
         }
 
         return match
