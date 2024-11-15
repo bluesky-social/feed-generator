@@ -57,7 +57,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         if (this.authorTask.Authors?.length > 0) {
           if (!this.authorTask.Authors.includes(create.author)) {
             //TODO: make this false when we are ready to guard the posts
-            return true
+            //return true
           }
           console.log('Author access granted: ', create.author)
         } else {

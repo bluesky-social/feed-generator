@@ -7,6 +7,7 @@ export type Author = {
 export class AuthorTask {
   private periodicIntervalId: NodeJS.Timer | undefined
   private AuthorsToAdd: string[] = []
+  private AuthorsToRemove: string[] = []
 
   public Authors: string[]
 
@@ -16,6 +17,8 @@ export class AuthorTask {
         try {
           // Add Authors
           this.addAuthors(db)
+          // Remove Authors
+          this.removeAuthors(db)
           // Get Authors
           this.Authors = await this.getAuthors(db)
         } catch (e) {
@@ -29,6 +32,12 @@ export class AuthorTask {
     if (this.AuthorsToAdd.includes(author)) return
     if (this.Authors.includes(author)) return
     this.AuthorsToAdd.push(author)
+  }
+
+  public removeAuthor = (author: string) => {
+    if (this.AuthorsToRemove.includes(author)) return
+    if (!this.Authors.includes(author)) return
+    this.AuthorsToRemove.push(author)
   }
 
   private getAuthors = async (db: Database): Promise<string[]> => {
@@ -51,6 +60,20 @@ export class AuthorTask {
     })
 
     await db.insertInto('author').values(authors).execute()
+    this.AuthorsToAdd = []
+  }
+
+  private removeAuthors = async (db: Database) => {
+    if (this.AuthorsToRemove?.length === 0) return
+
+    let author = this.AuthorsToRemove.filter((author) => {
+      return author == this.AuthorsToRemove[0]
+    })
+
+    await db
+      .deleteFrom('author')
+      .where('author.did', '=', author)
+      .executeTakeFirst()
     this.AuthorsToAdd = []
   }
 }
