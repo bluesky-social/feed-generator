@@ -49,6 +49,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
         // Add the Author
         if (hashtags.includes('#joinbeyhive')) {
+          console.log('Author: adding author = ', create?.author)
           this.authorTask.addAuthor({ did: create?.author })
         }
 
