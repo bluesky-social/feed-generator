@@ -34,7 +34,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         // Check for author to add
-        // Filter for posts that include the #joinbeyhive hashtag
+        // Filter for posts that include the join/leave hashtags
         let hashtags: any[] = []
         create?.record?.text
           ?.toLowerCase()
@@ -49,6 +49,12 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           this.authorTask.addAuthor(create?.author)
         }
 
+        // Remove the Author
+        if (hashtags.includes('#leavebeyhive')) {
+          console.log('Author: removing author = ', create?.author)
+          this.authorTask.removeAuthor(create?.author)
+        }
+
         // Check if this is a reply (if it is, don't process)
         if (create?.record?.hasOwnProperty('reply')) {
           if (create.record.reply?.root !== null) return false
@@ -56,10 +62,13 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
         if (this.authorTask.Authors?.length > 0) {
           if (!this.authorTask.Authors.includes(create.author)) {
-            //TODO: make this false when we are ready to guard the posts
-            //return true
+            // Only allow if there's a #BEYHIVE hashtag
+            if (hashtags.includes('#beyhive')) {
+              return true
+            }
+            return false
           }
-          //console.log('Author access granted: ', create.author)
+          console.log('Author access granted: ', create.author)
         } else {
           return false
         }
