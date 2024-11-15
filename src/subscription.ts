@@ -3,12 +3,22 @@ import {
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
+import { AuthorTask } from './addn/periodicTask'
+import { Database } from './db'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
+  private authorTask = new AuthorTask()
+
+  constructor(db: Database, service: string) {
+    super(db, service)
+    // Run Tasks
+    this.authorTask.run(db)
+  }
+
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
 
@@ -20,12 +30,16 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     /*for (const post of ops.posts.creates) {
       console.log(post)
     }*/
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         if (create?.record?.hasOwnProperty('reply')) {
           if (create.record.reply?.root !== null) return false
+        }
+
+        if (this.authorTask.Authors) {
+          if (!this.authorTask.Authors.includes({ did: create.author }))
+            return false
         }
         // only alf-related posts
         const re =
@@ -38,7 +52,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         const normalizedString = removeAccents(matchString)
 
         if (normalizedString.match(re) !== null) {
-          match = true
+          match = false
         }
 
         return match
