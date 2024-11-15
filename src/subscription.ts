@@ -47,12 +47,14 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         if (hashtags.includes('#joinbeyhive')) {
           console.log('Author: adding author = ', create?.author)
           this.authorTask.addAuthor(create?.author)
+          return false
         }
 
         // Remove the Author
         if (hashtags.includes('#leavebeyhive')) {
           console.log('Author: removing author = ', create?.author)
           this.authorTask.removeAuthor(create?.author)
+          return false
         }
 
         // Check if this is a reply (if it is, don't process)
@@ -63,10 +65,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         if (this.authorTask.Authors?.length > 0) {
           if (!this.authorTask.Authors.includes(create.author)) {
             // Only allow if there's a #BEYHIVE hashtag
-            if (hashtags.includes('#beyhive')) {
-              return true
-            }
-            return false
+            return hashtags.includes('#beyhive')
           }
           console.log('Author access granted: ', create.author)
         } else {
