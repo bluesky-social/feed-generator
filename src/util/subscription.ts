@@ -1,17 +1,17 @@
 import { Subscription } from '@atproto/xrpc-server'
 import { cborToLexRecord, readCar } from '@atproto/repo'
 import { BlobRef } from '@atproto/lexicon'
-import { ids, lexicons } from '../lexicon/lexicons'
-import { Record as PostRecord } from '../lexicon/types/app/bsky/feed/post'
-import { Record as RepostRecord } from '../lexicon/types/app/bsky/feed/repost'
-import { Record as LikeRecord } from '../lexicon/types/app/bsky/feed/like'
-import { Record as FollowRecord } from '../lexicon/types/app/bsky/graph/follow'
+import { ids, lexicons } from '../lexicon/lexicons.js'
+import { Record as PostRecord } from '../lexicon/types/app/bsky/feed/post.js'
+import { Record as RepostRecord } from '../lexicon/types/app/bsky/feed/repost.js'
+import { Record as LikeRecord } from '../lexicon/types/app/bsky/feed/like.js'
+import { Record as FollowRecord } from '../lexicon/types/app/bsky/graph/follow.js'
 import {
   Commit,
   OutputSchema as RepoEvent,
   isCommit,
-} from '../lexicon/types/com/atproto/sync/subscribeRepos'
-import { Database } from '../db'
+} from '../lexicon/types/com/atproto/sync/subscribeRepos.js'
+import { Database } from '../db/index.js'
 
 export abstract class FirehoseSubscriptionBase {
   public sub: Subscription<RepoEvent>

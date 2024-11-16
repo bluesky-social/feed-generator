@@ -1,7 +1,7 @@
 import { InvalidRequestError } from '@atproto/xrpc-server'
-import { Server } from '../lexicon'
-import { AppContext } from '../config'
-import algos from '../algos'
+import { Server } from '../lexicon/index.js'
+import { AppContext } from '../config.js'
+import algos from '../algos/index.js'
 import { validateAuth } from '../auth'
 import { AtUri } from '@atproto/syntax'
 

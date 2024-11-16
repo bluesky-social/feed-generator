@@ -8,7 +8,7 @@ import {
   AuthVerifier,
   StreamAuthVerifier,
 } from '@atproto/xrpc-server'
-import { schemas } from './lexicons'
+import { schemas } from './lexicons.js'
 import * as ComAtprotoAdminDisableAccountInvites from './types/com/atproto/admin/disableAccountInvites'
 import * as ComAtprotoAdminDisableInviteCodes from './types/com/atproto/admin/disableInviteCodes'
 import * as ComAtprotoAdminEnableAccountInvites from './types/com/atproto/admin/enableAccountInvites'

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import FeedGenerator from './server'
+import FeedGenerator from './server.js'
 
 const run = async () => {
   dotenv.config()

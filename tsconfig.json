@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": ["ESNext"],
     "outDir": "dist",
-    "module": "CommonJS",
+    "module": "ES6",
     "target": "ES6",
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -10,6 +10,9 @@
     "allowUnreachableCode": false,
     "strictNullChecks": true,
     "skipLibCheck": true
+  },
+  "ts-node": {
+    "esm": true
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

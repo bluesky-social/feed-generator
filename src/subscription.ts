@@ -1,12 +1,14 @@
 import {
   OutputSchema as RepoEvent,
   isCommit,
-} from './lexicon/types/com/atproto/sync/subscribeRepos'
-import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
-import { AuthorTask, BannedTask } from './addn/periodicTask'
-import { Database } from './db'
+} from './lexicon/types/com/atproto/sync/subscribeRepos.js'
+import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription.js'
+import { Database } from './db/index.js'
 import dotenv from 'dotenv'
 import { BskyAgent } from '@atproto/api'
+import getListFeed from './addn/getListFeed.js'
+import { AuthorTask } from './addn/tasks/authorTask.js'
+import { BannedTask } from './addn/tasks/bannedTask.js'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -31,9 +33,11 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const handle = `${process.env.FEEDGEN_HANDLE}`
     const password = `${process.env.FEEDGEN_PASSWORD}`
 
-    // Run Tasks
-    this.authorTask.run(db)
-    this.bannedTask.run(agent, handle, password)
+    /*await agent.login({ identifier: handle, password }).then(async () => {
+      // Run Tasks
+      this.authorTask.run(1, agent)
+      this.bannedTask.run(10, agent)
+    })*/
   }
 
   async handleEvent(evt: RepoEvent) {
@@ -71,7 +75,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         if (hashtags.includes('#joinbeyhive')) {
           console.log('Author: adding author = ', create?.author)
           this.authorTask.addAuthor(create?.author)
-          return false
         }
 
         // Remove the Author
