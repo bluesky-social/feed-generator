@@ -3,8 +3,10 @@ import {
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
-import { AuthorTask } from './addn/periodicTask'
+import { AuthorTask, BannedTask } from './addn/periodicTask'
 import { Database } from './db'
+import dotenv from 'dotenv'
+import { BskyAgent } from '@atproto/api'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -12,11 +14,26 @@ function removeAccents(str: string): string {
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   private authorTask = new AuthorTask()
+  private bannedTask = new BannedTask()
 
   constructor(db: Database, service: string) {
     super(db, service)
+
+    this.init(db)
+  }
+
+  // Init
+  async init(db: Database) {
+    dotenv.config()
+
+    // Login Agent
+    const agent = new BskyAgent({ service: 'https://bsky.social' })
+    const handle = `${process.env.FEEDGEN_HANDLE}`
+    const password = `${process.env.FEEDGEN_PASSWORD}`
+
     // Run Tasks
     this.authorTask.run(db)
+    this.bannedTask.run(agent, handle, password)
   }
 
   async handleEvent(evt: RepoEvent) {
@@ -33,7 +50,14 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // Check for author to add
+        // Ignore banned members
+        if (this.bannedTask.bannedMembers) {
+          if (this.bannedTask.bannedMembers.includes(create?.author)) {
+            console.log('This author is banned: ', create?.author)
+            return false
+          }
+        }
+
         // Filter for posts that include the join/leave hashtags
         let hashtags: any[] = []
         create?.record?.text
@@ -88,7 +112,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         return match
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        // map beyhive posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
