@@ -11,7 +11,7 @@
     "publishBeyhive": "tsx scripts/publishBeyhive.ts",
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
     "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
-    "start": "ts-node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "build": "tsc && tsc-alias"
   },
   "dependencies": {
