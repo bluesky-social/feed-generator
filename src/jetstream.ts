@@ -4,6 +4,7 @@ import { Database } from './db/index.js'
 import { BskyAgent } from '@atproto/api'
 import { AuthorTask } from './addn/tasks/authorTask.js'
 import { BannedTask } from './addn/tasks/bannedTask.js'
+import { NewMemberTask } from './addn/tasks/newMemberTask.js'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -12,6 +13,7 @@ function removeAccents(str: string): string {
 export class JetStreamManager {
   private authorTask = new AuthorTask()
   private bannedTask = new BannedTask()
+  private newMemberTask = new NewMemberTask()
   private db: Database
   public jetstream: Jetstream
 
@@ -28,6 +30,8 @@ export class JetStreamManager {
       // Run Tasks
       this.authorTask.run(1 * 60 * 1000, agent)
       this.bannedTask.run(10 * 60 * 1000, agent)
+
+      if (agent.session) this.newMemberTask.run(10 * 1000, agent.session)
     })
 
     this.initJetstream()
@@ -56,6 +60,7 @@ export class JetStreamManager {
   async handleCreateEvent(event) {
     let author: string = event.did
     let hashtags: any[] = []
+    let newJoin: boolean = false
 
     // Ignore banned members
     if (this.bannedTask.bannedMembers.includes(author)) {
@@ -75,6 +80,8 @@ export class JetStreamManager {
     if (hashtags.includes('#joinbeyhive')) {
       console.log('Author: adding author = ', author)
       this.authorTask.addAuthor(author)
+      this.newMemberTask.addMember(event.did)
+      newJoin = true
     }
 
     // Remove the Author
@@ -91,6 +98,7 @@ export class JetStreamManager {
 
     if (
       !this.authorTask.Authors.includes(author) &&
+      !newJoin &&
       process.env.LIMIT_NON_AUTHORS === 'true'
     ) {
       // Only allow if there's a #BEYHIVE hashtag
