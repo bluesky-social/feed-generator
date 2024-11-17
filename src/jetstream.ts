@@ -58,11 +58,9 @@ export class JetStreamManager {
     let hashtags: any[] = []
 
     // Ignore banned members
-    if (this.bannedTask.bannedMembers) {
-      if (this.bannedTask.bannedMembers.includes(author)) {
-        console.log('This author is banned: ', author)
-        return false
-      }
+    if (this.bannedTask.bannedMembers.includes(author)) {
+      console.log('This author is banned: ', author)
+      return
     }
 
     // Filter for posts that include the join/leave hashtags
@@ -83,26 +81,29 @@ export class JetStreamManager {
     if (hashtags.includes('#leavebeyhive')) {
       console.log('Author: removing author = ', author)
       this.authorTask.removeAuthor(author)
-      return false
+      return
     }
 
     // Check if this is a reply (if it is, don't process)
     if (event.commit.record.hasOwnProperty('reply')) {
-      return false
+      return
     }
 
-    if (!this.authorTask.Authors.includes(author)) {
+    if (
+      !this.authorTask.Authors.includes(author) &&
+      process.env.LIMIT_NON_AUTHORS === 'true'
+    ) {
       // Only allow if there's a #BEYHIVE hashtag
       if (!hashtags.includes('#beyhive')) {
         return
       }
     } else {
-      console.log('Author access granted: ', author)
+      console.log('User access granted: ', author)
     }
 
     // only beyonce/beyhive posts
     const re =
-      /^(?!.*(beyboons|haghive|hasbeyn)).*\b(beyonce|beyhive|beyoncé|sasha fierce|bey|yonce|yoncé|#beyonce)\b.*$/imu
+      /^(?!.*(beyboons|haghive|hasbeyn)).*\b(beyhive|beyoncé|beyonce|sasha fierce|yonce)\b.*$/imu
 
     let match = false
 

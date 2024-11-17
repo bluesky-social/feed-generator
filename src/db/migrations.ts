@@ -41,3 +41,16 @@ migrations['002'] = {
     await db.schema.dropTable('author').execute()
   },
 }
+
+migrations['003'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .createTable('member_points')
+      .addColumn('did', 'varchar', (col) => col.primaryKey())
+      .addColumn('points', 'integer', (col) => col.notNull())
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema.dropTable('member_points').execute()
+  },
+}
