@@ -97,8 +97,6 @@ export class JetStreamManager {
       if (!hashtags.includes('#beyhive')) {
         return
       }
-    } else {
-      console.log('User access granted: ', author)
     }
 
     // only beyonce/beyhive posts
