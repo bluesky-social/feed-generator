@@ -23,8 +23,8 @@ export class JetStreamManager {
 
     // Login Agent
     const agent = new BskyAgent({ service: 'https://bsky.social' })
-    const handle = `${process.env.FEEDGEN_HANDLE}`
-    const password = `${process.env.FEEDGEN_PASSWORD}`
+    const handle = `${process.env.BOT_HANDLE}`
+    const password = `${process.env.BOT_PASSWORD}`
 
     await agent.login({ identifier: handle, password }).then(async () => {
       // Run Tasks
