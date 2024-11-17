@@ -3,7 +3,14 @@
 {
   "name": "Node.js & TypeScript",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  //"image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "build": {
+    "dockerfile": "../Dockerfile"
+    // Update 'VARIANT' to pick a Node version: 16, 14, 12.
+    // Append -bullseye or -buster to pin to an OS version.
+    // Use -bullseye variants on local arm64/Apple Silicon.
+    //"args": { "VARIANT": "20" }
+  },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -16,7 +23,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn install",
+  //"postCreateCommand": "yarn install",
   "customizations": {
     "vscode": {
       "extensions": ["esbenp.prettier-vscode"]

@@ -20,24 +20,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
   constructor(db: Database, service: string) {
     super(db, service)
-
-    this.init(db)
-  }
-
-  // Init
-  async init(db: Database) {
-    dotenv.config()
-
-    // Login Agent
-    const agent = new BskyAgent({ service: 'https://bsky.social' })
-    const handle = `${process.env.FEEDGEN_HANDLE}`
-    const password = `${process.env.FEEDGEN_PASSWORD}`
-
-    /*await agent.login({ identifier: handle, password }).then(async () => {
-      // Run Tasks
-      this.authorTask.run(1, agent)
-      this.bannedTask.run(10, agent)
-    })*/
   }
 
   async handleEvent(evt: RepoEvent) {

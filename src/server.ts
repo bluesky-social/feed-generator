@@ -7,10 +7,9 @@ import feedGeneration from './methods/feed-generation.js'
 import describeGenerator from './methods/describe-generator.js'
 import { createDb, Database, migrateToLatest } from './db/index.js'
 import { FirehoseSubscription } from './subscription.js'
-import WebSocket from 'ws'
-import { Jetstream } from '@skyware/jetstream'
 import { AppContext, Config } from './config.js'
 import wellKnown from './well-known.js'
+import { JetStreamManager } from './jetstream.js'
 
 export class FeedGenerator {
   public app: express.Application
@@ -18,14 +17,14 @@ export class FeedGenerator {
   public db: Database
   public firehose: FirehoseSubscription
   public cfg: Config
-  public jetstream: Jetstream
+  public jetstream: JetStreamManager
 
   constructor(
     app: express.Application,
     db: Database,
     firehose: FirehoseSubscription,
     cfg: Config,
-    jetstream: Jetstream,
+    jetstream: JetStreamManager,
   ) {
     this.app = app
     this.db = db
@@ -38,20 +37,7 @@ export class FeedGenerator {
     const app = express()
     const db = createDb(cfg.dbLocation, cfg.dbCert)
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
-
-    const jetstream = new Jetstream({
-      ws: WebSocket,
-      wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
-      wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
-    })
-
-    jetstream.onCreate('app.bsky.feed.post', (event) => {
-      console.log(`New post: ${event}`)
-    })
-
-    jetstream.onDelete('app.bsky.feed.post', (event) => {
-      console.log(`Deleted post: ${event.commit.rkey}`)
-    })
+    const jetstream = new JetStreamManager()
 
     const didCache = new MemoryCache()
     const didResolver = new DidResolver({
@@ -82,8 +68,8 @@ export class FeedGenerator {
 
   async start(): Promise<http.Server> {
     await migrateToLatest(this.db)
-    this.jetstream.start()
     //this.firehose.run(this.cfg.subscriptionReconnectDelay)
+    this.jetstream.init(this.db)
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
     return this.server
