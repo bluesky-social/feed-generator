@@ -7,7 +7,7 @@ export class AuthorTask implements ITask {
   private AuthorsToAdd: string[] = []
   private AuthorsToRemove: string[] = []
 
-  public Authors: string[]
+  public Authors: string[] = []
 
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {

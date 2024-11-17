@@ -5,7 +5,7 @@ import { ITask } from './task.js'
 export class BannedTask implements ITask {
   private periodicIntervalId: NodeJS.Timer | undefined
 
-  public bannedMembers: string[]
+  public bannedMembers: string[] = []
 
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
