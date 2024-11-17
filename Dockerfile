@@ -18,6 +18,7 @@ FROM node:20
 RUN apt-get update && apt-get install -qq build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev g++ software-properties-common
 WORKDIR /app
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/images ./images
 COPY --from=deps /app/package.json .
 COPY --from=deps /app/yarn.lock .
 COPY --from=deps /app/node_modules ./node_modules
