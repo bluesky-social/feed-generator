@@ -1,4 +1,4 @@
-import { workerData, parentPort } from 'worker_threads'
+import workerpool from 'workerpool'
 import { RichText } from '@atproto/api'
 
 import { createCanvas, Image, loadImage } from 'canvas'
@@ -23,106 +23,124 @@ function dataURLToUint8Array(dataURL: string): Uint8Array {
   return bytes
 }
 
-const creds = new CredentialSession(new URL('https://bsky.social'))
-const data: AtpSessionData = {
-  accessJwt: workerData.access,
-  refreshJwt: workerData.refresh,
-  did: workerData.did,
-  handle: workerData.handle,
-  active: workerData.active,
-}
-creds.resumeSession(data)
-const agent = new BskyAgent(creds)
-workerData.members.map(async (author) => {
-  const imgWidth = 1080
-  const imgHeight = 1080
-  let image1: Image
-  let image2: Image = new Image()
-  const { handle, avatar }: UserProfileInfo = await getActorProfile(
-    author,
-    agent,
-  )
-
-  const canvas = createCanvas(imgWidth, imgHeight)
-  const ctx = canvas.getContext('2d')
-
-  // Get Random base image
-  const randomImg = Math.floor(Math.random() * 4) + 1
-  image1 = await loadImage(`images/bey-welcome${randomImg}.png`)
-
-  if (avatar) {
-    image2 = await loadImage(avatar)
+async function sendWelcomeMessage(
+  access: string,
+  refresh: string,
+  did: string,
+  session_handle: string,
+  active: boolean,
+  members: string[],
+) {
+  const creds = new CredentialSession(new URL('https://bsky.social'))
+  const data: AtpSessionData = {
+    accessJwt: access,
+    refreshJwt: refresh,
+    did: did,
+    handle: session_handle,
+    active: active,
   }
+  creds.resumeSession(data)
+  const agent = new BskyAgent(creds)
+  members.map(async (author) => {
+    const imgWidth = 1080
+    const imgHeight = 1080
+    let image1: Image
+    let image2: Image = new Image()
 
-  ctx.quality = 'fast'
-  ctx.drawImage(image1, 0, 0, imgWidth, imgHeight)
+    // Get User Data
+    console.log('calling user profile')
+    const userProfile = await agent.app.bsky.actor.getProfile({
+      actor: author,
+    })
+    console.log('got user profile')
+    const handle = userProfile.data.handle
+    const avatar = userProfile.data.avatar
 
-  ctx.font = 'normal 900 25px serif'
-  ctx.fillStyle = 'white'
-  ctx.textAlign = 'right'
-  ctx.fillText(`@${handle}`, 520, 98)
-  ctx.restore()
+    // Begin creating our image
+    const canvas = createCanvas(imgWidth, imgHeight)
+    const ctx = canvas.getContext('2d')
 
-  const circle = {
-    x: 280,
-    y: 550,
-    radius: 165,
-  }
+    // Get Random base image
+    const randomImg = Math.floor(Math.random() * 4) + 1
+    image1 = await loadImage(`images/bey-welcome${randomImg}.png`)
 
-  if (image2.complete) {
-    const aspect = 290 / 290
+    if (avatar) {
+      image2 = await loadImage(avatar)
+    }
 
-    // Shadow
-    ctx.shadowColor = 'black'
-    ctx.shadowBlur = 15
+    ctx.quality = 'fast'
+    ctx.drawImage(image1, 0, 0, imgWidth, imgHeight)
 
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
-    ctx.closePath()
-    ctx.fill()
+    ctx.font = 'normal 900 25px serif'
+    ctx.fillStyle = 'white'
+    ctx.textAlign = 'right'
+    ctx.fillText(`@${handle}`, 520, 98)
     ctx.restore()
 
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
-    ctx.closePath()
-    ctx.clip()
+    const circle = {
+      x: 280,
+      y: 550,
+      radius: 165,
+    }
 
-    const hsx = circle.radius * Math.max(1.0 / aspect, 1.0)
-    const hsy = circle.radius * Math.max(aspect, 1.0)
+    if (image2.complete) {
+      const aspect = 290 / 290
 
-    ctx.drawImage(image2, circle.x - hsx, circle.y - hsy, hsx * 2, hsy * 2)
-  }
+      // Shadow
+      ctx.shadowColor = 'black'
+      ctx.shadowBlur = 15
 
-  const image = await canvas.toDataURL('image/jpeg', 90)
-  const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
+      ctx.closePath()
+      ctx.fill()
+      ctx.restore()
 
-  const rt = new RichText({
-    text: `Hi @${handle}! ✨ Welcome to the Interactive feed! 🐝`,
-  })
-  await rt.detectFacets(agent)
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
+      ctx.closePath()
+      ctx.clip()
 
-  await agent.post({
-    text: rt.text,
-    facets: rt.facets,
-    embed: {
-      $type: 'app.bsky.embed.images',
-      images: [
-        // can be an array up to 4 values
-        {
-          alt: 'Welcome to #BeyHive', // the alt text
-          image: data.blob,
-          aspectRatio: {
-            // a hint to clients
-            width: imgWidth,
-            height: imgHeight,
+      const hsx = circle.radius * Math.max(1.0 / aspect, 1.0)
+      const hsy = circle.radius * Math.max(aspect, 1.0)
+
+      ctx.drawImage(image2, circle.x - hsx, circle.y - hsy, hsx * 2, hsy * 2)
+    }
+
+    const image = await canvas.toDataURL('image/jpeg', 90)
+    const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
+
+    const rt = new RichText({
+      text: `Hi @${handle}! ✨ Welcome to the Interactive feed! 🐝`,
+    })
+    await rt.detectFacets(agent)
+
+    await agent.post({
+      text: rt.text,
+      facets: rt.facets,
+      embed: {
+        $type: 'app.bsky.embed.images',
+        images: [
+          // can be an array up to 4 values
+          {
+            alt: 'Welcome to #BeyHive', // the alt text
+            image: data.blob,
+            aspectRatio: {
+              // a hint to clients
+              width: imgWidth,
+              height: imgHeight,
+            },
           },
-        },
-      ],
-    },
-    createdAt: new Date().toISOString(),
+        ],
+      },
+      createdAt: new Date().toISOString(),
+    })
   })
+}
 
-  parentPort?.postMessage({ membersAdded: workerData.members })
+// create a worker and register public functions
+workerpool.worker({
+  sendWelcomeMessage,
 })

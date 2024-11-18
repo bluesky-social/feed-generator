@@ -5,11 +5,9 @@ export const getActorProfile = async (
   userDid: string,
   agent: BskyAgent,
 ): Promise<{ handle: string; avatar: string | undefined }> => {
-  const userProfile = await limit(() =>
-    agent.app.bsky.actor.getProfile({
-      actor: userDid,
-    }),
-  )
+  const userProfile = await agent.app.bsky.actor.getProfile({
+    actor: userDid,
+  })
 
   return { handle: userProfile.data.handle, avatar: userProfile.data.avatar }
 }

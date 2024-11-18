@@ -42,6 +42,7 @@ export class AuthorTask implements ITask {
   public addAuthor = (author: string): boolean => {
     if (this.AuthorsToAdd.includes(author)) return false
     if (this.Authors.includes(author)) return false
+    console.log('Author: adding author = ', author)
     this.AuthorsToAdd.push(author)
     return true
   }
@@ -49,6 +50,7 @@ export class AuthorTask implements ITask {
   public removeAuthor = (author: string) => {
     if (this.AuthorsToRemove.includes(author)) return
     if (!this.Authors.includes(author)) return
+    console.log('Author: removing author = ', author)
     this.AuthorsToRemove.push(author)
   }
 

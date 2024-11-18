@@ -3,32 +3,31 @@ import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask } from './task.js'
 import path from 'path'
 
-export class NewMemberTask implements ITask {
-  public newMembers: string[] = []
+export interface BotCommand {
+  type: 'points' | 'help' | 'members_list' | 'ban_list'
+  userDid: string
+}
+
+export class BotCommandTask implements ITask {
+  private periodicIntervalId: NodeJS.Timer | undefined
+  private commands: BotCommand[] = []
 
   // create a worker pool using an external worker script
   private __dirname = path.resolve(path.dirname(''))
   private pool = workerpool.pool(
-    this.__dirname + '/dist/addn/workers/welcomeImageService.js',
+    this.__dirname + '/dist/addn/workers/botCommandService.js',
   )
 
   public run = (interval: number, agent: BskyAgent) => {
-    let periodicIntervalId: NodeJS.Timer | undefined
-
     const timer = async () => {
-      // Create a temp array of members we can process
-      const tempMembers: string[] = this.newMembers
-
       try {
-        if (this.newMembers.length === 0) return
-
-        // Remove temp members from the newMembers array while they are being processed
-        this.newMembers = []
-
         // Call the service working
         const session: AtpSessionData | undefined = agent.session
 
+        console.log(this.commands.length)
+
         if (!session) return
+        if (this.commands.length == 0) return
 
         const result = await this.runService(
           session.accessJwt,
@@ -36,25 +35,25 @@ export class NewMemberTask implements ITask {
           session.did,
           session.handle,
           session.active,
-          tempMembers,
+          this.commands.shift(),
         )
       } catch (e) {
-        // Reset newMembers Array
-        this.newMembers = this.newMembers.concat(tempMembers)
-
-        // Service failed
         console.log(
-          `New Member Task: error running periodic task - ${e.message}`,
+          `Bot Command Task: error running periodic task - ${e.message}`,
         )
       }
     }
 
-    if (!periodicIntervalId) {
-      periodicIntervalId = setInterval(timer, interval)
+    if (!this.periodicIntervalId) {
+      this.periodicIntervalId = setInterval(timer, interval)
 
       // Call timer on the initial run
       timer()
     }
+  }
+
+  public addCommand = (command: BotCommand) => {
+    this.commands.push(command)
   }
 
   private runService = async (
@@ -63,17 +62,17 @@ export class NewMemberTask implements ITask {
     did: string,
     handle: string,
     active: boolean,
-    members: string[],
+    commands: BotCommand | undefined,
   ): Promise<any> => {
     let currentPool = this.pool
     return currentPool
-      .exec('sendWelcomeMessage', [
+      .exec('processBotCommand', [
         access,
         refresh,
         did,
         handle,
         active,
-        members,
+        commands,
       ])
       .catch(function (err) {
         console.error(err)
@@ -81,10 +80,5 @@ export class NewMemberTask implements ITask {
       .then(function () {
         currentPool.terminate() // terminate all workers when done
       })
-  }
-
-  public addMember = (author: string) => {
-    if (this.newMembers.includes(author)) return
-    this.newMembers.push(author)
   }
 }

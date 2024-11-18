@@ -5,6 +5,8 @@ import { BskyAgent } from '@atproto/api'
 import { AuthorTask } from './addn/tasks/authorTask.js'
 import { BannedTask } from './addn/tasks/bannedTask.js'
 import { NewMemberTask } from './addn/tasks/newMemberTask.js'
+import { CleanupTask } from './addn/tasks/cleanupTask.js'
+import { BotCommandTask } from './addn/tasks/botCommandTask.js'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -13,6 +15,8 @@ function removeAccents(str: string): string {
 export class JetStreamManager {
   private authorTask = new AuthorTask()
   private bannedTask = new BannedTask()
+  private cleanupTask = new CleanupTask()
+  private botCommandTask = new BotCommandTask()
   private newMemberTask = new NewMemberTask()
   private db: Database
   public jetstream: Jetstream
@@ -30,8 +34,9 @@ export class JetStreamManager {
       // Run Tasks
       this.authorTask.run(1 * 60 * 1000, agent)
       this.bannedTask.run(10 * 60 * 1000, agent)
-
-      if (agent.session) this.newMemberTask.run(10 * 1000, agent)
+      this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
+      this.botCommandTask.run(2 * 1000, agent)
+      this.newMemberTask.run(10 * 1000, agent)
     })
 
     this.initJetstream()
@@ -62,15 +67,13 @@ export class JetStreamManager {
     const author: string = did
     let hashtags: any[] = []
     let newJoin: boolean = false
+    let isMember: boolean = false
 
     // Ignore banned members
     if (this.bannedTask.bannedMembers.includes(author)) {
       console.log('This author is banned: ', author)
       return
     }
-
-    // Let the bot handle posts
-    this.handleBotMessages(uri, record, rkey, did)
 
     // Filter for posts that include the join/leave hashtags
     record['text']
@@ -80,10 +83,12 @@ export class JetStreamManager {
         hashtags.push(hashtag)
       })
 
+    // Let the bot handle posts
+    this.handleBotMessages(uri, record, rkey, did, hashtags)
+
     // Add the Author
     if (hashtags.includes('#joinbeyhive')) {
       if (this.authorTask.addAuthor(author)) {
-        console.log('Author: adding author = ', author)
         this.newMemberTask.addMember(author)
         newJoin = true
       } else {
@@ -94,7 +99,6 @@ export class JetStreamManager {
     // Remove the Author
     if (hashtags.includes('#leavebeyhive')) {
       if (this.authorTask.Authors.includes(author)) {
-        console.log('Author: removing author = ', author)
         this.authorTask.removeAuthor(author)
       }
       return
@@ -113,6 +117,10 @@ export class JetStreamManager {
       // Only allow if there's a #BEYHIVE hashtag
       if (!hashtags.includes('#beyhive')) {
         return
+      }
+    } else {
+      if (this.authorTask.Authors.includes(author)) {
+        isMember = true
       }
     }
 
@@ -146,6 +154,19 @@ export class JetStreamManager {
       .onConflict((oc) => oc.doNothing())
       .execute()
 
+    // Increment points for members
+    if (isMember) {
+      await this.db
+        .insertInto('member_points')
+        .values([{ did: author, points: 0 }])
+        .onConflict((oc) =>
+          oc.column('did').doUpdateSet({
+            points: (eb) => eb('member_points.points', '+', 1),
+          }),
+        )
+        .execute()
+    }
+
     return
   }
 
@@ -158,11 +179,26 @@ export class JetStreamManager {
       .execute()
   }
 
-  handleBotMessages(uri: string, record: any, rkey: any, did: string) {
+  handleBotMessages(
+    uri: string,
+    record: any,
+    rkey: any,
+    did: string,
+    hashtags: any[],
+  ) {
     const botId = process.env.BOT_PUBLISHER_DID
     if (record.reply?.parent?.uri?.includes(`at://${botId}`)) {
       // Is a bot reply
       console.log('BOT got a reply')
+
+      // POINTS COMMAND
+      if (hashtags.includes('#points')) {
+        this.botCommandTask.addCommand({
+          type: 'points',
+          userDid: did,
+        })
+        return
+      }
     } else if (
       this.is('app.bsky.embed.record', record.embed) &&
       record.embed.record.uri.includes(`at://${botId}`)
