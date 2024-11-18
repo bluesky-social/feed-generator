@@ -9,6 +9,7 @@ export class BannedTask implements ITask {
 
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
+      console.log('Banned Task: running now')
       try {
         // Get Banned Members
         const { members } = await this.getBanndedMembers(agent)

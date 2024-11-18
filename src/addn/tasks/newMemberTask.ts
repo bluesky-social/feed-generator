@@ -13,7 +13,7 @@ export class NewMemberTask implements ITask {
     'dist/addn/workers/welcomeImageService.js',
   )
 
-  public run = (interval: number, session: AtpSessionData) => {
+  public run = (interval: number, agent: BskyAgent) => {
     let periodicIntervalId: NodeJS.Timer | undefined
 
     const timer = async () => {
@@ -27,6 +27,10 @@ export class NewMemberTask implements ITask {
         this.newMembers = []
 
         // Call the service working
+        const session: AtpSessionData | undefined = agent.session
+
+        if (!session) return
+
         const result = await this.runService(
           session.accessJwt,
           session.refreshJwt,

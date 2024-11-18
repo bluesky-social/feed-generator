@@ -31,7 +31,7 @@ export class JetStreamManager {
       this.authorTask.run(1 * 60 * 1000, agent)
       this.bannedTask.run(10 * 60 * 1000, agent)
 
-      if (agent.session) this.newMemberTask.run(10 * 1000, agent.session)
+      if (agent.session) this.newMemberTask.run(10 * 1000, agent)
     })
 
     this.initJetstream()
@@ -57,8 +57,9 @@ export class JetStreamManager {
     this.jetstream.start()
   }
 
-  async handleCreateEvent(event) {
-    let author: string = event.did
+  async handleCreateEvent({ commit: { record, rkey, cid }, did }) {
+    const uri = `at://${did}/app.bsky.feed.post/${rkey}`
+    const author: string = did
     let hashtags: any[] = []
     let newJoin: boolean = false
 
@@ -68,8 +69,11 @@ export class JetStreamManager {
       return
     }
 
+    // Let the bot handle posts
+    this.handleBotMessages(uri, record, rkey, did)
+
     // Filter for posts that include the join/leave hashtags
-    event.commit?.record['text']
+    record['text']
       ?.toLowerCase()
       ?.match(/#[^\s#\.\;]*/gim)
       ?.map((hashtag) => {
@@ -80,7 +84,7 @@ export class JetStreamManager {
     if (hashtags.includes('#joinbeyhive')) {
       if (this.authorTask.addAuthor(author)) {
         console.log('Author: adding author = ', author)
-        this.newMemberTask.addMember(event.did)
+        this.newMemberTask.addMember(author)
         newJoin = true
       } else {
         return
@@ -97,7 +101,7 @@ export class JetStreamManager {
     }
 
     // Check if this is a reply (if it is, don't process)
-    if (event.commit.record.hasOwnProperty('reply')) {
+    if (record.hasOwnProperty('reply')) {
       return
     }
 
@@ -118,7 +122,7 @@ export class JetStreamManager {
 
     let match = false
 
-    let matchString = event.commit.record['text'].toLowerCase()
+    let matchString = record['text'].toLowerCase()
 
     const normalizedString = removeAccents(matchString)
 
@@ -129,8 +133,8 @@ export class JetStreamManager {
     if (!match) return
 
     const post = {
-      uri: `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
-      cid: event.commit.cid,
+      uri,
+      cid: cid,
       indexedAt: new Date().toISOString(),
     }
 
@@ -152,5 +156,43 @@ export class JetStreamManager {
         `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
       ])
       .execute()
+  }
+
+  handleBotMessages(uri: string, record: any, rkey: any, did: string) {
+    const botId = process.env.BOT_PUBLISHER_DID
+    if (record.reply?.parent?.uri?.includes(`at://${botId}`)) {
+      // Is a bot reply
+      console.log('BOT got a reply')
+    } else if (
+      this.is('app.bsky.embed.record', record.embed) &&
+      record.embed.record.uri.includes(`at://${botId}`)
+    ) {
+      // Is a bot quote
+    } else if (
+      this.is('app.bsky.embed.recordWithMedia', record.embed) &&
+      record.embed.record.record.uri.includes(`at://${botId}`)
+    ) {
+      // Is a bot quote
+    } else if (
+      record.facets?.some((facet) =>
+        facet.features.some(
+          (feature) =>
+            this.is('app.bsky.richtext.facet#mention', feature) &&
+            feature.did === botId,
+        ),
+      )
+    ) {
+      // Is a mention
+      console.log('BOT got a mention')
+    }
+  }
+
+  is(lexicon, obj) {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      '$type' in obj &&
+      (obj.$type === lexicon || obj.$type === lexicon + '#main')
+    )
   }
 }
