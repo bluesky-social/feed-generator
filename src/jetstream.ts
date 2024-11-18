@@ -78,16 +78,21 @@ export class JetStreamManager {
 
     // Add the Author
     if (hashtags.includes('#joinbeyhive')) {
-      console.log('Author: adding author = ', author)
-      this.authorTask.addAuthor(author)
-      this.newMemberTask.addMember(event.did)
-      newJoin = true
+      if (this.authorTask.addAuthor(author)) {
+        console.log('Author: adding author = ', author)
+        this.newMemberTask.addMember(event.did)
+        newJoin = true
+      } else {
+        return
+      }
     }
 
     // Remove the Author
     if (hashtags.includes('#leavebeyhive')) {
-      console.log('Author: removing author = ', author)
-      this.authorTask.removeAuthor(author)
+      if (this.authorTask.Authors.includes(author)) {
+        console.log('Author: removing author = ', author)
+        this.authorTask.removeAuthor(author)
+      }
       return
     }
 

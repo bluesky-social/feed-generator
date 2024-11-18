@@ -1,13 +1,15 @@
 import { AtUri, BskyAgent } from '@atproto/api'
 import limit from './rateLimit.js'
+import { response } from 'express'
 
 export const getListMembers = async (
   list: string,
   agent: BskyAgent,
-): Promise<string[]> => {
+): Promise<{ members: string[]; uriMap: any[] }> => {
   let total_retrieved = 1
   let current_cursor: string | undefined = undefined
   let members: string[] = []
+  let uriMap: any[] = []
 
   do {
     const list_members = await limit(() =>
@@ -21,10 +23,11 @@ export const getListMembers = async (
     current_cursor = list_members.data.cursor
     list_members.data.items.forEach((member) => {
       members.push(member.subject.did)
+      uriMap[member.subject.did] = member.uri
     })
   } while (current_cursor !== undefined && current_cursor !== '')
 
-  return members
+  return { members, uriMap }
 }
 
 export const addListMembers = async (
@@ -50,9 +53,12 @@ export const removeListMembers = async (
   listItemUri: string,
   agent: BskyAgent,
 ): Promise<void> => {
-  const repo = agent.session?.did || ''
   const { collection, rkey } = new AtUri(listItemUri)
   await limit(() =>
-    agent.com.atproto.repo.deleteRecord({ repo, collection, rkey }),
+    agent.com.atproto.repo.deleteRecord({
+      repo: agent.session?.did || '',
+      collection,
+      rkey,
+    }),
   )
 }

@@ -1,25 +1,33 @@
 import { BskyAgent } from '@atproto/api'
-import { addListMembers, getListMembers } from '../listMethods.js'
+import {
+  addListMembers,
+  getListMembers,
+  removeListMembers,
+} from '../listMethods.js'
 import { ITask } from './task.js'
 
 export class AuthorTask implements ITask {
   private periodicIntervalId: NodeJS.Timer | undefined
   private AuthorsToAdd: string[] = []
   private AuthorsToRemove: string[] = []
+  private authorUriMap: any[] = []
 
   public Authors: string[] = []
 
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
       try {
+        console.log('Authors Task: running now')
         // Add Authors
         await this.addAuthorsToList(agent)
         // Remove Authors
-        this.removeAuthors(agent)
+        await this.removeAuthors(agent)
         // Get Authors
-        this.Authors = await this.getAuthors(agent)
+        const { members, uriMap } = await this.getAuthors(agent)
+        this.Authors = members
+        this.authorUriMap = uriMap
       } catch (e) {
-        console.log(`Authors: error running periodic task - ${e.message}`)
+        console.log(`Authors Task: error running periodic task - ${e.message}`)
       }
     }
 
@@ -31,10 +39,11 @@ export class AuthorTask implements ITask {
     }
   }
 
-  public addAuthor = (author: string) => {
-    if (this.AuthorsToAdd.includes(author)) return
-    if (this.Authors.includes(author)) return
+  public addAuthor = (author: string): boolean => {
+    if (this.AuthorsToAdd.includes(author)) return false
+    if (this.Authors.includes(author)) return false
     this.AuthorsToAdd.push(author)
+    return true
   }
 
   public removeAuthor = (author: string) => {
@@ -43,7 +52,9 @@ export class AuthorTask implements ITask {
     this.AuthorsToRemove.push(author)
   }
 
-  private getAuthors = async (agent: BskyAgent): Promise<string[]> => {
+  private getAuthors = async (
+    agent: BskyAgent,
+  ): Promise<{ members: string[]; uriMap: any[] }> => {
     // Get authors from BeyHive feed list
     const list: string = `${process.env.BEYHIVE_FEED_LIST}`
     return await getListMembers(list, agent)
@@ -64,17 +75,16 @@ export class AuthorTask implements ITask {
   private removeAuthors = async (agent: BskyAgent) => {
     if (this.AuthorsToRemove?.length === 0) return
 
-    const list: string = `${process.env.BEYHIVE_FEED_LIST}`
-
     await Promise.all(
       this.AuthorsToRemove.map(async (author, index) => {
-        await addListMembers(list, agent, author)
+        await removeListMembers(this.authorUriMap[author], agent)
         this.AuthorsToRemove.splice(index, 1)
 
         const indexToRemove = this.Authors.indexOf(author)
 
         if (indexToRemove > -1) {
           this.Authors.splice(indexToRemove, 1)
+          delete this.authorUriMap[author]
         }
       }),
     )
