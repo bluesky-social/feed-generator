@@ -20,7 +20,7 @@ export class NewMemberTask implements ITask {
       const tempMembers: string[] = this.newMembers
 
       try {
-        if (this.newMembers.length === 0) return
+        if (this.newMembers.length == 0) return
 
         // Remove temp members from the newMembers array while they are being processed
         this.newMembers = []
@@ -64,7 +64,7 @@ export class NewMemberTask implements ITask {
     handle: string,
     active: boolean,
     members: string[],
-  ): Promise<any> => {
+  ): Promise<void> => {
     let currentPool = this.pool
     return currentPool
       .exec('sendWelcomeMessage', [
