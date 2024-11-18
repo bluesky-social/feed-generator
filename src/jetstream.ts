@@ -36,7 +36,7 @@ export class JetStreamManager {
       this.bannedTask.run(10 * 60 * 1000, agent)
       this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
       this.botCommandTask.run(2 * 1000, agent)
-      this.newMemberTask.run(10 * 1000, agent)
+      this.newMemberTask.run(2 * 1000, agent)
     })
 
     this.initJetstream()

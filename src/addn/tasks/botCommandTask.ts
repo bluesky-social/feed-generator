@@ -24,8 +24,6 @@ export class BotCommandTask implements ITask {
         // Call the service working
         const session: AtpSessionData | undefined = agent.session
 
-        console.log(this.commands.length)
-
         if (!session) return
         if (this.commands.length == 0) return
 

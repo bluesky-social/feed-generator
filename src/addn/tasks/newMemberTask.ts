@@ -16,14 +16,8 @@ export class NewMemberTask implements ITask {
     let periodicIntervalId: NodeJS.Timer | undefined
 
     const timer = async () => {
-      // Create a temp array of members we can process
-      const tempMembers: string[] = this.newMembers
-
       try {
         if (this.newMembers.length == 0) return
-
-        // Remove temp members from the newMembers array while they are being processed
-        this.newMembers = []
 
         // Call the service working
         const session: AtpSessionData | undefined = agent.session
@@ -36,12 +30,9 @@ export class NewMemberTask implements ITask {
           session.did,
           session.handle,
           session.active,
-          tempMembers,
+          this.newMembers.shift(),
         )
       } catch (e) {
-        // Reset newMembers Array
-        this.newMembers = this.newMembers.concat(tempMembers)
-
         // Service failed
         console.log(
           `New Member Task: error running periodic task - ${e.message}`,
@@ -63,7 +54,7 @@ export class NewMemberTask implements ITask {
     did: string,
     handle: string,
     active: boolean,
-    members: string[],
+    member: string | undefined,
   ): Promise<void> => {
     let currentPool = this.pool
     return currentPool
@@ -73,7 +64,7 @@ export class NewMemberTask implements ITask {
         did,
         handle,
         active,
-        members,
+        member,
       ])
       .catch(function (err) {
         console.error(err)
