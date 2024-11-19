@@ -69,6 +69,9 @@ export class JetStreamManager {
     let newJoin: boolean = false
     let isMember: boolean = false
 
+    const botId = process.env.BOT_PUBLISHER_DID
+    if (author == botId) return
+
     // Ignore banned members
     if (this.bannedTask.bannedMembers.includes(author)) {
       console.log('This author is banned: ', author)
