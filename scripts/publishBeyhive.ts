@@ -21,15 +21,16 @@ const run = async () => {
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = '#WorkInProgress'
+  const displayName = '#BeyHive Interactive'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description = 'Feed still under construction!'
+  const description =
+    'Welcome to the #BeyHive Interactive feed! Use #JoinBeyHive (anywhere) to become a member and start earning BeyPoints. Send commands to @beyfeed.bsky.social for even more features.'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = 'images/cats.png'
+  const avatar: string = 'images/bey-avatar.jpg'
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE

@@ -17,7 +17,7 @@ export class AuthorTask implements ITask {
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
       try {
-        console.log('Authors Task: running now: ', this.Authors)
+        console.log('Authors Task: running now')
         // Get Authors
         const { members, uriMap } = await this.getAuthors(agent)
         this.Authors = members
