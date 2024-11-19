@@ -17,15 +17,15 @@ export class AuthorTask implements ITask {
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
       try {
-        console.log('Authors Task: running now')
-        // Add Authors
-        await this.addAuthorsToList(agent)
-        // Remove Authors
-        await this.removeAuthors(agent)
+        console.log('Authors Task: running now: ', this.Authors)
         // Get Authors
         const { members, uriMap } = await this.getAuthors(agent)
         this.Authors = members
         this.authorUriMap = uriMap
+        // Add Authors
+        await this.addAuthorsToList(agent)
+        // Remove Authors
+        await this.removeAuthors(agent)
       } catch (e) {
         console.log(`Authors Task: error running periodic task - ${e.message}`)
       }
