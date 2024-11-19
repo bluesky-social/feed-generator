@@ -198,8 +198,13 @@ export class JetStreamManager {
     const uri = `at://${did}/app.bsky.graph.follow/${rkey}`
 
     if (record.subject === botId) {
-      //this.emit("follow", { user: await this.bot.getProfile(did), uri });
-      console.log('Got a follow from: ', uri)
+      console.log('BOT got a follow')
+      if (this.authorTask.addAuthor(author)) {
+        this.newMemberTask.addMember({
+          author,
+          uri,
+        })
+      }
     }
   }
 
