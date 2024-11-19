@@ -102,28 +102,17 @@ async function processBotCommand(
         createdAt: new Date().toISOString(),
         reply: {
           root: {
-            uri: view.post.uri,
-            cid: view.post.cid,
-          },
-          parent: {
             uri: root.post.uri,
             cid: root.post.cid,
+          },
+          parent: {
+            uri: view.post.uri,
+            cid: view.post.cid,
           },
         },
       })
 
       break
-    }
-    case 'app.bsky.feed.defs#blockedPost': {
-      throw new Error(`The bot is blocked from viewing post ${command.uri}.`)
-    }
-    case 'app.bsky.feed.defs#notFoundPost': {
-      throw new Error(`The post ${command.uri} was not found.`)
-    }
-    default: {
-      throw new Error(
-        `An unknown error occurred while trying to fetch post ${command.uri}.`,
-      )
     }
   }
 }
