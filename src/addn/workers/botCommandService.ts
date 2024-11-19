@@ -1,4 +1,4 @@
-import { RichText } from '@atproto/api'
+import { AppBskyFeedDefs, RichText } from '@atproto/api'
 import workerpool from 'workerpool'
 
 import getActorProfile from '../actorMethods.js'
@@ -9,6 +9,46 @@ import { ThreadViewPost } from '../../lexicon/types/app/bsky/feed/defs.js'
 interface UserProfileInfo {
   handle: string
   avatar: string | undefined
+}
+
+/**
+ * Constructs an instance from a ThreadViewPost.
+ */
+function fromThreadView(view: AppBskyFeedDefs.ThreadViewPost): any {
+  if (!is('app.bsky.feed.post', view.post.record)) {
+    throw new Error('Invalid post view record')
+  }
+
+  const parent =
+    view.parent?.$type === 'app.bsky.feed.defs#threadViewPost'
+      ? fromThreadView(view.parent as ThreadViewPost)
+      : undefined
+  const children = view.replies
+    ?.map((reply) =>
+      reply.$type === 'app.bsky.feed.defs#threadViewPost'
+        ? fromThreadView(reply as ThreadViewPost)
+        : undefined,
+    )
+    ?.filter((reply) => reply !== undefined)
+
+  return { post: view.post, parent, children }
+}
+
+function getThreadRoot(view: ThreadViewPost): any {
+  if (view.parent) {
+    return getThreadRoot(view.parent as ThreadViewPost)
+  } else {
+    return view
+  }
+}
+
+function is(lexicon, obj) {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    '$type' in obj &&
+    (obj.$type === lexicon || obj.$type === lexicon + '#main')
+  )
 }
 
 async function processBotCommand(
@@ -43,8 +83,6 @@ async function processBotCommand(
 
   const threadRes = await agent.getPostThread({
     uri: command.uri,
-    depth: 1,
-    parentHeight: 1,
   })
   const { thread } = threadRes.data
 
@@ -55,43 +93,24 @@ async function processBotCommand(
 
   switch (thread?.$type) {
     case 'app.bsky.feed.defs#threadViewPost': {
-      const root: ThreadViewPost = thread as ThreadViewPost
+      let view = fromThreadView(thread as ThreadViewPost)
+      let root = getThreadRoot(view)
 
-      switch (root.parent?.$type) {
-        case 'app.bsky.feed.defs#threadViewPost': {
-          const parent: ThreadViewPost = root.parent as ThreadViewPost
-          await agent.post({
-            text: rt.text,
-            facets: rt.facets,
-            createdAt: new Date().toISOString(),
-            reply: {
-              root: {
-                uri: parent.post.uri,
-                cid: parent.post.cid,
-              },
-              parent: {
-                uri: root.post.uri,
-                cid: root.post.cid,
-              },
-            },
-          })
-
-          break
-        }
-        case 'app.bsky.feed.defs#blockedPost': {
-          throw new Error(
-            `The bot is blocked from viewing post ${command.uri}.`,
-          )
-        }
-        case 'app.bsky.feed.defs#notFoundPost': {
-          throw new Error(`The post ${command.uri} was not found.`)
-        }
-        default: {
-          throw new Error(
-            `An unknown error occurred while trying to fetch post ${command.uri}.`,
-          )
-        }
-      }
+      await agent.post({
+        text: rt.text,
+        facets: rt.facets,
+        createdAt: new Date().toISOString(),
+        reply: {
+          root: {
+            uri: view.post.uri,
+            cid: view.post.cid,
+          },
+          parent: {
+            uri: root.post.uri,
+            cid: root.post.cid,
+          },
+        },
+      })
 
       break
     }
