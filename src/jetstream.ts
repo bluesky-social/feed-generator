@@ -187,14 +187,29 @@ export class JetStreamManager {
     hashtags: any[],
   ) {
     const botId = process.env.BOT_PUBLISHER_DID
+
+    // Don't process if the bot has sent a command to itself
+    if (did == botId) return
+
+    // Check which command was sent (and how it was sent)
     if (record.reply?.parent?.uri?.includes(`at://${botId}`)) {
       // Is a bot reply
       console.log('BOT got a reply')
 
       // POINTS COMMAND
-      if (hashtags.includes('#points')) {
+      if (hashtags.includes('#beypoints')) {
         this.botCommandTask.addCommand({
           type: 'points',
+          userDid: did,
+          uri,
+        })
+        return
+      }
+
+      // HELP COMMAND
+      if (hashtags.includes('#help')) {
+        this.botCommandTask.addCommand({
+          type: 'help',
           userDid: did,
           uri,
         })
@@ -221,6 +236,26 @@ export class JetStreamManager {
     ) {
       // Is a mention
       console.log('BOT got a mention')
+
+      // POINTS COMMAND
+      if (hashtags.includes('#beypoints')) {
+        this.botCommandTask.addCommand({
+          type: 'points',
+          userDid: did,
+          uri,
+        })
+        return
+      }
+
+      // HELP COMMAND
+      if (hashtags.includes('#help')) {
+        this.botCommandTask.addCommand({
+          type: 'help',
+          userDid: did,
+          uri,
+        })
+        return
+      }
     }
   }
 

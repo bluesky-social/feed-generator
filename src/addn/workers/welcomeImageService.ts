@@ -2,12 +2,27 @@ import workerpool from 'workerpool'
 import { RichText } from '@atproto/api'
 
 import { createCanvas, Image, loadImage } from 'canvas'
-import getActorProfile from '../actorMethods.js'
 import { AtpSessionData, BskyAgent, CredentialSession } from '@atproto/api'
+import { TaskSessionData } from '../tasks/task'
 
 interface UserProfileInfo {
   handle: string
   avatar: string | undefined
+}
+
+function buildAgent(taskSession): BskyAgent {
+  const creds = new CredentialSession(new URL('https://bsky.social'))
+  const data: AtpSessionData = {
+    accessJwt: taskSession.access,
+    refreshJwt: taskSession.refresh,
+    did: taskSession.did,
+    handle: taskSession.handle,
+    active: taskSession.active,
+  }
+  creds.resumeSession(data)
+
+  // Rebuild Agent
+  return new BskyAgent(creds)
 }
 
 function dataURLToUint8Array(dataURL: string): Uint8Array {
@@ -24,23 +39,11 @@ function dataURLToUint8Array(dataURL: string): Uint8Array {
 }
 
 async function sendWelcomeMessage(
-  access: string,
-  refresh: string,
-  did: string,
-  session_handle: string,
-  active: boolean,
+  taskSession: TaskSessionData,
   author: string,
 ) {
-  const creds = new CredentialSession(new URL('https://bsky.social'))
-  const sessionData: AtpSessionData = {
-    accessJwt: access,
-    refreshJwt: refresh,
-    did: did,
-    handle: session_handle,
-    active: active,
-  }
-  creds.resumeSession(sessionData)
-  const agent = new BskyAgent(creds)
+  // Get agent
+  const agent: BskyAgent = buildAgent(taskSession)
 
   const imgWidth = 1080
   const imgHeight = 1080
@@ -48,11 +51,10 @@ async function sendWelcomeMessage(
   let image2: Image = new Image()
 
   // Get User Data
-  console.log('calling user profile')
   const userProfile = await agent.app.bsky.actor.getProfile({
     actor: author,
   })
-  console.log('got user profile')
+
   const handle = userProfile.data.handle
   const avatar = userProfile.data.avatar
 
@@ -113,7 +115,7 @@ async function sendWelcomeMessage(
   const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
 
   const rt = new RichText({
-    text: `Hi @${handle}! ✨ Welcome to the Interactive feed! 🐝`,
+    text: `Hi @${handle}! ✨ Welcome to the #BeyHive Interactive feed! 🐝`,
   })
   await rt.detectFacets(agent)
 

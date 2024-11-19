@@ -1,14 +1,112 @@
 import { AppBskyFeedDefs, RichText } from '@atproto/api'
 import workerpool from 'workerpool'
+import dotenv from 'dotenv'
 
 import getActorProfile from '../actorMethods.js'
 import { AtpSessionData, BskyAgent, CredentialSession } from '@atproto/api'
 import { BotCommand } from '../tasks/botCommandTask.js'
 import { ThreadViewPost } from '../../lexicon/types/app/bsky/feed/defs.js'
+import { createDb, Database, migrateToLatest } from '../../db/index.js'
+import { TaskSessionData } from '../tasks/task.js'
 
 interface UserProfileInfo {
   handle: string
   avatar: string | undefined
+}
+
+function buildAgent(taskSession): BskyAgent {
+  const creds = new CredentialSession(new URL('https://bsky.social'))
+  const data: AtpSessionData = {
+    accessJwt: taskSession.access,
+    refreshJwt: taskSession.refresh,
+    did: taskSession.did,
+    handle: taskSession.handle,
+    active: taskSession.active,
+  }
+  creds.resumeSession(data)
+
+  // Rebuild Agent
+  return new BskyAgent(creds)
+}
+
+async function getHelpForUser(handle: string, agent: BskyAgent) {
+  const rt = new RichText({
+    text: `Here are some commands you can send to me! 🐝\n#BeyPoints - to get your current BeyPoints\n#Help - to get a list of commands\n#LeaveBeyHive - to disable membership (points will remain)\n#JoinBeyHive - to become a member`,
+  })
+  await rt.detectFacets(agent)
+
+  return rt
+}
+
+async function getPointsForUser(
+  command: BotCommand,
+  handle: string,
+  agent: BskyAgent,
+  db: Database,
+): Promise<RichText> {
+  const results = await db
+    .selectFrom('member_points')
+    .selectAll()
+    .where('did', '=', command.userDid)
+    .execute()
+
+  const rt = new RichText({
+    text: `Hi @${handle}! ✨ You've earned ${
+      results[0]?.points || 0
+    } points! Keep it up! 🐝`,
+  })
+  await rt.detectFacets(agent)
+
+  return rt
+}
+
+async function processBotCommand(
+  taskSession: TaskSessionData,
+  command: BotCommand | undefined,
+) {
+  if (!command) return
+
+  console.log('Processing Bot command: ', command.type)
+
+  // Setup Database
+  dotenv.config()
+  const db: Database = createDb(
+    process.env.FEEDGEN_DB_LOCATION || '',
+    process.env.CA_CERT || '',
+  )
+
+  // Get agent
+  const agent: BskyAgent = buildAgent(taskSession)
+
+  // Get the user that sent the request
+  const { handle }: UserProfileInfo = await getActorProfile(
+    command.userDid,
+    agent,
+  )
+
+  // Get the thread this post is a part of
+  const threadRes = await agent.getPostThread({
+    uri: command.uri,
+  })
+  const { thread } = threadRes.data
+
+  // Build post text
+  let richText: RichText | undefined = undefined
+
+  switch (command.type) {
+    case 'points': {
+      richText = await getPointsForUser(command, handle, agent, db)
+      break
+    }
+    case 'help': {
+      richText = await getHelpForUser(handle, agent)
+      break
+    }
+    case 'members_list':
+    case 'ban_list':
+  }
+
+  await sendPost(agent, thread, richText)
 }
 
 /**
@@ -51,54 +149,15 @@ function is(lexicon, obj) {
   )
 }
 
-async function processBotCommand(
-  access: string,
-  refresh: string,
-  did: string,
-  session_handle: string,
-  active: boolean,
-  command: BotCommand | undefined,
-) {
-  console.log('Running: processBotCommand')
-  if (!command) return
-
-  const creds = new CredentialSession(new URL('https://bsky.social'))
-  const data: AtpSessionData = {
-    accessJwt: access,
-    refreshJwt: refresh,
-    did: did,
-    handle: session_handle,
-    active: active,
-  }
-  creds.resumeSession(data)
-
-  // Rebuild Agent
-  const agent = new BskyAgent(creds)
-
-  // Get the user that sent the request
-  const { handle }: UserProfileInfo = await getActorProfile(
-    command.userDid,
-    agent,
-  )
-
-  const threadRes = await agent.getPostThread({
-    uri: command.uri,
-  })
-  const { thread } = threadRes.data
-
-  const rt = new RichText({
-    text: `Hi @${handle}! ✨ I just got your ${command.type} command! 🐝`,
-  })
-  await rt.detectFacets(agent)
-
+async function sendPost(agent, thread, richText) {
   switch (thread?.$type) {
     case 'app.bsky.feed.defs#threadViewPost': {
       let view = fromThreadView(thread as ThreadViewPost)
       let root = getThreadRoot(view)
 
       await agent.post({
-        text: rt.text,
-        facets: rt.facets,
+        text: richText?.text,
+        facets: richText?.facets,
         createdAt: new Date().toISOString(),
         reply: {
           root: {
