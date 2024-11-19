@@ -92,7 +92,10 @@ export class JetStreamManager {
     // Add the Author
     if (hashtags.includes('#joinbeyhive')) {
       if (this.authorTask.addAuthor(author)) {
-        this.newMemberTask.addMember(author)
+        this.newMemberTask.addMember({
+          author,
+          uri,
+        })
         newJoin = true
       } else {
         return

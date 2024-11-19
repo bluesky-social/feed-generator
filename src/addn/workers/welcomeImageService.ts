@@ -4,6 +4,8 @@ import { RichText } from '@atproto/api'
 import { createCanvas, Image, loadImage } from 'canvas'
 import { AtpSessionData, BskyAgent, CredentialSession } from '@atproto/api'
 import { TaskSessionData } from '../tasks/task'
+import { ThreadViewPost } from '../../lexicon/types/app/bsky/feed/defs.js'
+import { NewMemberData } from '../tasks/newMemberTask'
 
 interface UserProfileInfo {
   handle: string
@@ -40,7 +42,7 @@ function dataURLToUint8Array(dataURL: string): Uint8Array {
 
 async function sendWelcomeMessage(
   taskSession: TaskSessionData,
-  author: string,
+  member: NewMemberData,
 ) {
   // Get agent
   const agent: BskyAgent = buildAgent(taskSession)
@@ -52,7 +54,7 @@ async function sendWelcomeMessage(
 
   // Get User Data
   const userProfile = await agent.app.bsky.actor.getProfile({
-    actor: author,
+    actor: member.author,
   })
 
   const handle = userProfile.data.handle
@@ -119,26 +121,95 @@ async function sendWelcomeMessage(
   })
   await rt.detectFacets(agent)
 
-  await agent.post({
-    text: rt.text,
-    facets: rt.facets,
-    embed: {
-      $type: 'app.bsky.embed.images',
-      images: [
-        // can be an array up to 4 values
-        {
-          alt: 'Welcome to #BeyHive', // the alt text
-          image: data.blob,
-          aspectRatio: {
-            // a hint to clients
-            width: imgWidth,
-            height: imgHeight,
+  // Get the thread this post is a part of
+  const threadRes = await agent.getPostThread({
+    uri: member.uri,
+  })
+  const { thread } = threadRes.data
+
+  await sendPost(agent, thread, rt, data, imgWidth, imgHeight)
+}
+
+/**
+ * Constructs an instance from a ThreadViewPost.
+ */
+function fromThreadView(view: ThreadViewPost): any {
+  if (!is('app.bsky.feed.post', view.post.record)) {
+    throw new Error('Invalid post view record')
+  }
+
+  const parent =
+    view.parent?.$type === 'app.bsky.feed.defs#threadViewPost'
+      ? fromThreadView(view.parent as ThreadViewPost)
+      : undefined
+  const children = view.replies
+    ?.map((reply) =>
+      reply.$type === 'app.bsky.feed.defs#threadViewPost'
+        ? fromThreadView(reply as ThreadViewPost)
+        : undefined,
+    )
+    ?.filter((reply) => reply !== undefined)
+
+  return { post: view.post, parent, children }
+}
+
+function getThreadRoot(view: ThreadViewPost): any {
+  if (view.parent) {
+    return getThreadRoot(view.parent as ThreadViewPost)
+  } else {
+    return view
+  }
+}
+
+function is(lexicon, obj) {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    '$type' in obj &&
+    (obj.$type === lexicon || obj.$type === lexicon + '#main')
+  )
+}
+
+async function sendPost(agent, thread, richText, data, imgWidth, imgHeight) {
+  switch (thread?.$type) {
+    case 'app.bsky.feed.defs#threadViewPost': {
+      let view = fromThreadView(thread as ThreadViewPost)
+      let root = getThreadRoot(view)
+
+      await agent.post({
+        text: richText?.text,
+        facets: richText?.facets,
+        embed: {
+          $type: 'app.bsky.embed.images',
+          images: [
+            // can be an array up to 4 values
+            {
+              alt: 'Welcome to #BeyHive', // the alt text
+              image: data.blob,
+              aspectRatio: {
+                // a hint to clients
+                width: imgWidth,
+                height: imgHeight,
+              },
+            },
+          ],
+        },
+        createdAt: new Date().toISOString(),
+        reply: {
+          root: {
+            uri: root.post.uri,
+            cid: root.post.cid,
+          },
+          parent: {
+            uri: view.post.uri,
+            cid: view.post.cid,
           },
         },
-      ],
-    },
-    createdAt: new Date().toISOString(),
-  })
+      })
+
+      break
+    }
+  }
 }
 
 // create a worker and register public functions

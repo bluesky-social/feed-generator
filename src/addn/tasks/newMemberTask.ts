@@ -3,8 +3,13 @@ import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
 
+export interface NewMemberData {
+  author: string
+  uri: string
+}
+
 export class NewMemberTask implements ITask {
-  public newMembers: string[] = []
+  public newMembers: NewMemberData[] = []
 
   // create a worker pool using an external worker script
   private __dirname = path.resolve(path.dirname(''))
@@ -52,7 +57,7 @@ export class NewMemberTask implements ITask {
 
   private runService = async (
     taskSession: TaskSessionData,
-    member: string | undefined,
+    member: NewMemberData | undefined,
   ): Promise<void> => {
     let currentPool = this.pool
     return currentPool
@@ -65,8 +70,8 @@ export class NewMemberTask implements ITask {
       })
   }
 
-  public addMember = (author: string) => {
-    if (this.newMembers.includes(author)) return
-    this.newMembers.push(author)
+  public addMember = (member: NewMemberData) => {
+    if (this.newMembers.includes(member)) return
+    this.newMembers.push(member)
   }
 }
