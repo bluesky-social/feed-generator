@@ -195,14 +195,12 @@ export class JetStreamManager {
   async handleCreateFollowEvent({ commit: { record, rkey }, did }) {
     const botId = process.env.BOT_PUBLISHER_DID
     const author = did
-    const uri = `at://${did}/app.bsky.graph.follow/${rkey}`
 
     if (record.subject === botId) {
       console.log('BOT got a follow')
       if (this.authorTask.addAuthor(author)) {
         this.newMemberTask.addMember({
           author,
-          uri,
         })
       }
     }

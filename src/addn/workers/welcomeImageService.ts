@@ -117,17 +117,22 @@ async function sendWelcomeMessage(
   const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
 
   const rt = new RichText({
-    text: `Hi @${handle}! ✨ Welcome to the BeyHive Interactive feed! 🐝`,
+    text: `@${handle} ✨ Welcome to the BeyHive Interactive feed! 🐝`,
   })
   await rt.detectFacets(agent)
 
   // Get the thread this post is a part of
-  const threadRes = await agent.getPostThread({
-    uri: member.uri,
-  })
-  const { thread } = threadRes.data
+  if (member.uri) {
+    const threadRes = await agent.getPostThread({
+      uri: member.uri,
+    })
+    const { thread } = threadRes.data
 
-  await sendPost(agent, thread, rt, data, imgWidth, imgHeight)
+    await sendPost(agent, rt, data, imgWidth, imgHeight, thread)
+  } else {
+    // This wasn't sent via a thread, so message the user directly
+    await sendPost(agent, rt, data, imgWidth, imgHeight)
+  }
 }
 
 /**
@@ -170,45 +175,74 @@ function is(lexicon, obj) {
   )
 }
 
-async function sendPost(agent, thread, richText, data, imgWidth, imgHeight) {
-  switch (thread?.$type) {
-    case 'app.bsky.feed.defs#threadViewPost': {
-      let view = fromThreadView(thread as ThreadViewPost)
-      let root = getThreadRoot(view)
+async function sendPost(
+  agent: BskyAgent,
+  richText: RichText,
+  data: any,
+  imgWidth: number,
+  imgHeight: number,
+  thread?: any,
+) {
+  if (thread) {
+    switch (thread?.$type) {
+      case 'app.bsky.feed.defs#threadViewPost': {
+        let view = fromThreadView(thread as ThreadViewPost)
+        let root = getThreadRoot(view)
 
-      await agent.post({
-        text: richText?.text,
-        facets: richText?.facets,
-        embed: {
-          $type: 'app.bsky.embed.images',
-          images: [
-            // can be an array up to 4 values
-            {
-              alt: 'Welcome to #BeyHive', // the alt text
-              image: data.blob,
-              aspectRatio: {
-                // a hint to clients
-                width: imgWidth,
-                height: imgHeight,
+        await agent.post({
+          text: richText?.text,
+          facets: richText?.facets,
+          embed: {
+            $type: 'app.bsky.embed.images',
+            images: [
+              // can be an array up to 4 values
+              {
+                alt: 'Welcome to #BeyHive', // the alt text
+                image: data.blob,
+                aspectRatio: {
+                  // a hint to clients
+                  width: imgWidth,
+                  height: imgHeight,
+                },
               },
+            ],
+          },
+          createdAt: new Date().toISOString(),
+          reply: {
+            root: {
+              uri: root.post.uri,
+              cid: root.post.cid,
             },
-          ],
-        },
-        createdAt: new Date().toISOString(),
-        reply: {
-          root: {
-            uri: root.post.uri,
-            cid: root.post.cid,
+            parent: {
+              uri: view.post.uri,
+              cid: view.post.cid,
+            },
           },
-          parent: {
-            uri: view.post.uri,
-            cid: view.post.cid,
-          },
-        },
-      })
-
-      break
+        })
+        break
+      }
     }
+  } else {
+    await agent.post({
+      text: richText?.text,
+      facets: richText?.facets,
+      embed: {
+        $type: 'app.bsky.embed.images',
+        images: [
+          // can be an array up to 4 values
+          {
+            alt: 'Welcome to #BeyHive', // the alt text
+            image: data.blob,
+            aspectRatio: {
+              // a hint to clients
+              width: imgWidth,
+              height: imgHeight,
+            },
+          },
+        ],
+      },
+      createdAt: new Date().toISOString(),
+    })
   }
 }
 

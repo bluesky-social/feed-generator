@@ -5,7 +5,7 @@ import path from 'path'
 
 export interface NewMemberData {
   author: string
-  uri: string
+  uri?: string
 }
 
 export class NewMemberTask implements ITask {
