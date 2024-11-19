@@ -1,6 +1,6 @@
 import workerpool from 'workerpool'
 import { AtpSessionData, BskyAgent } from '@atproto/api'
-import { ITask } from './task.js'
+import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
 
 export class NewMemberTask implements ITask {
@@ -25,11 +25,13 @@ export class NewMemberTask implements ITask {
         if (!session) return
 
         const result = await this.runService(
-          session.accessJwt,
-          session.refreshJwt,
-          session.did,
-          session.handle,
-          session.active,
+          {
+            access: session.accessJwt,
+            refresh: session.refreshJwt,
+            did: session.did,
+            handle: session.handle,
+            active: session.active,
+          },
           this.newMembers.shift(),
         )
       } catch (e) {
@@ -49,23 +51,12 @@ export class NewMemberTask implements ITask {
   }
 
   private runService = async (
-    access: string,
-    refresh: string,
-    did: string,
-    handle: string,
-    active: boolean,
+    taskSession: TaskSessionData,
     member: string | undefined,
   ): Promise<void> => {
     let currentPool = this.pool
     return currentPool
-      .exec('sendWelcomeMessage', [
-        access,
-        refresh,
-        did,
-        handle,
-        active,
-        member,
-      ])
+      .exec('sendWelcomeMessage', [taskSession, member])
       .catch(function (err) {
         console.error(err)
       })
