@@ -6,6 +6,7 @@ import path from 'path'
 export interface BotCommand {
   type: 'points' | 'help' | 'members_list' | 'ban_list'
   userDid: string
+  uri: string
 }
 
 export class BotCommandTask implements ITask {

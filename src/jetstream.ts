@@ -196,6 +196,7 @@ export class JetStreamManager {
         this.botCommandTask.addCommand({
           type: 'points',
           userDid: did,
+          uri,
         })
         return
       }
