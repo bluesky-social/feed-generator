@@ -9,8 +9,8 @@
   "type": "module",
   "scripts": {
     "publishBeyhive": "tsx scripts/publishBeyhive.ts",
-    "publishFeed": "ts-node scripts/publishFeedGen.ts",
-    "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
+    "publishFeed": "tsx scripts/publishFeedGen.ts",
+    "unpublishFeed": "tsx scripts/unpublishFeedGen.ts",
     "start": "node --no-warnings ./dist/index.js",
     "build": "tsc && tsc-alias"
   },

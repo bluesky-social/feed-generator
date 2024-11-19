@@ -46,23 +46,30 @@ export class JetStreamManager {
     // Jetstream
     this.jetstream = new Jetstream({
       ws: WebSocket,
-      wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
+      wantedCollections: ['app.bsky.feed.post', 'app.bsky.graph.follow'], // omit to receive all collections
       //wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
     })
 
+    // Posts
     this.jetstream.onCreate(
       'app.bsky.feed.post',
-      this.handleCreateEvent.bind(this),
+      this.handleCreatePostEvent.bind(this),
     )
     this.jetstream.onDelete(
       'app.bsky.feed.post',
-      this.handleDeleteEvent.bind(this),
+      this.handleDeletePostEvent.bind(this),
+    )
+
+    // Follows
+    this.jetstream.onCreate(
+      'app.bsky.graph.follow',
+      this.handleCreateFollowEvent.bind(this),
     )
 
     this.jetstream.start()
   }
 
-  async handleCreateEvent({ commit: { record, rkey, cid }, did }) {
+  async handleCreatePostEvent({ commit: { record, rkey, cid }, did }) {
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     const author: string = did
     let hashtags: any[] = []
@@ -81,7 +88,7 @@ export class JetStreamManager {
     // Filter for posts that include the join/leave hashtags
     record['text']
       ?.toLowerCase()
-      ?.match(/#[^\s#\.\;]*/gim)
+      ?.match(/#[^\s#\W\;]*/gim)
       ?.map((hashtag) => {
         hashtags.push(hashtag)
       })
@@ -176,13 +183,24 @@ export class JetStreamManager {
     return
   }
 
-  async handleDeleteEvent(event) {
+  async handleDeletePostEvent(event) {
     await this.db
       .deleteFrom('post')
       .where('uri', 'in', [
         `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
       ])
       .execute()
+  }
+
+  async handleCreateFollowEvent({ commit: { record, rkey }, did }) {
+    const botId = process.env.BOT_PUBLISHER_DID
+    const author = did
+    const uri = `at://${did}/app.bsky.graph.follow/${rkey}`
+
+    if (record.subject === botId) {
+      //this.emit("follow", { user: await this.bot.getProfile(did), uri });
+      console.log('Got a follow from: ', uri)
+    }
   }
 
   handleBotMessages(
