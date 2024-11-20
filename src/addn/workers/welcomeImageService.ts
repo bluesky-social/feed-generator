@@ -170,9 +170,9 @@ function fromThreadView(view: ThreadViewPost): any {
 
 function getThreadRoot(view: ThreadViewPost): any {
   if (view.parent) {
-    //return getThreadRoot(view.parent as ThreadViewPost)
+    return getThreadRoot(view.parent as ThreadViewPost)
   } else {
-    //return view
+    return view
   }
 }
 
