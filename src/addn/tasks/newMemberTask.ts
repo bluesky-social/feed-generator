@@ -30,7 +30,7 @@ export class NewMemberTask implements ITask {
 
         if (!session) return
 
-        const result = await this.runService(
+        await this.runService(
           {
             access: session.accessJwt,
             refresh: session.refreshJwt,
@@ -40,6 +40,9 @@ export class NewMemberTask implements ITask {
           },
           this.newMembers.shift(),
         )
+
+        // Service a success
+        console.log(`New Member Task: completed!`)
       } catch (e) {
         // Service failed
         console.log(
