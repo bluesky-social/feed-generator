@@ -1,7 +1,8 @@
-import workerpool from 'workerpool'
+import { workerData, parentPort } from 'worker_threads'
 import { RichText } from '@atproto/api'
 
-import { createCanvas, Image, loadImage } from 'canvas'
+import { Canvas, Image, loadImage } from 'skia-canvas'
+//import { createCanvas, Image, loadImage } from 'canvas'
 import { AtpSessionData, BskyAgent, CredentialSession } from '@atproto/api'
 import { TaskSessionData } from '../tasks/task'
 import { ThreadViewPost } from '../../lexicon/types/app/bsky/feed/defs.js'
@@ -61,8 +62,12 @@ async function sendWelcomeMessage(
   const avatar = userProfile.data.avatar
 
   // Begin creating our image
-  const canvas = createCanvas(imgWidth, imgHeight)
-  const ctx = canvas.getContext('2d')
+  let canvas = new Canvas(imgWidth, imgHeight),
+    { width, height } = canvas,
+    ctx = canvas.getContext('2d')
+
+  //const canvas = createCanvas(imgWidth, imgHeight)
+  //const ctx = canvas.getContext('2d')
 
   // Get Random base image
   const randomImg = Math.floor(Math.random() * 4) + 1
@@ -72,7 +77,7 @@ async function sendWelcomeMessage(
     image2 = await loadImage(avatar)
   }
 
-  ctx.quality = 'fast'
+  //ctx.quality = 'fast'
   ctx.drawImage(image1, 0, 0, imgWidth, imgHeight)
 
   ctx.font = 'normal 900 25px serif'
@@ -113,7 +118,10 @@ async function sendWelcomeMessage(
     ctx.drawImage(image2, circle.x - hsx, circle.y - hsy, hsx * 2, hsy * 2)
   }
 
-  const image = await canvas.toDataURL('image/jpeg', 90)
+  // finish drawing
+  ctx.save()
+
+  const image = await canvas.toDataURL('jpeg', { quality: 0.9 })
   const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
 
   const rt = new RichText({
@@ -133,6 +141,8 @@ async function sendWelcomeMessage(
     // This wasn't sent via a thread, so message the user directly
     await sendPost(agent, rt, data, imgWidth, imgHeight)
   }
+
+  return
 }
 
 /**
@@ -160,9 +170,9 @@ function fromThreadView(view: ThreadViewPost): any {
 
 function getThreadRoot(view: ThreadViewPost): any {
   if (view.parent) {
-    return getThreadRoot(view.parent as ThreadViewPost)
+    //return getThreadRoot(view.parent as ThreadViewPost)
   } else {
-    return view
+    //return view
   }
 }
 
@@ -246,7 +256,4 @@ async function sendPost(
   }
 }
 
-// create a worker and register public functions
-workerpool.worker({
-  sendWelcomeMessage,
-})
+sendWelcomeMessage(workerData.taskSession, workerData.member)

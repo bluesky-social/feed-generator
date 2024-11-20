@@ -1,4 +1,4 @@
-import workerpool from 'workerpool'
+import { Worker } from 'worker_threads'
 import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
@@ -11,10 +11,11 @@ export interface NewMemberData {
 export class NewMemberTask implements ITask {
   public newMembers: NewMemberData[] = []
 
-  // create a worker pool using an external worker script
   private __dirname = path.resolve(path.dirname(''))
-  private pool = workerpool.pool(
-    this.__dirname + '/dist/addn/workers/welcomeImageService.js',
+  private workerPath = path.join(
+    this.__dirname,
+    '',
+    'dist/addn/workers/welcomeImageService.js',
   )
 
   public run = (interval: number, agent: BskyAgent) => {
@@ -22,7 +23,7 @@ export class NewMemberTask implements ITask {
 
     const timer = async () => {
       try {
-        if (this.newMembers.length == 0) return
+        if (this.newMembers.length === 0) return
 
         // Call the service working
         const session: AtpSessionData | undefined = agent.session
@@ -58,20 +59,22 @@ export class NewMemberTask implements ITask {
   private runService = async (
     taskSession: TaskSessionData,
     member: NewMemberData | undefined,
-  ): Promise<void> => {
-    let currentPool = this.pool
-    return currentPool
-      .exec('sendWelcomeMessage', [taskSession, member])
-      .catch(function (err) {
-        console.error(err)
+  ): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(this.workerPath, {
+        workerData: { taskSession, member },
       })
-      .then(function () {
-        currentPool.terminate() // terminate all workers when done
+      worker.on('message', resolve)
+      worker.on('error', reject)
+      worker.on('exit', (code) => {
+        if (code !== 0)
+          reject(new Error(`Worker stopped with exit code ${code}`))
       })
+    })
   }
 
-  public addMember = (member: NewMemberData) => {
-    if (this.newMembers.includes(member)) return
-    this.newMembers.push(member)
+  public addMember = (author: NewMemberData) => {
+    if (this.newMembers.includes(author)) return
+    this.newMembers.push(author)
   }
 }

@@ -24,7 +24,6 @@
     "@jimp/plugin-print": "^1.6.0",
     "@skyware/jetstream": "^0.2.0",
     "better-sqlite3": "^11.3.0",
-    "canvas": "^2.11.2",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jimp": "^1.6.0",
@@ -35,6 +34,7 @@
     "multiformats": "^9.9.0",
     "p-ratelimit": "^1.0.1",
     "pg": "^8.13.1",
+    "skia-canvas": "^1.0.2",
     "workerpool": "^9.2.0",
     "ws": "^8.18.0"
   },

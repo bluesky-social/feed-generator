@@ -198,11 +198,11 @@ export class JetStreamManager {
 
     if (record.subject === botId) {
       console.log('BOT got a follow')
-      if (this.authorTask.addAuthor(author)) {
-        this.newMemberTask.addMember({
-          author,
-        })
-      }
+      //if (this.authorTask.addAuthor(author)) {
+      this.newMemberTask.addMember({
+        author,
+      })
+      //}
     }
   }
 
