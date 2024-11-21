@@ -20,6 +20,7 @@ const run = async () => {
       maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
     hostname,
     serviceDid,
+    isAdminMode: maybeStr(process.env.ADMIN_MODE) == 'true' ? true : false,
   })
   await server.start()
   console.log(

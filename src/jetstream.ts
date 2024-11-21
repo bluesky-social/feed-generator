@@ -23,11 +23,13 @@ export class JetStreamManager {
   private newMemberTask = new NewMemberTask()
   private pointsTask = new PointsTask()
   private db: Database
+  private isAdminMode: boolean
   public jetstream: Jetstream
 
   // Init
-  async init(db: Database) {
+  async init(db: Database, isAdminMode: boolean) {
     this.db = db
+    this.isAdminMode = isAdminMode
 
     // Login Agent
     const agent = new BskyAgent({ service: 'https://bsky.social' })
@@ -40,15 +42,28 @@ export class JetStreamManager {
     })
 
     this.initJetstream()
+
+    if (this.isAdminMode) {
+      let test = 'did:plc:vtcasaah356sx6ejp5yscfgp'
+
+      if (this.authorTask.addAuthor(test)) {
+        this.newMemberTask.addMember({
+          author: test,
+        })
+      }
+    }
   }
 
   runTasks(agent: BskyAgent) {
     this.authorTask.run(1 * 60 * 1000, agent)
-    this.bannedTask.run(10 * 60 * 1000, agent)
-    this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
-    this.botCommandTask.run(2 * 1000, agent)
     this.newMemberTask.run(2 * 1000, agent)
-    this.pointsTask.run(1 * 60 * 60 * 1000, agent, this.db)
+
+    if (!this.isAdminMode) {
+      this.bannedTask.run(10 * 60 * 1000, agent)
+      this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
+      this.botCommandTask.run(2 * 1000, agent)
+      this.pointsTask.run(1 * 60 * 60 * 1000, agent, this.db)
+    }
   }
 
   initJetstream() {
@@ -71,7 +86,9 @@ export class JetStreamManager {
       this.handleCreateFollowEvent.bind(this),
     )
 
-    this.jetstream.start()
+    if (!this.isAdminMode) {
+      this.jetstream.start()
+    }
   }
 
   async handleCreatePostEvent({ commit: { record, rkey, cid }, did }) {

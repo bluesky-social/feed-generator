@@ -17,4 +17,5 @@ export type Config = {
   serviceDid: string
   publisherDid: string
   subscriptionReconnectDelay: number
+  isAdminMode: boolean
 }
