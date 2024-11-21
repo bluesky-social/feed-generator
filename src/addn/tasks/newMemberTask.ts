@@ -2,6 +2,7 @@ import workerpool from 'workerpool'
 import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
+import { Database } from '../../db/index.js'
 
 export interface NewMemberData {
   author: string
@@ -9,6 +10,7 @@ export interface NewMemberData {
 }
 
 export class NewMemberTask implements ITask {
+  public name = 'new_members'
   public newMembers: NewMemberData[] = []
 
   // create a worker pool using an external worker script
@@ -77,4 +79,6 @@ export class NewMemberTask implements ITask {
     if (this.newMembers.includes(author)) return
     this.newMembers.push(author)
   }
+
+  public checkTask: (db: Database) => Promise<boolean>
 }

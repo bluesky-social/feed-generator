@@ -69,3 +69,16 @@ migrations['004'] = {
       .execute()
   },
 }
+
+migrations['005'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .createTable('feed_task')
+      .addColumn('type', 'varchar', (col) => col.primaryKey())
+      .addColumn('lastRun', 'varchar', (col) => col.notNull())
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema.dropTable('feed_task').execute()
+  },
+}

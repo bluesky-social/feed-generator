@@ -2,6 +2,7 @@ import { ITask } from './task.js'
 import { Database } from '../../db/index.js'
 
 export class CleanupTask implements ITask {
+  public name: string = 'cleanup'
   private periodicIntervalId: NodeJS.Timer | undefined
 
   public run = (interval: number, db: Database) => {
@@ -30,4 +31,6 @@ export class CleanupTask implements ITask {
       .where('indexedAt', '<', new Date(pastTime).toISOString())
       .execute()
   }
+
+  public checkTask: (db: Database) => Promise<boolean>
 }

@@ -5,8 +5,10 @@ import {
   removeListMembers,
 } from '../listMethods.js'
 import { ITask } from './task.js'
+import { Database } from '../../db/index.js'
 
 export class AuthorTask implements ITask {
+  public name: string = 'author'
   private periodicIntervalId: NodeJS.Timer | undefined
   private AuthorsToAdd: string[] = []
   private AuthorsToRemove: string[] = []
@@ -91,4 +93,6 @@ export class AuthorTask implements ITask {
       }),
     )
   }
+
+  public checkTask: (db: Database) => Promise<boolean>
 }

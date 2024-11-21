@@ -1,8 +1,10 @@
 import { BskyAgent } from '@atproto/api'
 import { getListMembers } from '../listMethods.js'
 import { ITask } from './task.js'
+import { Database } from '../../db/index.js'
 
 export class BannedTask implements ITask {
+  public name: string = 'banned'
   private periodicIntervalId: NodeJS.Timer | undefined
 
   public bannedMembers: string[] = []
@@ -34,4 +36,6 @@ export class BannedTask implements ITask {
     const list: string = `${process.env.BEYHIVE_BAN_LIST}`
     return await getListMembers(list, agent)
   }
+
+  public checkTask: (db: Database) => Promise<boolean>
 }

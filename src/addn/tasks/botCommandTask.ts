@@ -2,6 +2,7 @@ import workerpool from 'workerpool'
 import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
+import { Database } from '../../db/index.js'
 
 export interface BotCommand {
   type: 'points' | 'help' | 'members_list' | 'ban_list'
@@ -10,6 +11,7 @@ export interface BotCommand {
 }
 
 export class BotCommandTask implements ITask {
+  public name: string = 'bot_command'
   private periodicIntervalId: NodeJS.Timer | undefined
   private commands: BotCommand[] = []
 
@@ -71,4 +73,6 @@ export class BotCommandTask implements ITask {
         currentPool.terminate() // terminate all workers when done
       })
   }
+
+  public checkTask: (db: Database) => Promise<boolean>
 }

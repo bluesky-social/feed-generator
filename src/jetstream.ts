@@ -36,15 +36,19 @@ export class JetStreamManager {
 
     await agent.login({ identifier: handle, password }).then(async () => {
       // Run Tasks
-      this.authorTask.run(1 * 60 * 1000, agent)
-      this.bannedTask.run(10 * 60 * 1000, agent)
-      this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
-      this.botCommandTask.run(2 * 1000, agent)
-      this.newMemberTask.run(2 * 1000, agent)
-      this.pointsTask.run(24 * 60 * 60 * 1000, agent)
+      this.runTasks(agent)
     })
 
     this.initJetstream()
+  }
+
+  runTasks(agent: BskyAgent) {
+    this.authorTask.run(1 * 60 * 1000, agent)
+    this.bannedTask.run(10 * 60 * 1000, agent)
+    this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
+    this.botCommandTask.run(2 * 1000, agent)
+    this.newMemberTask.run(2 * 1000, agent)
+    this.pointsTask.run(1 * 60 * 60 * 1000, agent, this.db)
   }
 
   initJetstream() {

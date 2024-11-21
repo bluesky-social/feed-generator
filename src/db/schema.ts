@@ -3,6 +3,7 @@ export type DatabaseSchema = {
   sub_state: SubState
   author: Author
   member_points: MemberPoints
+  feed_task: FeedTask
 }
 
 export type Post = {
@@ -20,6 +21,11 @@ export type Author = {
 export type SubState = {
   service: string
   cursor: bigint
+}
+
+export type FeedTask = {
+  type: string
+  lastRun: string
 }
 
 export type MemberPoints = {
