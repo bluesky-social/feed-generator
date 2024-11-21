@@ -1,4 +1,4 @@
-import { Worker } from 'worker_threads'
+import workerpool from 'workerpool'
 import { AtpSessionData, BskyAgent } from '@atproto/api'
 import { ITask, TaskSessionData } from './task.js'
 import path from 'path'
@@ -11,11 +11,10 @@ export interface NewMemberData {
 export class NewMemberTask implements ITask {
   public newMembers: NewMemberData[] = []
 
+  // create a worker pool using an external worker script
   private __dirname = path.resolve(path.dirname(''))
-  private workerPath = path.join(
-    this.__dirname,
-    '',
-    'dist/addn/workers/welcomeImageService.js',
+  private pool = workerpool.pool(
+    this.__dirname + '/dist/addn/workers/welcomeImageService.js',
   )
 
   public run = (interval: number, agent: BskyAgent) => {
@@ -63,17 +62,15 @@ export class NewMemberTask implements ITask {
     taskSession: TaskSessionData,
     member: NewMemberData | undefined,
   ): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      const worker = new Worker(this.workerPath, {
-        workerData: { taskSession, member },
+    let currentPool = this.pool
+    return currentPool
+      .exec('sendWelcomeMessage', [taskSession, member])
+      .catch(function (err) {
+        console.error(err)
       })
-      worker.on('message', resolve)
-      worker.on('error', reject)
-      worker.on('exit', (code) => {
-        if (code !== 0)
-          reject(new Error(`Worker stopped with exit code ${code}`))
+      .then(function () {
+        currentPool.terminate() // terminate all workers when done
       })
-    })
   }
 
   public addMember = (author: NewMemberData) => {

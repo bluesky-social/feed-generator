@@ -1,4 +1,4 @@
-import { workerData, parentPort } from 'worker_threads'
+import workerpool from 'workerpool'
 import { RichText } from '@atproto/api'
 
 import { Canvas, Image, loadImage } from 'skia-canvas'
@@ -256,4 +256,7 @@ async function sendPost(
   }
 }
 
-sendWelcomeMessage(workerData.taskSession, workerData.member)
+// create a worker and register public functions
+workerpool.worker({
+  sendWelcomeMessage,
+})
