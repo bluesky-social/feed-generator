@@ -6,7 +6,7 @@ import getActorProfile from '../actorMethods.js'
 import { AtpSessionData, BskyAgent, CredentialSession } from '@atproto/api'
 import { BotCommand } from '../tasks/botCommandTask.js'
 import { ThreadViewPost } from '../../lexicon/types/app/bsky/feed/defs.js'
-import { createDb, Database, migrateToLatest } from '../../db/index.js'
+import { createDb, Database } from '../../db/index.js'
 import { TaskSessionData } from '../tasks/task.js'
 
 interface UserProfileInfo {
@@ -50,10 +50,21 @@ async function getPointsForUser(
     .where('did', '=', command.userDid)
     .execute()
 
+  const points: number = results[0]?.points || 0
+  let suffix: string = ''
+
+  switch (points) {
+    case 0: {
+      suffix = 'Make posts about Beyoncé to earn points.'
+      break
+    }
+    default: {
+      suffix = 'Keep it up!'
+    }
+  }
+
   const rt = new RichText({
-    text: `Hi @${handle}! ✨ You've earned ${
-      results[0]?.points || 0
-    } points! Keep it up! 🐝`,
+    text: `Hi @${handle}! ✨ You've earned ${points} points! ${suffix} 🐝`,
   })
   await rt.detectFacets(agent)
 

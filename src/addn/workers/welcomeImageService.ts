@@ -125,7 +125,7 @@ async function sendWelcomeMessage(
   const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
 
   const rt = new RichText({
-    text: `@${handle} ✨ Welcome to the BeyHive Interactive feed! 🐝`,
+    text: `@${handle} ✨ Welcome to the BeyHive Interactive feed! #NewMember 🐝`,
   })
   await rt.detectFacets(agent)
 

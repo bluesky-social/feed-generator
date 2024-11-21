@@ -2,11 +2,14 @@ import WebSocket from 'ws'
 import { Jetstream } from '@skyware/jetstream'
 import { Database } from './db/index.js'
 import { BskyAgent } from '@atproto/api'
-import { AuthorTask } from './addn/tasks/authorTask.js'
-import { BannedTask } from './addn/tasks/bannedTask.js'
-import { NewMemberTask } from './addn/tasks/newMemberTask.js'
-import { CleanupTask } from './addn/tasks/cleanupTask.js'
-import { BotCommandTask } from './addn/tasks/botCommandTask.js'
+import {
+  AuthorTask,
+  BannedTask,
+  BotCommandTask,
+  CleanupTask,
+  NewMemberTask,
+  PointsTask,
+} from './addn/tasks/index.js'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -18,6 +21,7 @@ export class JetStreamManager {
   private cleanupTask = new CleanupTask()
   private botCommandTask = new BotCommandTask()
   private newMemberTask = new NewMemberTask()
+  private pointsTask = new PointsTask()
   private db: Database
   public jetstream: Jetstream
 
@@ -37,6 +41,7 @@ export class JetStreamManager {
       this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
       this.botCommandTask.run(2 * 1000, agent)
       this.newMemberTask.run(2 * 1000, agent)
+      this.pointsTask.run(24 * 60 * 60 * 1000, agent)
     })
 
     this.initJetstream()
@@ -70,6 +75,7 @@ export class JetStreamManager {
   }
 
   async handleCreatePostEvent({ commit: { record, rkey, cid }, did }) {
+    const botId = process.env.BOT_PUBLISHER_DID
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     const author: string = did
     let hashtags: any[] = []
@@ -104,6 +110,11 @@ export class JetStreamManager {
       } else {
         return
       }
+    }
+
+    // Hide new member posts from bot
+    if (author == botId && hashtags.includes('#newmember')) {
+      return
     }
 
     // Remove the Author
@@ -165,10 +176,10 @@ export class JetStreamManager {
       .execute()
 
     // Increment points for members
-    if (isMember) {
+    if (isMember && author !== botId) {
       await this.db
         .insertInto('member_points')
-        .values([{ did: author, points: 0 }])
+        .values([{ did: author, points: 1 }])
         .onConflict((oc) =>
           oc.column('did').doUpdateSet({
             points: (eb) => eb('member_points.points', '+', 1),

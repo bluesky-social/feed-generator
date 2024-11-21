@@ -24,7 +24,7 @@ export class NewMemberTask implements ITask {
       try {
         if (this.newMembers.length === 0) return
 
-        // Call the service working
+        // Call the service worker
         const session: AtpSessionData | undefined = agent.session
 
         if (!session) return

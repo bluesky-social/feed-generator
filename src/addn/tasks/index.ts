@@ -1,0 +1,6 @@
+export { AuthorTask } from './authorTask.js'
+export { BannedTask } from './bannedTask.js'
+export { BotCommandTask } from './botCommandTask.js'
+export { CleanupTask } from './cleanupTask.js'
+export { NewMemberTask } from './newMemberTask.js'
+export { PointsTask } from './pointsTask.js'

@@ -22,7 +22,7 @@ export class BotCommandTask implements ITask {
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
       try {
-        // Call the service working
+        // Call the service worker
         const session: AtpSessionData | undefined = agent.session
 
         if (!session) return
