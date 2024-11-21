@@ -60,10 +60,6 @@ export class JetStreamManager {
       'app.bsky.feed.post',
       this.handleCreatePostEvent.bind(this),
     )
-    this.jetstream.onDelete(
-      'app.bsky.feed.post',
-      this.handleDeletePostEvent.bind(this),
-    )
 
     // Follows
     this.jetstream.onCreate(
@@ -189,15 +185,6 @@ export class JetStreamManager {
     }
 
     return
-  }
-
-  async handleDeletePostEvent(event) {
-    await this.db
-      .deleteFrom('post')
-      .where('uri', 'in', [
-        `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
-      ])
-      .execute()
   }
 
   async handleCreateFollowEvent({ commit: { record, rkey }, did }) {
