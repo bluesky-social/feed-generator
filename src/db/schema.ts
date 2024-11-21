@@ -25,4 +25,5 @@ export type SubState = {
 export type MemberPoints = {
   did: string
   points: number
+  dailyPoints: number
 }

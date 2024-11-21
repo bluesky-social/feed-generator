@@ -80,6 +80,7 @@ async function postTopMembers(
 
   // Get top members
   const topMembers: MemberPoints[] = await getTopMembers(db)
+  let memberHandles: string[] = []
 
   const promises = topMembers.map(async (member) => {
     let avatar: Image | undefined = undefined
@@ -104,24 +105,24 @@ async function postTopMembers(
   const profileResults = await Promise.all(promises)
 
   profileResults.forEach(({ userProfile: { handle }, avatar }, index) => {
+    // Add member handles
+    memberHandles.push(`@${handle}`)
+
+    // Draw members
     const offset: number = 350
     const padding: number = 125
     const position: number = padding * index
 
-    ctx.fillText(`@${handle}`, 180, position + offset)
+    ctx.fillText(`${handle}`, 140, position + offset)
 
     const circle = {
-      x: 120,
+      x: 80,
       y: position + offset,
       radius: 50,
     }
 
     if (avatar?.complete) {
       const aspect = 290 / 290
-
-      // Shadow
-      //ctx.shadowColor = 'black'
-      //ctx.shadowBlur = 15
 
       ctx.save()
       ctx.beginPath()
@@ -137,65 +138,24 @@ async function postTopMembers(
     }
   })
 
-  //canvas.saveAsSync('images/top-members.png')
-
-  return
-
-  /*
-  if (avatar) {
-    image2 = await loadImage(avatar)
-  }
-
-  ctx.fillText(`@${handle}`, 520, 98)
-  ctx.restore()
-
-  const circle = {
-    x: 280,
-    y: 550,
-    radius: 165,
-  }
-
-  if (image2.complete) {
-    const aspect = 290 / 290
-
-    // Shadow
-    ctx.shadowColor = 'black'
-    ctx.shadowBlur = 15
-
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
-    ctx.closePath()
-    ctx.fill()
-    ctx.restore()
-
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2, true)
-    ctx.closePath()
-    ctx.clip()
-
-    const hsx = circle.radius * Math.max(1.0 / aspect, 1.0)
-    const hsy = circle.radius * Math.max(aspect, 1.0)
-
-    ctx.drawImage(image2, circle.x - hsx, circle.y - hsy, hsx * 2, hsy * 2)
-  }
-
-  // finish drawing
-  ctx.save()
-
   const image = await canvas.toDataURL('jpeg', { quality: 0.9 })
   const { data } = await agent.uploadBlob(dataURLToUint8Array(image))
 
+  const today = new Date()
+  const formattedDate = `${
+    today.getMonth() + 1
+  }/${today.getDate()}/${today.getFullYear()}`
+
+  const flatMembers: string = memberHandles.join(' ')
+
   const rt = new RichText({
-    text: `@${handle} ✨ Welcome to the BeyHive Interactive feed! 🐝`,
+    text: `#BeyHive top 5 members for ${formattedDate} are ${flatMembers}`,
   })
   await rt.detectFacets(agent)
 
   await sendPost(agent, rt, data, imgWidth, imgHeight)
 
   return
-  */
 }
 
 async function sendPost(
@@ -228,6 +188,7 @@ async function sendPost(
 }
 
 async function getTopMembers(db: Database): Promise<MemberPoints[]> {
+  // Get calculated points
   const results = await db
     .selectFrom('member_points')
     .selectAll()

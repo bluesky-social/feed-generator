@@ -179,7 +179,7 @@ export class JetStreamManager {
     if (isMember && author !== botId) {
       await this.db
         .insertInto('member_points')
-        .values([{ did: author, points: 1 }])
+        .values([{ did: author, points: 0, dailyPoints: 1 }])
         .onConflict((oc) =>
           oc.column('did').doUpdateSet({
             points: (eb) => eb('member_points.points', '+', 1),
