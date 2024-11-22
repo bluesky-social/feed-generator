@@ -82,3 +82,15 @@ migrations['005'] = {
     await db.schema.dropTable('feed_task').execute()
   },
 }
+
+migrations['006'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('post')
+      .addColumn('pinned', 'boolean', (col) => col.notNull().defaultTo(false))
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema.alterTable('post').dropColumn('pinned').execute()
+  },
+}

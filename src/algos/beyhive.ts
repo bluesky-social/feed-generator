@@ -8,6 +8,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
+    .orderBy('pinned', 'desc')
     .orderBy('post.indexedAt', 'desc')
     .limit(params.limit)
 

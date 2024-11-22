@@ -12,6 +12,7 @@ export type Post = {
   replyParent: string | null
   replyRoot: string | null
   indexedAt: string
+  pinned: boolean
 }
 
 export type Author = {

@@ -11,6 +11,7 @@ import {
   PointsTask,
   FollowsTask,
 } from './addn/tasks/index.js'
+import { Post } from './db/schema.js'
 
 function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -199,10 +200,13 @@ export class JetStreamManager {
 
     if (!match) return
 
-    const post = {
+    const post: Post = {
       uri,
       cid: cid,
       indexedAt: record.createdAt,
+      replyParent: null,
+      replyRoot: null,
+      pinned: false,
     }
 
     console.log('Committing message to DB: ', post)
