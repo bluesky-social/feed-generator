@@ -30,15 +30,6 @@ export class FollowsTask implements ITask {
 
   public async getNewFollowers(db: Database, agent: BskyAgent): Promise<void> {
     const botId: string = process.env.BOT_PUBLISHER_DID || ''
-    const result = await db
-      .selectFrom('feed_task')
-      .where('type', '=', this.name)
-      .selectAll()
-      .limit(1)
-      .executeTakeFirst()
-
-    const yesterday: number = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
-    const lastRun: number = new Date(result?.lastRun || yesterday).getTime()
 
     const followers = await agent.getFollowers({
       actor: botId,

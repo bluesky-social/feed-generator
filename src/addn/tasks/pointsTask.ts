@@ -80,6 +80,6 @@ export class PointsTask implements ITask {
       )
       .execute()
 
-    return pastTime < lastRun
+    return lastRun < pastTime
   }
 }
