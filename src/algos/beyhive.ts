@@ -12,6 +12,8 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .limit(1)
     .executeTakeFirst()
 
+  console.log(pinned)
+
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
