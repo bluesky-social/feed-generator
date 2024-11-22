@@ -81,8 +81,8 @@ export class JetStreamManager {
     this.jetstream = new Jetstream({
       endpoint: `${process.env.JETSTREAM_ENDPOINT}`,
       ws: WebSocket,
-      wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
-      //wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
+      wantedCollections: ['app.bsky.feed.post'],
+      cursor: new Date().getTime(),
     })
 
     // Posts
@@ -198,8 +198,6 @@ export class JetStreamManager {
     }
 
     if (!match) return
-
-    console.log(event)
 
     const post = {
       uri,
