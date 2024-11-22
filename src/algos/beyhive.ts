@@ -5,10 +5,16 @@ import { AppContext } from '../config'
 export const shortname = 'beyhive'
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
+  const pinned = await ctx.db
+    .selectFrom('post')
+    .selectAll()
+    .where('pinned', '==', true)
+    .limit(1)
+    .executeTakeFirst()
+
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
-    .orderBy('pinned', 'desc')
     .orderBy('post.indexedAt', 'desc')
     .limit(params.limit)
 
@@ -21,6 +27,12 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   const feed = res.map((row) => ({
     post: row.uri,
   }))
+
+  if (pinned) {
+    feed.unshift({
+      post: pinned.uri,
+    })
+  }
 
   let cursor: string | undefined
   const last = res.at(-1)
