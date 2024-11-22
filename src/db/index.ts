@@ -8,9 +8,6 @@ export const createDb = (location: string, cert: string): Database => {
     dialect: new PostgresDialect({
       pool: new pg.Pool({
         connectionString: location,
-        ssl: {
-          ca: cert,
-        },
       }),
     }),
   })
