@@ -22,9 +22,6 @@ export class FollowsTask implements ITask {
 
     if (!this.periodicIntervalId) {
       this.periodicIntervalId = setInterval(timer, interval)
-
-      // Call timer on the initial run
-      timer()
     }
   }
 
