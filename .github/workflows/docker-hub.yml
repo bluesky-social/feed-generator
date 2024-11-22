@@ -13,7 +13,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
+      with:
+          driver-opts: |
+            image=moby/buildkit:v0.10.6
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
