@@ -28,7 +28,6 @@ export class JetStreamManager {
   private db: Database
   private isAdminMode: boolean
   public jetstream: Jetstream
-  private periodicIntervalId: NodeJS.Timer | undefined
 
   // Init
   async init(db: Database, isAdminMode: boolean) {
@@ -49,31 +48,14 @@ export class JetStreamManager {
   }
 
   runTasks(agent: BskyAgent) {
-    this.authorTask.run(1 * 60 * 1000, agent)
-    this.newMemberTask.run(2 * 1000, agent)
-    this.followsTask.run(2 * 60 * 1000, agent, this.db)
-
     if (!this.isAdminMode) {
+      this.authorTask.run(1 * 60 * 1000, agent)
+      this.newMemberTask.run(2 * 1000, agent)
       this.bannedTask.run(10 * 60 * 1000, agent)
       this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
       this.botCommandTask.run(2 * 1000, agent)
       this.pointsTask.run(1 * 60 * 60 * 1000, agent, this.db)
-    }
-
-    // Follows timer
-    const timer = async () => {
-      if (this.followsTask.newMembers.length > 0) {
-        var selectedMember = this.followsTask.newMembers.shift()
-        if (this.authorTask.addAuthor(selectedMember)) {
-          this.newMemberTask.addMember({
-            author: selectedMember,
-          })
-        }
-      }
-    }
-
-    if (!this.periodicIntervalId) {
-      this.periodicIntervalId = setInterval(timer, 10 * 1000)
+      //this.followsTask.run(2 * 60 * 1000, agent, this.db)
     }
   }
 
@@ -82,7 +64,7 @@ export class JetStreamManager {
     this.jetstream = new Jetstream({
       endpoint: `${process.env.JETSTREAM_ENDPOINT}`,
       ws: WebSocket,
-      wantedCollections: ['app.bsky.feed.post'],
+      wantedCollections: ['app.bsky.feed.post', 'app.bsky.graph.follow'],
       cursor: new Date().getTime(),
     })
 
@@ -93,10 +75,10 @@ export class JetStreamManager {
     )
 
     // Follows
-    /*this.jetstream.onCreate(
+    this.jetstream.onCreate(
       'app.bsky.graph.follow',
       this.handleCreateFollowEvent.bind(this),
-    )*/
+    )
 
     // Delete
     /*this.jetstream.onDelete(
@@ -104,9 +86,7 @@ export class JetStreamManager {
       this.handleDeletePostEvent.bind(this),
     )*/
 
-    if (!this.isAdminMode) {
-      this.jetstream.start()
-    }
+    this.jetstream.start()
   }
 
   async handleCreatePostEvent(event) {
@@ -211,6 +191,11 @@ export class JetStreamManager {
 
     console.log('Committing message to DB: ', post)
 
+    // Don't commit to DB in admin mode
+    if (this.isAdminMode) {
+      return
+    }
+
     await this.db
       .insertInto('post')
       .values([post])
@@ -233,12 +218,9 @@ export class JetStreamManager {
     return
   }
 
-  /*
-  async handleCreateFollowEvent({ commit: { record, rkey }, did }) {
+  async handleCreateFollowEvent({ commit: { record }, did }) {
     const botId = process.env.BOT_PUBLISHER_DID
     const author = did
-
-    console.log(botId)
 
     if (record.subject === botId) {
       console.log('BOT got a follow')
@@ -249,7 +231,6 @@ export class JetStreamManager {
       }
     }
   }
-  */
 
   /*async handleDeletePostEvent(event) {
     await this.db

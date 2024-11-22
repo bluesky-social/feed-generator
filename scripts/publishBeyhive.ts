@@ -26,7 +26,7 @@ const run = async () => {
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
   const description =
-    'Welcome to the #BeyHive Interactive feed! Follow @beyfeed.bsky.social or use #JoinBeyHive (anywhere) to become a member and start earning BeyPoints. Send commands to @beyfeed.bsky.social for even more features.'
+    'Welcome to the Beyoncé Interactive feed! Follow @beyfeed.bsky.social to become a member and start earning BeyPoints. Post #help to @beyfeed.bsky.social for even more features.'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
