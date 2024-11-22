@@ -79,6 +79,7 @@ export class JetStreamManager {
   initJetstream() {
     // Jetstream
     this.jetstream = new Jetstream({
+      endpoint: 'wss://jetstream1.us-west.bsky.network/subscribe',
       ws: WebSocket,
       wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
       //wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
