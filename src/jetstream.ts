@@ -79,7 +79,7 @@ export class JetStreamManager {
   initJetstream() {
     // Jetstream
     this.jetstream = new Jetstream({
-      endpoint: 'wss://jetstream1.us-west.bsky.network/subscribe',
+      endpoint: `${process.env.JETSTREAM_ENDPOINT}`,
       ws: WebSocket,
       wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
       //wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
@@ -103,7 +103,7 @@ export class JetStreamManager {
       this.handleDeletePostEvent.bind(this),
     )*/
 
-    if (this.isAdminMode) {
+    if (!this.isAdminMode) {
       this.jetstream.start()
     }
   }
