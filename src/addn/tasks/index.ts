@@ -1,3 +1,4 @@
+export { FollowsTask } from './followsTask.js'
 export { AuthorTask } from './authorTask.js'
 export { BannedTask } from './bannedTask.js'
 export { BotCommandTask } from './botCommandTask.js'

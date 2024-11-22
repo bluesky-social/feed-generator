@@ -9,6 +9,7 @@ import {
   CleanupTask,
   NewMemberTask,
   PointsTask,
+  FollowsTask,
 } from './addn/tasks/index.js'
 
 function removeAccents(str: string): string {
@@ -22,9 +23,11 @@ export class JetStreamManager {
   private botCommandTask = new BotCommandTask()
   private newMemberTask = new NewMemberTask()
   private pointsTask = new PointsTask()
+  private followsTask = new FollowsTask()
   private db: Database
   private isAdminMode: boolean
   public jetstream: Jetstream
+  private periodicIntervalId: NodeJS.Timer | undefined
 
   // Init
   async init(db: Database, isAdminMode: boolean) {
@@ -42,27 +45,35 @@ export class JetStreamManager {
     })
 
     this.initJetstream()
-
-    if (this.isAdminMode) {
-      let test = 'did:plc:vtcasaah356sx6ejp5yscfgp'
-
-      if (this.authorTask.addAuthor(test)) {
-        this.newMemberTask.addMember({
-          author: test,
-        })
-      }
-    }
   }
 
   runTasks(agent: BskyAgent) {
     this.authorTask.run(1 * 60 * 1000, agent)
     this.newMemberTask.run(2 * 1000, agent)
+    this.followsTask.run(1 * 60 * 1000, agent, this.db)
 
     if (!this.isAdminMode) {
       this.bannedTask.run(10 * 60 * 1000, agent)
       this.cleanupTask.run(24 * 60 * 60 * 1000, this.db)
       this.botCommandTask.run(2 * 1000, agent)
-      this.pointsTask.run(1 * 60 * 60 * 1000, agent, this.db)
+      this.pointsTask.run(1 * 60 * 1000, agent, this.db)
+    }
+
+    // Follows timer
+    const timer = async () => {
+      var selectedMember = this.followsTask.newMembers.shift()
+
+      if (this.followsTask.newMembers.length > 0) {
+        if (this.authorTask.addAuthor(selectedMember)) {
+          this.newMemberTask.addMember({
+            author: selectedMember,
+          })
+        }
+      }
+    }
+
+    if (!this.periodicIntervalId) {
+      this.periodicIntervalId = setInterval(timer, 10 * 1000)
     }
   }
 
@@ -70,7 +81,7 @@ export class JetStreamManager {
     // Jetstream
     this.jetstream = new Jetstream({
       ws: WebSocket,
-      wantedCollections: ['app.bsky.feed.post', 'app.bsky.graph.follow'], // omit to receive all collections
+      wantedCollections: ['app.bsky.feed.post'], // omit to receive all collections
       //wantedDids: ['did:plc:dvej7nvbmmusifxfeund54cz'], // omit to receive events from all dids
     })
 
@@ -81,10 +92,16 @@ export class JetStreamManager {
     )
 
     // Follows
-    this.jetstream.onCreate(
+    /*this.jetstream.onCreate(
       'app.bsky.graph.follow',
       this.handleCreateFollowEvent.bind(this),
-    )
+    )*/
+
+    // Delete
+    /*this.jetstream.onDelete(
+      'app.bsky.feed.post',
+      this.handleDeletePostEvent.bind(this),
+    )*/
 
     if (!this.isAdminMode) {
       this.jetstream.start()
@@ -212,6 +229,8 @@ export class JetStreamManager {
     const botId = process.env.BOT_PUBLISHER_DID
     const author = did
 
+    console.log(botId)
+
     if (record.subject === botId) {
       console.log('BOT got a follow')
       if (this.authorTask.addAuthor(author)) {
@@ -221,6 +240,15 @@ export class JetStreamManager {
       }
     }
   }
+
+  /*async handleDeletePostEvent(event) {
+    await this.db
+      .deleteFrom('post')
+      .where('uri', 'in', [
+        `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
+      ])
+      .execute()
+  }*/
 
   handleBotMessages(
     uri: string,

@@ -62,17 +62,17 @@ export class PointsTask implements ITask {
     //
     const result = await db
       .selectFrom('feed_task')
-      .where('type', '=', 'top_members')
+      .where('type', '=', this.name)
       .selectAll()
       .limit(1)
       .executeTakeFirst()
 
-    const lastRun: number = new Date(result?.lastRun || '').getDate()
+    const lastRun: number = new Date(result?.lastRun || '').getTime()
     const pastTime: number = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
 
     await db
       .insertInto('feed_task')
-      .values([{ type: 'top_members', lastRun: new Date().toISOString() }])
+      .values([{ type: this.name, lastRun: new Date().toISOString() }])
       .onConflict((oc) =>
         oc.column('type').doUpdateSet({
           lastRun: new Date().toISOString(),
