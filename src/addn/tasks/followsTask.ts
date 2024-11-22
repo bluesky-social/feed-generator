@@ -38,7 +38,10 @@ export class FollowsTask implements ITask {
       await getListMembers(list, agent)
 
     followers.data.followers.forEach((member) => {
-      if (!listMembers.members.includes(member.did)) {
+      if (
+        !listMembers.members.includes(member.did) &&
+        !this.newMembers.includes(member.did)
+      ) {
         this.newMembers.push(member.did)
       }
     })
