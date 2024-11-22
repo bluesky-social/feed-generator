@@ -70,7 +70,7 @@ async function sendWelcomeMessage(
   //const ctx = canvas.getContext('2d')
 
   // Get Random base image
-  const randomImg = Math.floor(Math.random() * 4) + 1
+  const randomImg = Math.floor(Math.random() * 7) + 1
   image1 = await loadImage(`images/bey-welcome${randomImg}.png`)
 
   if (avatar) {
