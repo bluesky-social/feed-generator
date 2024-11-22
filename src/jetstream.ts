@@ -102,12 +102,16 @@ export class JetStreamManager {
       this.handleDeletePostEvent.bind(this),
     )*/
 
-    if (!this.isAdminMode) {
+    if (this.isAdminMode) {
       this.jetstream.start()
     }
   }
 
-  async handleCreatePostEvent({ commit: { record, rkey, cid }, did }) {
+  async handleCreatePostEvent(event) {
+    const {
+      commit: { record, rkey, cid },
+      did,
+    } = event
     const botId = process.env.BOT_PUBLISHER_DID
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     const author: string = did
@@ -193,6 +197,8 @@ export class JetStreamManager {
     }
 
     if (!match) return
+
+    console.log(event)
 
     const post = {
       uri,
