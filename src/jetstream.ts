@@ -204,7 +204,7 @@ export class JetStreamManager {
     const post = {
       uri,
       cid: cid,
-      indexedAt: new Date().toISOString(),
+      indexedAt: record.createdAt,
     }
 
     console.log('Committing message to DB: ', post)
