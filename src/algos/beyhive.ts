@@ -8,7 +8,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   const pinned = await ctx.db
     .selectFrom('post')
     .selectAll()
-    .where('pinned', '==', true)
+    .where('pinned', '=', true)
     .limit(1)
     .executeTakeFirst()
 
@@ -24,7 +24,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   }
   const res = await builder.execute()
 
-  const feed = res.map((row) => ({
+  let feed = res.map((row) => ({
     post: row.uri,
   }))
 
