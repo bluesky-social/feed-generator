@@ -61,9 +61,8 @@ export class JetStreamManager {
 
     // Follows timer
     const timer = async () => {
-      var selectedMember = this.followsTask.newMembers.shift()
-
       if (this.followsTask.newMembers.length > 0) {
+        var selectedMember = this.followsTask.newMembers.shift()
         if (this.authorTask.addAuthor(selectedMember)) {
           this.newMemberTask.addMember({
             author: selectedMember,
