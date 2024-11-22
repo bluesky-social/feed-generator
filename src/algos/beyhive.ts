@@ -31,7 +31,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   }))
 
   if (pinned) {
-    feed.unshift({
+    feed.push({
       post: pinned.uri,
     })
   }
