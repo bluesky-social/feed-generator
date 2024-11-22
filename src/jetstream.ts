@@ -50,7 +50,7 @@ export class JetStreamManager {
   runTasks(agent: BskyAgent) {
     this.authorTask.run(1 * 60 * 1000, agent)
     this.newMemberTask.run(2 * 1000, agent)
-    this.followsTask.run(1 * 60 * 1000, agent, this.db)
+    this.followsTask.run(2 * 60 * 1000, agent, this.db)
 
     if (!this.isAdminMode) {
       this.bannedTask.run(10 * 60 * 1000, agent)
@@ -230,6 +230,7 @@ export class JetStreamManager {
     return
   }
 
+  /*
   async handleCreateFollowEvent({ commit: { record, rkey }, did }) {
     const botId = process.env.BOT_PUBLISHER_DID
     const author = did
@@ -245,6 +246,7 @@ export class JetStreamManager {
       }
     }
   }
+  */
 
   /*async handleDeletePostEvent(event) {
     await this.db
