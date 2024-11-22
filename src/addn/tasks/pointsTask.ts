@@ -7,6 +7,7 @@ import { Database } from '../../db/index.js'
 export class PointsTask implements ITask {
   public name = 'top_members'
   private periodicIntervalId: NodeJS.Timer | undefined
+  private db: Database
 
   // create a worker pool using an external worker script
   private __dirname = path.resolve(path.dirname(''))
@@ -15,6 +16,8 @@ export class PointsTask implements ITask {
   )
 
   public run = (interval: number, agent: BskyAgent, db: Database) => {
+    this.db = db
+
     const timer = async () => {
       const shouldRunTask: boolean = await this.checkTask(db)
       if (shouldRunTask) {
@@ -50,6 +53,17 @@ export class PointsTask implements ITask {
     let currentPool = this.pool
     return currentPool
       .exec('postTopMembers', [taskSession])
+      .then(async () => {
+        await this.db
+          .insertInto('feed_task')
+          .values([{ type: this.name, lastRun: new Date().toISOString() }])
+          .onConflict((oc) =>
+            oc.column('type').doUpdateSet({
+              lastRun: new Date().toISOString(),
+            }),
+          )
+          .execute()
+      })
       .catch(function (err) {
         console.error(err)
       })
@@ -69,16 +83,6 @@ export class PointsTask implements ITask {
 
     const lastRun: number = new Date(result?.lastRun || '').getTime()
     const pastTime: number = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
-
-    await db
-      .insertInto('feed_task')
-      .values([{ type: this.name, lastRun: new Date().toISOString() }])
-      .onConflict((oc) =>
-        oc.column('type').doUpdateSet({
-          lastRun: new Date().toISOString(),
-        }),
-      )
-      .execute()
 
     return lastRun < pastTime
   }
