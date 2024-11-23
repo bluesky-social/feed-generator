@@ -73,10 +73,7 @@ async function postTopMembers(
 
   // Setup Database
   dotenv.config()
-  const db: Database = createDb(
-    process.env.FEEDGEN_DB_LOCATION || '',
-    process.env.CA_CERT || '',
-  )
+  const db: Database = createDb(process.env.FEEDGEN_DB_LOCATION || '')
 
   // Get top members
   const topMembers: MemberPoints[] = await getTopMembers(db)

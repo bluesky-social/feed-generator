@@ -10,7 +10,6 @@ const run = async () => {
     port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
     listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost',
     dbLocation: maybeStr(process.env.FEEDGEN_DB_LOCATION) ?? ':memory:',
-    dbCert: maybeStr(process.env.CA_CERT) ?? '',
     subscriptionEndpoint:
       maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ??
       'wss://bsky.network',
