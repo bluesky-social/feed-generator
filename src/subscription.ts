@@ -87,7 +87,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       await this.db.insertInto('post').ignore().values(createPosts).execute()
     }
     if (createPostTags.length > 0) {
-      console.log(createPostTags)
       await this.db
         .insertInto('post_tag')
         .ignore()
