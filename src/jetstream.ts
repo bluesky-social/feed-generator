@@ -145,9 +145,9 @@ export class JetStreamManager {
     }
 
     // Check if this is a reply (if it is, don't process)
-    if (record.hasOwnProperty('reply')) {
-      return
-    }
+    //if (record.hasOwnProperty('reply')) {
+    //  return
+    //}
 
     if (
       !this.authorTask.Authors.includes(author) &&
@@ -206,7 +206,7 @@ export class JetStreamManager {
     if (isMember && author !== botId) {
       await this.db
         .insertInto('member_points')
-        .values([{ did: author, points: 0, dailyPoints: 1 }])
+        .values([{ did: author, points: 1, dailyPoints: 1 }])
         .onConflict((oc) =>
           oc.column('did').doUpdateSet({
             points: (eb) => eb('member_points.points', '+', 1),
