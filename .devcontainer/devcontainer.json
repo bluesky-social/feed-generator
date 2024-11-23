@@ -26,7 +26,7 @@
   //"postCreateCommand": "yarn install",
   "customizations": {
     "vscode": {
-      "extensions": ["esbenp.prettier-vscode"]
+      "extensions": ["esbenp.prettier-vscode", "github.vscode-github-actions"]
     }
   }
 
