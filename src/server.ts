@@ -35,7 +35,7 @@ export class FeedGenerator {
 
   static create(cfg: Config) {
     const app = express()
-    const db = createDb(cfg.dbLocation)
+    const db = createDb(cfg.dbLocation, cfg.dbCert)
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
     const jetstream = new JetStreamManager()
 

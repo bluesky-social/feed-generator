@@ -12,6 +12,7 @@ export type Config = {
   listenhost: string
   hostname: string
   dbLocation: string
+  dbCert: string
   subscriptionEndpoint: string
   serviceDid: string
   publisherDid: string

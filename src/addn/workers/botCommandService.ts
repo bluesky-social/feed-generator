@@ -81,7 +81,10 @@ async function processBotCommand(
 
   // Setup Database
   dotenv.config()
-  const db: Database = createDb(process.env.FEEDGEN_DB_LOCATION || '')
+  const db: Database = createDb(
+    process.env.FEEDGEN_DB_LOCATION || '',
+    process.env.CA_CERT || '',
+  )
 
   // Get agent
   const agent: BskyAgent = buildAgent(taskSession)
