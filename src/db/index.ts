@@ -1,21 +1,32 @@
 import dotenv from 'dotenv'
-import { Kysely, Migrator, MysqlDialect } from 'kysely'
+import { Kysely, Migrator, MysqlDialect, PostgresDialect } from 'kysely'
 import { createPool } from 'mysql2'
 import { DatabaseSchema } from './schema'
 import { migrationProvider } from './migrations'
+import { Pool } from 'pg'
 import path from 'path'
 
 const envPath = path.resolve(__dirname, '../../.env.local')
 dotenv.config({ path: envPath })
 
-const dialect = new MysqlDialect({
-  pool: createPool(process.env.DATABASE_URL ?? ''),
-})
-
 export const createDb = async (): Promise<Database> => {
-  return new Kysely<DatabaseSchema>({
-    dialect,
-  })
+  if (process.env.PG_DATABASE_URL) {
+    const pg_dialect = new PostgresDialect({
+      pool: new Pool({
+        connectionString: process.env.PG_DATABASE_URL,
+      }),
+    })
+    return new Kysely<DatabaseSchema>({
+      dialect: pg_dialect,
+    })
+  } else {
+    const dialect = new MysqlDialect({
+      pool: createPool(process.env.DATABASE_URL ?? ''),
+    })
+    return new Kysely<DatabaseSchema>({
+      dialect,
+    })
+  }
 }
 
 export const migrateToLatest = async (db: Database) => {
