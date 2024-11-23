@@ -3,46 +3,95 @@ import {
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
+import { uniqBy } from 'lodash'
+import {
+  filterAndMap as filterAndMapTTRPG,
+  shortname as ttrpgShortname,
+} from './algos/ttrpg'
+import {
+  filterAndMap as filterAndMapCritRoleSpoiler,
+  shortname as critRoleSpoilerShortname,
+} from './algos/critrole-spoilers'
+import {
+  filterAndMap as filterAndMapTTRPGIntro,
+  shortname as ttrpgIntroShortname,
+} from './algos/ttrpg-intro'
+import {
+  filterAndMap as filterAndMapItch,
+  shortname as itchShortname,
+} from './algos/itch'
+// import { filterAndMap as filterAndMapTTRPGTest } from './algos/ttrpg-testing'
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
-
     const ops = await getOpsByType(evt)
 
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
-    const postsToCreate = ops.posts.creates
-      .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
-      })
-      .map((create) => {
-        // map alf-related posts to a db row
-        return {
-          uri: create.uri,
-          cid: create.cid,
-          indexedAt: new Date().toISOString(),
-        }
-      })
+    const ttrpgCreatePosts = filterAndMapTTRPG(ops.posts.creates)
+    const critRoleSpoilerCreatePosts = filterAndMapCritRoleSpoiler(
+      ops.posts.creates,
+    )
+    const ttrpgIntroCreatePosts = filterAndMapTTRPGIntro(ops.posts.creates)
+    const itchCreatePosts = filterAndMapItch(ops.posts.creates)
+
+    const ttrpgPostTags = ttrpgCreatePosts.map((post) => ({
+      post_uri: post.uri,
+      tag: ttrpgShortname,
+      indexedAt: post.indexedAt,
+    }))
+    const critRoleSpoilerPostTags = critRoleSpoilerCreatePosts.map((post) => ({
+      post_uri: post.uri,
+      tag: critRoleSpoilerShortname,
+      indexedAt: post.indexedAt,
+    }))
+    const ttrpgIntroPostTags = ttrpgIntroCreatePosts.map((post) => ({
+      post_uri: post.uri,
+      tag: ttrpgIntroShortname,
+      indexedAt: post.indexedAt,
+    }))
+    const itchPostTags = itchCreatePosts.map((post) => ({
+      post_uri: post.uri,
+      tag: itchShortname,
+      indexedAt: post.indexedAt,
+    }))
+    // const ttrpgTestCreatePosts = filterAndMapTTRPGTest(ops.posts.creates)
 
     if (postsToDelete.length > 0) {
       await this.db
         .deleteFrom('post')
         .where('uri', 'in', postsToDelete)
         .execute()
-    }
-    if (postsToCreate.length > 0) {
       await this.db
-        .insertInto('post')
-        .values(postsToCreate)
-        .onConflict((oc) => oc.doNothing())
+        .deleteFrom('post_tag')
+        .where('post_uri', 'in', postsToDelete)
+        .execute()
+    }
+    const createPosts = uniqBy(
+      [
+        ...ttrpgCreatePosts,
+        ...critRoleSpoilerCreatePosts,
+        ...ttrpgIntroCreatePosts,
+        ...itchCreatePosts,
+      ],
+      'uri',
+    )
+    const createPostTags = [
+      ...ttrpgPostTags,
+      ...critRoleSpoilerPostTags,
+      ...ttrpgIntroPostTags,
+      ...itchPostTags,
+    ]
+
+    if (createPosts.length > 0) {
+      await this.db.insertInto('post').ignore().values(createPosts).execute()
+    }
+    if (createPostTags.length > 0) {
+      console.log(createPostTags)
+      await this.db
+        .insertInto('post_tag')
+        .ignore()
+        .values(createPostTags)
         .execute()
     }
   }

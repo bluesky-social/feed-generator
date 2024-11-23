@@ -1,13 +1,20 @@
-import SqliteDb from 'better-sqlite3'
-import { Kysely, Migrator, SqliteDialect } from 'kysely'
+import dotenv from 'dotenv'
+import { Kysely, Migrator, MysqlDialect } from 'kysely'
+import { createPool } from 'mysql2'
 import { DatabaseSchema } from './schema'
 import { migrationProvider } from './migrations'
+import path from 'path'
 
-export const createDb = (location: string): Database => {
+const envPath = path.resolve(__dirname, '../../.env.local')
+dotenv.config({ path: envPath })
+
+const dialect = new MysqlDialect({
+  pool: createPool(process.env.DATABASE_URL ?? ''),
+})
+
+export const createDb = async (): Promise<Database> => {
   return new Kysely<DatabaseSchema>({
-    dialect: new SqliteDialect({
-      database: new SqliteDb(location),
-    }),
+    dialect,
   })
 }
 

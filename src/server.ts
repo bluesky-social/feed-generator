@@ -29,9 +29,9 @@ export class FeedGenerator {
     this.cfg = cfg
   }
 
-  static create(cfg: Config) {
+  static async create(cfg: Config) {
     const app = express()
-    const db = createDb(cfg.sqliteLocation)
+    const db = await createDb()
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
 
     const didCache = new MemoryCache()
@@ -57,6 +57,10 @@ export class FeedGenerator {
     describeGenerator(server, ctx)
     app.use(server.xrpc.router)
     app.use(wellKnown(ctx))
+
+    app.get('/', (req, res) => {
+      res.send('Hello TTRPG!')
+    })
 
     return new FeedGenerator(app, db, firehose, cfg)
   }
