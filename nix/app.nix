@@ -3,6 +3,7 @@
   yarn2nix-moretea,
   stdenv,
   inputs,
+  nodejs-slim_22,
 }:
 let
   inherit (inputs) nix-filter;
@@ -33,7 +34,7 @@ yarn2nix-moretea.mkYarnPackage {
     mv deps/feed-generator/package.json $out/bin
     cat <<ENTRYPOINT > $out/bin/entrypoint
     #!${stdenv.shell}
-    node $out/bin/dist/index.js
+    ${nodejs-slim_22}/bin/node $out/bin/dist/index.js
     ENTRYPOINT
     chmod +x $out/bin/entrypoint
   '';
