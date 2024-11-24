@@ -28,11 +28,13 @@ export class JetStreamManager {
   private db: Database
   private isAdminMode: boolean
   public jetstream: Jetstream
+  private botId: string
 
   // Init
   async init(db: Database, isAdminMode: boolean) {
     this.db = db
     this.isAdminMode = isAdminMode
+    this.botId = process.env.BOT_PUBLISHER_DID || ''
 
     // Login Agent
     const agent = new BskyAgent({ service: 'https://bsky.social' })
@@ -94,7 +96,6 @@ export class JetStreamManager {
       commit: { record, rkey, cid },
       did,
     } = event
-    const botId = process.env.BOT_PUBLISHER_DID
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     const author: string = did
     let hashtags: any[] = []
@@ -132,7 +133,7 @@ export class JetStreamManager {
     }
 
     // Hide new member posts from bot
-    if (author == botId && hashtags.includes('#newmember')) {
+    if (author == this.botId && hashtags.includes('#newmember')) {
       return
     }
 
@@ -203,7 +204,7 @@ export class JetStreamManager {
       .execute()
 
     // Increment points for members
-    if (isMember && author !== botId) {
+    if (isMember && author !== this.botId) {
       await this.db
         .insertInto('member_points')
         .values([{ did: author, points: 1, dailyPoints: 1 }])
@@ -219,14 +220,11 @@ export class JetStreamManager {
   }
 
   async handleCreateFollowEvent({ commit: { record }, did }) {
-    const botId = process.env.BOT_PUBLISHER_DID
-    const author = did
-
-    if (record.subject === botId) {
+    if (record.subject === this.botId) {
       console.log('BOT got a follow')
-      if (this.authorTask.addAuthor(author)) {
+      if (this.authorTask.addAuthor(did)) {
         this.newMemberTask.addMember({
-          author,
+          author: did,
         })
       }
     }
@@ -248,13 +246,11 @@ export class JetStreamManager {
     did: string,
     hashtags: any[],
   ) {
-    const botId = process.env.BOT_PUBLISHER_DID
-
     // Don't process if the bot has sent a command to itself
-    if (did == botId) return
+    if (did == this.botId) return
 
     // Check which command was sent (and how it was sent)
-    if (record.reply?.parent?.uri?.includes(`at://${botId}`)) {
+    if (record.reply?.parent?.uri?.includes(`at://${this.botId}`)) {
       // Is a bot reply
       console.log('BOT got a reply')
 
@@ -279,12 +275,12 @@ export class JetStreamManager {
       }
     } else if (
       this.is('app.bsky.embed.record', record.embed) &&
-      record.embed.record.uri.includes(`at://${botId}`)
+      record.embed.record.uri.includes(`at://${this.botId}`)
     ) {
       // Is a bot quote
     } else if (
       this.is('app.bsky.embed.recordWithMedia', record.embed) &&
-      record.embed.record.record.uri.includes(`at://${botId}`)
+      record.embed.record.record.uri.includes(`at://${this.botId}`)
     ) {
       // Is a bot quote
     } else if (
@@ -292,7 +288,7 @@ export class JetStreamManager {
         facet.features.some(
           (feature) =>
             this.is('app.bsky.richtext.facet#mention', feature) &&
-            feature.did === botId,
+            feature.did === this.botId,
         ),
       )
     ) {
