@@ -19,7 +19,6 @@ export class AuthorTask implements ITask {
   public run = (interval: number, agent: BskyAgent) => {
     const timer = async () => {
       try {
-        console.log('Authors Task: running now')
         // Get Authors
         const { members, uriMap } = await this.getAuthors(agent)
         this.Authors = members
@@ -44,7 +43,6 @@ export class AuthorTask implements ITask {
   public addAuthor = (author: string): boolean => {
     if (this.AuthorsToAdd.includes(author)) return false
     if (this.Authors.includes(author)) return false
-    console.log('Author: adding author = ', author)
     this.AuthorsToAdd.push(author)
     return true
   }
@@ -72,6 +70,7 @@ export class AuthorTask implements ITask {
       this.AuthorsToAdd.map(async (author, index) => {
         await addListMembers(list, agent, author)
         this.AuthorsToAdd.splice(index, 1)
+        console.log('Author: added author = ', author)
       }),
     )
   }

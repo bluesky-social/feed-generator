@@ -6,13 +6,19 @@ import { getListMembers } from '../listMethods.js'
 export class FollowsTask implements ITask {
   public name = 'follows'
   private periodicIntervalId: NodeJS.Timer | undefined
-  public newMembers: any[] = []
+  public newFollowers: any[] = []
 
   public run = (interval: number, agent: BskyAgent, db: Database) => {
     const timer = async () => {
-      console.log('Followers Task: running now')
       try {
-        await this.getNewFollowers(db, agent)
+        if (this.newFollowers.length > 0) {
+          const uri = await this.followNewMember(
+            db,
+            agent,
+            this.newFollowers.shift(),
+          )
+          console.log(`Followers Task: followed - `, uri)
+        }
       } catch (e) {
         console.log(
           `Followers Task: error running periodic task - ${e.message}`,
@@ -25,26 +31,19 @@ export class FollowsTask implements ITask {
     }
   }
 
-  public async getNewFollowers(db: Database, agent: BskyAgent): Promise<void> {
-    const botId: string = process.env.BOT_PUBLISHER_DID || ''
+  public follow = (author: string) => {
+    if (this.newFollowers.includes(author)) return false
+    this.newFollowers.push(author)
+  }
 
-    const followers = await agent.getFollowers({
-      actor: botId,
-      limit: 50,
-    })
+  public async followNewMember(
+    db: Database,
+    agent: BskyAgent,
+    member: string,
+  ): Promise<string> {
+    const { uri } = await agent.follow(member)
 
-    const list: string = `${process.env.BEYHIVE_FEED_LIST}`
-    const listMembers: { members: string[]; uriMap: any[] } =
-      await getListMembers(list, agent)
-
-    followers.data.followers.forEach((member) => {
-      if (
-        !listMembers.members.includes(member.did) &&
-        !this.newMembers.includes(member.did)
-      ) {
-        this.newMembers.push(member.did)
-      }
-    })
+    return uri
   }
 
   public checkTask: (db: Database) => Promise<boolean>
