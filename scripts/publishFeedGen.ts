@@ -3,17 +3,17 @@ import { AtpAgent, BlobRef } from '@atproto/api'
 import fs from 'fs/promises'
 import { ids } from '../src/lexicon/lexicons'
 import path from 'path'
-// import { shortname as ttrpgShortname } from '../src/algos/ttrpg'
-import { shortname as ttrpgShortname } from '../src/algos/ttrpg-testing'
-// import { shortname as ttrpgIntroShortName } from '../src/algos/ttrpg-intro'
-// import { shortname as critRoleSpoilerShortname } from '../src/algos/critrole-spoilers'
-// import { shortname as itchShortname } from '../src/algos/itch'
+import { shortname as ttrpgShortname } from '../src/algos/ttrpg'
+import { shortname as ttrpgTestingShortname } from '../src/algos/ttrpg-testing'
+import { shortname as ttrpgIntroShortName } from '../src/algos/ttrpg-intro'
+import { shortname as critRoleSpoilerShortname } from '../src/algos/critrole-spoilers'
+import { shortname as itchShortname } from '../src/algos/itch'
 
 const envPath = path.resolve(__dirname, '../.env.local')
 
 const feeds = [
   {
-    recordName: ttrpgShortname,
+    recordName: ttrpgTestingShortname,
     displayName: 'TTRPG Folks Testing',
     description: `testing the TTRPG Folks feed
 you don't wanna follow this one`,

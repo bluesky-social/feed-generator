@@ -9,6 +9,7 @@ import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 import { AppContext, Config } from './config'
 import wellKnown from './well-known'
+import { handler as testingHandler } from './algos/ttrpg-testing'
 
 export class FeedGenerator {
   public app: express.Application
@@ -60,6 +61,14 @@ export class FeedGenerator {
 
     app.get('/', (req, res) => {
       res.send('Hello TTRPG!')
+    })
+
+    app.get('/algo/testing', async (req, res) => {
+      const { feed } = await testingHandler(ctx, {
+        limit: 30,
+        feed: 'at://did:plc:iuk433sj23ncu2oo2pfnw7fw/app.bsky.feed.generator/ttrpgfolkstest',
+      })
+      res.json(feed)
     })
 
     return new FeedGenerator(app, db, firehose, cfg)
