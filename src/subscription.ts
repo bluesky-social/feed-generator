@@ -84,12 +84,16 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     ]
 
     if (createPosts.length > 0) {
-      await this.db.insertInto('post').ignore().values(createPosts).execute()
+      await this.db
+        .insertInto('post')
+        // .onConflict((oc) => oc.column('uri').doNothing())
+        .values(createPosts)
+        .execute()
     }
     if (createPostTags.length > 0) {
       await this.db
         .insertInto('post_tag')
-        .ignore()
+        // .onConflict((oc) => oc.column('post_uri').doNothing())
         .values(createPostTags)
         .execute()
     }
