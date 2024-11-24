@@ -15,15 +15,22 @@ const feeds = [
   {
     recordName: ttrpgShortname,
     displayName: 'TTRPG Folks Testing',
-    description: `A comprehensive feed of TTRPG posts!
-🎉 Filters out Critical Role Spoilers!
-⚔️ Tons of terms matching games and systems, large and small!
-🏆 Matches for Ennies, a bunch of APs, and lots of creators.
-❌ Opt out with #nofeed or #nottrpgfeed.
-Have a request? Hit up @lich.dad!
-`,
+    description: `testing the TTRPG Folks feed
+you don't wanna follow this one`,
     avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
   },
+  //   {
+  //     recordName: ttrpgShortname,
+  //     displayName: 'TTRPG Folks Testing',
+  //     description: `A comprehensive feed of TTRPG posts!
+  // 🎉 Filters out Critical Role Spoilers!
+  // ⚔️ Tons of terms matching games and systems, large and small!
+  // 🏆 Matches for Ennies, a bunch of APs, and lots of creators.
+  // ❌ Opt out with #nofeed or #nottrpgfeed.
+  // Have a request? Hit up @lich.dad!
+  // `,
+  //     avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
+  //   },
   //   {
   //     recordName: ttrpgIntroShortName,
   //     displayName: 'TTRPG Intros',
