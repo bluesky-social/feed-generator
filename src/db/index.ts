@@ -10,10 +10,13 @@ const envPath = path.resolve(__dirname, '../../.env.local')
 dotenv.config({ path: envPath })
 
 export const createDb = async (): Promise<Database> => {
-  if (process.env.PG_DATABASE_URL) {
+  if (process.env.PG_DATABASE) {
     const pg_dialect = new PostgresDialect({
       pool: new Pool({
-        connectionString: process.env.PG_DATABASE_URL,
+        database: process.env.PG_DATABASE,
+        user: process.env.PG_USER,
+        password: process.env.PG_PASS,
+        host: process.env.PG_HOST,
       }),
     })
     return new Kysely<DatabaseSchema>({
