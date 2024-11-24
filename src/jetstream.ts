@@ -190,7 +190,7 @@ export class JetStreamManager {
       pinned: false,
     }
 
-    console.log('Committing message to DB: ', post)
+    console.log('Committing message to DB: ', post.uri)
 
     // Don't commit to DB in admin mode
     if (this.isAdminMode) {
