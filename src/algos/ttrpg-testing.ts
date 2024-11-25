@@ -152,8 +152,9 @@ const pinnedMessage = ''
 export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
-    .selectAll()
-    .where('tag', '=', ttrpg.shortname)
+    .innerJoin('post_tag', 'post_tag.post_uri', 'post.uri')
+    .where('post_tag.tag', '=', ttrpg.shortname)
+    .selectAll('post')
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)
