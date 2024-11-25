@@ -6,20 +6,10 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
-    {
-      "src": "/.well-known/did.json",
-      "dest": "/index.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.ts"
-    }
-  ],
-  {
   "rewrites": [
-    { "source": "/.well-known/did.json", "destination": "/api/well-known-did" }
+    {
+      "source": "/.well-known/did.json",
+      "destination": "/api/well-known-did"
+    }
   ]
-}
-
 }
