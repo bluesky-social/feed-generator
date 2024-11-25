@@ -15,5 +15,11 @@
       "src": "/(.*)",
       "dest": "/index.ts"
     }
+  ],
+  {
+  "rewrites": [
+    { "source": "/.well-known/did.json", "destination": "/api/well-known-did" }
   ]
+}
+
 }
