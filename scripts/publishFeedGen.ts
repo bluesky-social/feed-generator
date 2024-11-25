@@ -12,46 +12,46 @@ import { shortname as itchShortname } from '../src/algos/itch'
 const envPath = path.resolve(__dirname, '../.env.local')
 
 const feeds = [
-  {
-    recordName: ttrpgTestingShortname,
-    displayName: 'TTRPG Folks Testing',
-    description: `testing the TTRPG Folks feed
-you don't wanna follow this one`,
-    avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
-  },
   //   {
-  //     recordName: ttrpgShortname,
+  //     recordName: ttrpgTestingShortname,
   //     displayName: 'TTRPG Folks Testing',
-  //     description: `A comprehensive feed of TTRPG posts!
-  // 🎉 Filters out Critical Role Spoilers!
-  // ⚔️ Tons of terms matching games and systems, large and small!
-  // 🏆 Matches for Ennies, a bunch of APs, and lots of creators.
-  // ❌ Opt out with #nofeed or #nottrpgfeed.
-  // Have a request? Hit up @lich.dad!
-  // `,
+  //     description: `testing the TTRPG Folks feed
+  // you don't wanna follow this one`,
   //     avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
   //   },
-  //   {
-  //     recordName: ttrpgIntroShortName,
-  //     displayName: 'TTRPG Intros',
-  //     description: `A feed of introductions in the TTRPG space! Use #TTRPGIntro to post yours!`,
-  //     avatar: path.resolve(__dirname, '../images/introAvatar.png'),
-  //   },
-  //   {
-  //     recordName: critRoleSpoilerShortname,
-  //     displayName: 'Critical Role Spoilers',
-  //     description: `A feed of posts talking about Critical Role spoilers!
-  // Something not working? Reach out to @lich.dad.
-  // To use, add "critical role spoiler" or #critrolespoiler to your posts.`,
-  //     avatar: path.resolve(__dirname, '../images/critRoleSpoilerAvatar.png'),
-  //   },
-  //   {
-  //     recordName: itchShortname,
-  //     displayName: 'Itch.io',
-  //     description: `A feed matching any post with an itch.io link!
-  // `,
-  //     avatar: path.resolve(__dirname, '../images/itchAvatar.png'),
-  //   },
+  {
+    recordName: ttrpgShortname,
+    displayName: 'TTRPG Folks',
+    description: `A comprehensive feed of TTRPG posts!
+  🎉 Filters out Critical Role Spoilers!
+  ⚔️ Tons of terms matching games and systems, large and small!
+  🏆 Matches for Ennies, a bunch of APs, and lots of creators.
+  ❌ Opt out with #nofeed or #nottrpgfeed.
+  Have a request? Hit up @lich.dad!
+  `,
+    avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
+  },
+  {
+    recordName: ttrpgIntroShortName,
+    displayName: 'TTRPG Intros',
+    description: `A feed of introductions in the TTRPG space! Use #TTRPGIntro to post yours!`,
+    avatar: path.resolve(__dirname, '../images/introAvatar.png'),
+  },
+  {
+    recordName: critRoleSpoilerShortname,
+    displayName: 'Critical Role Spoilers',
+    description: `A feed of posts talking about Critical Role spoilers!
+  Something not working? Reach out to @lich.dad.
+  To use, add "critical role spoiler" or #critrolespoiler to your posts.`,
+    avatar: path.resolve(__dirname, '../images/critRoleSpoilerAvatar.png'),
+  },
+  {
+    recordName: itchShortname,
+    displayName: 'Itch.io',
+    description: `A feed matching any post with an itch.io link!
+  `,
+    avatar: path.resolve(__dirname, '../images/itchAvatar.png'),
+  },
 ].reverse()
 
 const run = async () => {
