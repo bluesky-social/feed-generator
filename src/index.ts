@@ -2,12 +2,11 @@ import dotenv from 'dotenv';
 import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
-import { Kysely, SqliteDialect } from 'kysely'; // Import Kysely and SqliteDialect
+import { Database } from 'kysely'; // Use Kysely for DB
 import { DidResolver } from '@atproto/identity'; 
-import { BskyAgent } from '@atproto/api'; // Add BskyAgent import if you're using this for interaction
-import sqlite3 from 'sqlite3'; // SQLite driver for Kysely
+import { BskyAgent } from '@atproto/api'; // Add BskyAgent import for Bluesky interactions
 
-// Define the AppContext type if not already defined
+// Define the AppContext type to include agent
 interface AppContext {
   cfg: {
     hostname: string;
@@ -19,9 +18,9 @@ interface AppContext {
     publisherDid: string;
     subscriptionReconnectDelay: number;
   };
-  db: Kysely<any>; // Use Kysely type for db
+  db: Database; // Kysely Database instance
   didResolver: DidResolver;
-  agent: BskyAgent;
+  agent: BskyAgent; // Bluesky agent
 }
 
 const run = async () => {
@@ -31,14 +30,10 @@ const run = async () => {
   const hostname = 'example.com'; // Use your specific hostname
   const serviceDid = 'did:web:example.com'; // Use your specific service DID
 
-  // Create Kysely database instance
-  const db = new Kysely({
-    dialect: new SqliteDialect({
-      sqlite: sqlite3, // Pass in the SQLite driver
-      databasePath: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:', // Initialize with the correct DB path
-    }),
-  });
+  // Create the Kysely database instance
+  const db = new Database({ dialect: 'sqlite', database: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:' }); // Kysely DB instance
 
+  // Create instances of DidResolver and BskyAgent
   const didResolver = new DidResolver();
   const agent = new BskyAgent({
     service: 'https://bsky.social',
@@ -49,16 +44,16 @@ const run = async () => {
     cfg: {
       hostname,
       serviceDid,
-      port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000, // Add port
-      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'black-transmen-feed.vercel.app', // Add listenhost
-      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':db.sqlite:', // Add sqliteLocation
-      subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network', // Add subscriptionEndpoint
-      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:plc:upiws74afv3ixs64dwleecmu', // Add publisherDid
-      subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000, // Add subscriptionReconnectDelay
+      port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
+      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'black-transmen-feed.vercel.app',
+      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':db.sqlite:',
+      subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network',
+      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:plc:upiws74afv3ixs64dwleecmu',
+      subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
     },
-    db, // Use Kysely instance here
-    didResolver, // Include the DID resolver
-    agent, // Include the agent instance
+    db, // Kysely database instance
+    didResolver, // DidResolver instance
+    agent, // BskyAgent instance
   };
 
   // Express server setup
@@ -106,3 +101,4 @@ const maybeInt = (val?: string) => {
 };
 
 run();
+
