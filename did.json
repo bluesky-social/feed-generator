@@ -3,7 +3,7 @@
   "id": "did:web:black-transmen-feed.vercel.app",
   "service": [
     {
-      "id": "#bsky_fg",
+      "id": "#black-transmen-feed", 
       "type": "BskyFeedGenerator",
       "serviceEndpoint": "https://black-transmen-feed.vercel.app/xrpc/app.bsky.feed.getFeedSkeleton"
     }
