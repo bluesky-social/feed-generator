@@ -2,62 +2,48 @@ import dotenv from 'dotenv';
 import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
-import { Kysely, SqliteDialect } from 'kysely'; // Correct Kysely import
+import { Kysely, SqliteDialect } from 'kysely'; // Correct import for Kysely
 import { DidResolver } from '@atproto/identity'; 
-import { BskyAgent } from '@atproto/api'; // Add BskyAgent import for Bluesky interactions
+import { BskyAgent } from '@atproto/api'; // Import BskyAgent
 
-// Define the AppContext type to include agent
-interface AppContext {
-  cfg: {
-    hostname: string;
-    serviceDid: string;
-    port: number;
-    listenhost: string;
-    sqliteLocation: string;
-    subscriptionEndpoint: string;
-    publisherDid: string;
-    subscriptionReconnectDelay: number;
-  };
-  db: Kysely<any>; // Kysely database instance
-  didResolver: DidResolver;
-  agent: BskyAgent; // Bluesky agent
-}
+// Ensure your schema is defined for Kysely
+import { DatabaseSchema } from './schema'; // Example import for your DB schema
+
+// Configuration loading
+dotenv.config();
 
 const run = async () => {
-  dotenv.config();
-
   // Get configurations from environment variables or fallback to defaults
   const hostname = 'example.com'; // Use your specific hostname
   const serviceDid = 'did:web:example.com'; // Use your specific service DID
 
-  // Initialize Kysely database instance with SqliteDialect
-  const db = new Kysely<any>({
+  // Create database, DID resolver, and agent instances
+  const db = new Kysely<DatabaseSchema>({
     dialect: new SqliteDialect({
-      database: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:',
+      database: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:', // SQLite DB file or memory DB
     }),
   });
 
-  // Create instances of DidResolver and BskyAgent
   const didResolver = new DidResolver();
   const agent = new BskyAgent({
     service: 'https://bsky.social',
   });
 
   // Context for well-known route and FeedGenerator
-  const ctx: AppContext = {
+  const ctx = {
     cfg: {
       hostname,
       serviceDid,
-      port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
-      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'black-transmen-feed.vercel.app',
-      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':db.sqlite:',
-      subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network',
-      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:plc:upiws74afv3ixs64dwleecmu',
-      subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
+      port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000, // Add port
+      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost', // Add listenhost
+      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':memory:', // Add sqliteLocation
+      subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network', // Add subscriptionEndpoint
+      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice', // Add publisherDid
+      subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000, // Add subscriptionReconnectDelay
     },
-    db, // Kysely database instance
-    didResolver, // DidResolver instance
-    agent, // BskyAgent instance
+    db, // Include the database instance
+    didResolver, // Include the DID resolver
+    agent, // Include the agent instance
   };
 
   // Express server setup
@@ -79,10 +65,7 @@ const run = async () => {
   try {
     // Start the FeedGenerator service
     await server.start();
-
-    console.log(
-      `🤖 running feed generator at http://${server.cfg.listenhost}:${server.cfg.port}`
-    );
+    console.log(`🤖 running feed generator at http://${server.cfg.listenhost}:${server.cfg.port}`);
 
     // Start the Express server to serve the .well-known route
     app.listen(server.cfg.port, () => {
