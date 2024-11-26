@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "atproto feed generator starter kit",
   "main": "index.js",
-  "repository": "git@github.com:bluesky-social/feed-generator.git",
+  "repository": "https://github.com/bluesky-social/feed-generator.git",
   "author": "dholms <dtholmgren@gmail.com>",
   "license": "MIT",
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
     "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
-    "start": "ts-node src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc"
   },
   "dependencies": {
