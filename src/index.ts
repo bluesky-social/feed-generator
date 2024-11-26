@@ -6,6 +6,23 @@ import Database from 'better-sqlite3'; // Correct import for Database
 import { DidResolver } from '@atproto/identity'; 
 import { BskyAgent } from '@atproto/api'; // Add BskyAgent import if you're using this for interaction
 
+// Define the AppContext type if not already defined
+interface AppContext {
+  cfg: {
+    hostname: string;
+    serviceDid: string;
+    port: number;
+    listenhost: string;
+    sqliteLocation: string;
+    subscriptionEndpoint: string;
+    publisherDid: string;
+    subscriptionReconnectDelay: number;
+  };
+  db: Database;
+  didResolver: DidResolver;
+  agent: BskyAgent;
+}
+
 const run = async () => {
   dotenv.config();
 
@@ -21,7 +38,7 @@ const run = async () => {
   });
 
   // Context for well-known route and FeedGenerator
-  const ctx = {
+  const ctx: AppContext = {
     cfg: {
       hostname,
       serviceDid,
