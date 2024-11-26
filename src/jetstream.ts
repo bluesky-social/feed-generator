@@ -83,10 +83,10 @@ export class JetStreamManager {
     )
 
     // Delete
-    /*this.jetstream.onDelete(
+    this.jetstream.onDelete(
       'app.bsky.feed.post',
       this.handleDeletePostEvent.bind(this),
-    )*/
+    )
 
     this.jetstream.start()
   }
@@ -232,14 +232,14 @@ export class JetStreamManager {
     }
   }
 
-  /*async handleDeletePostEvent(event) {
+  async handleDeletePostEvent(event) {
     await this.db
       .deleteFrom('post')
       .where('uri', 'in', [
         `at://${event.did}/${event.commit.collection}/${event.commit.rkey}`,
       ])
       .execute()
-  }*/
+  }
 
   handleBotMessages(
     uri: string,
