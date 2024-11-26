@@ -26,13 +26,6 @@ const run = async () => {
       },
       {
         type: 'input',
-        name: 'service',
-        message: 'Optionally, enter a custom PDS service to sign in with:',
-        default: 'https://bsky.social',
-        required: false,
-      },
-      {
-        type: 'input',
         name: 'recordName',
         message: 'Enter a short name or the record. This will be shown in the feed\'s URL:',
         required: true,
