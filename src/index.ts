@@ -2,8 +2,9 @@ import dotenv from 'dotenv';
 import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
-import { Database } from 'better-sqlite3';
-import { DidResolver } from '@atproto/identity';
+import Database from 'better-sqlite3'; // Correct import for Database
+import { DidResolver } from '@atproto/identity'; 
+import { BskyAgent } from '@atproto/api'; // Add BskyAgent import if you're using this for interaction
 
 const run = async () => {
   dotenv.config();
@@ -13,18 +14,26 @@ const run = async () => {
   const serviceDid =
     maybeStr(process.env.FEEDGEN_SERVICE_DID) ?? `did:web:${hostname}`;
 
-  // Create database and DID resolver instances
+  // Create database, DID resolver, and agent instances
   const db = new Database(process.env.FEEDGEN_SQLITE_LOCATION || ':memory:');
   const didResolver = new DidResolver();
+  const agent = new BskyAgent(); // Initialize the BskyAgent or your preferred agent
 
-  // Context for well-known route
+  // Context for well-known route and FeedGenerator
   const ctx = {
     cfg: {
       hostname,
       serviceDid,
+      port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000, // Add port
+      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost', // Add listenhost
+      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':memory:', // Add sqliteLocation
+      subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network', // Add subscriptionEndpoint
+      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice', // Add publisherDid
+      subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000, // Add subscriptionReconnectDelay
     },
     db, // Include the database instance
     didResolver, // Include the DID resolver
+    agent, // Include the agent instance
   };
 
   // Express server setup
@@ -33,15 +42,12 @@ const run = async () => {
 
   // FeedGenerator configuration
   const server = FeedGenerator.create({
-    port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
-    listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost',
-    sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':memory:',
-    subscriptionEndpoint:
-      maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network',
-    publisherDid:
-      maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice',
-    subscriptionReconnectDelay:
-      maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
+    port: ctx.cfg.port,
+    listenhost: ctx.cfg.listenhost,
+    sqliteLocation: ctx.cfg.sqliteLocation,
+    subscriptionEndpoint: ctx.cfg.subscriptionEndpoint,
+    publisherDid: ctx.cfg.publisherDid,
+    subscriptionReconnectDelay: ctx.cfg.subscriptionReconnectDelay,
     hostname,
     serviceDid,
   });
