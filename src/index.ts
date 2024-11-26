@@ -15,9 +15,9 @@ const run = async () => {
     maybeStr(process.env.FEEDGEN_SERVICE_DID) ?? `did:web:${hostname}`;
 
   // Create database, DID resolver, and agent instances
-  const db = new Database(process.env.FEEDGEN_SQLITE_LOCATION || ':memory:');
+  const db = new Database(process.env.FEEDGEN_SQLITE_LOCATION || ':memory:'); // Initialize with the correct DB path
   const didResolver = new DidResolver();
-  const agent = new BskyAgent(); // Initialize the BskyAgent or your preferred agent
+  const agent = new BskyAgent({ /* Add config options if needed */ }); // Initialize the BskyAgent
 
   // Context for well-known route and FeedGenerator
   const ctx = {
