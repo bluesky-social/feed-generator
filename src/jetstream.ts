@@ -211,6 +211,7 @@ export class JetStreamManager {
         .onConflict((oc) =>
           oc.column('did').doUpdateSet({
             points: (eb) => eb('member_points.points', '+', 1),
+            dailyPoints: (eb) => eb('member_points.dailyPoints', '+', 1),
           }),
         )
         .execute()

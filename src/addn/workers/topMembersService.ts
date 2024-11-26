@@ -86,11 +86,6 @@ async function postTopMembers(
       actor: member.did,
     })
 
-    //const handle = userProfile.data.handle
-    //const avatar = userProfile.data.avatar
-
-    //console.log('Top Member: ', handle)
-
     // Get member avatars
     if (userProfile.data.avatar) {
       avatar = await loadImage(userProfile.data.avatar)
@@ -152,6 +147,9 @@ async function postTopMembers(
 
   await sendPost(agent, rt, data, imgWidth, imgHeight)
 
+  // Reset daily points
+  await resetDailyPoints(db)
+
   return
 }
 
@@ -189,11 +187,24 @@ async function getTopMembers(db: Database): Promise<MemberPoints[]> {
   const results = await db
     .selectFrom('member_points')
     .selectAll()
-    .orderBy('points', 'desc')
+    .orderBy('dailyPoints', 'desc')
     .limit(5)
     .execute()
 
   return results
+}
+
+async function resetDailyPoints(db: Database): Promise<void> {
+  // Get calculated points
+  await db
+    .updateTable('member_points')
+    .set((eb) => ({
+      dailyPoints: 0,
+    }))
+    .where('member_points.dailyPoints', '>', 0)
+    .execute()
+
+  return
 }
 
 // create a worker and register public functions

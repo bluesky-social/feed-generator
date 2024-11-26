@@ -6,7 +6,6 @@ import { createServer } from './lexicon/index.js'
 import feedGeneration from './methods/feed-generation.js'
 import describeGenerator from './methods/describe-generator.js'
 import { createDb, Database, migrateToLatest } from './db/index.js'
-import { FirehoseSubscription } from './subscription.js'
 import { AppContext, Config } from './config.js'
 import wellKnown from './well-known.js'
 import { JetStreamManager } from './jetstream.js'
@@ -15,20 +14,17 @@ export class FeedGenerator {
   public app: express.Application
   public server?: http.Server
   public db: Database
-  public firehose: FirehoseSubscription
   public cfg: Config
   public jetstream: JetStreamManager
 
   constructor(
     app: express.Application,
     db: Database,
-    firehose: FirehoseSubscription,
     cfg: Config,
     jetstream: JetStreamManager,
   ) {
     this.app = app
     this.db = db
-    this.firehose = firehose
     this.cfg = cfg
     this.jetstream = jetstream
   }
@@ -36,7 +32,6 @@ export class FeedGenerator {
   static create(cfg: Config) {
     const app = express()
     const db = createDb(cfg.dbLocation)
-    const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
     const jetstream = new JetStreamManager()
 
     const didCache = new MemoryCache()
@@ -63,12 +58,11 @@ export class FeedGenerator {
     app.use(server.xrpc.router)
     app.use(wellKnown(ctx))
 
-    return new FeedGenerator(app, db, firehose, cfg, jetstream)
+    return new FeedGenerator(app, db, cfg, jetstream)
   }
 
   async start(): Promise<http.Server> {
     await migrateToLatest(this.db)
-    //this.firehose.run(this.cfg.subscriptionReconnectDelay)
     this.jetstream.init(this.db, this.cfg.isAdminMode)
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
