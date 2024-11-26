@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
-import { Database } from 'kysely'; // Use Kysely for DB
+import { Kysely, SqliteDialect } from 'kysely'; // Correct Kysely import
 import { DidResolver } from '@atproto/identity'; 
 import { BskyAgent } from '@atproto/api'; // Add BskyAgent import for Bluesky interactions
 
@@ -18,7 +18,7 @@ interface AppContext {
     publisherDid: string;
     subscriptionReconnectDelay: number;
   };
-  db: Database; // Kysely Database instance
+  db: Kysely<any>; // Kysely database instance
   didResolver: DidResolver;
   agent: BskyAgent; // Bluesky agent
 }
@@ -30,8 +30,12 @@ const run = async () => {
   const hostname = 'example.com'; // Use your specific hostname
   const serviceDid = 'did:web:example.com'; // Use your specific service DID
 
-  // Create the Kysely database instance
-  const db = new Database({ dialect: 'sqlite', database: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:' }); // Kysely DB instance
+  // Initialize Kysely database instance with SqliteDialect
+  const db = new Kysely<any>({
+    dialect: new SqliteDialect({
+      database: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:',
+    }),
+  });
 
   // Create instances of DidResolver and BskyAgent
   const didResolver = new DidResolver();
