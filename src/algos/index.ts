@@ -1,14 +1,14 @@
-import { AppContext } from '../config'
+import { AppContext } from '../config';
 import {
   QueryParams,
   OutputSchema as AlgoOutput,
-} from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
-import * as whatsAlf from './whats-alf'
+} from '../lexicon/types/app/bsky/feed/getFeedSkeleton';
+import * as blackTransmanTransmasc from './blacktransman-transmasc'; // Only import your new algorithm
 
-type AlgoHandler = (ctx: AppContext, params: QueryParams) => Promise<AlgoOutput>
+type AlgoHandler = (ctx: AppContext, params: QueryParams) => Promise<AlgoOutput>;
 
 const algos: Record<string, AlgoHandler> = {
-  [whatsAlf.shortname]: whatsAlf.handler,
-}
+  [blackTransmanTransmasc.shortname]: blackTransmanTransmasc.handler, // Add your algorithm here
+};
 
-export default algos
+export default algos;
