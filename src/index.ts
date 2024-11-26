@@ -3,7 +3,7 @@ import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
 import { Database } from 'better-sqlite3';
-import { DidResolver } from '@atproto/identity'; // Adjust the import if needed
+import { DidResolver } from '@atproto/identity';
 
 const run = async () => {
   dotenv.config();
@@ -46,25 +46,32 @@ const run = async () => {
     serviceDid,
   });
 
-  // Start the FeedGenerator service
-  await server.start();
+  try {
+    // Start the FeedGenerator service
+    await server.start();
 
-  console.log(
-    `🤖 running feed generator at http://${server.cfg.listenhost}:${server.cfg.port}`,
-  );
+    console.log(
+      `🤖 running feed generator at http://${server.cfg.listenhost}:${server.cfg.port}`
+    );
 
-  // Start the Express server to serve the .well-known route
-  app.listen(3000, () => {
-    console.log(`Express server running at http://${hostname}:3000`);
-  });
+    // Start the Express server to serve the .well-known route
+    app.listen(server.cfg.port, () => {
+      console.log(`Express server running at http://${hostname}:${server.cfg.port}`);
+    });
+  } catch (err) {
+    console.error('Error starting server:', err);
+  }
 };
 
 // Helper functions for environment variables
 const maybeStr = (val?: string) => {
-  if (!val) return undefined;
-  return val;
+  return val ? val : undefined;
 };
 
 const maybeInt = (val?: string) => {
   if (!val) return undefined;
-  const int = parse
+  const parsed = parseInt(val, 10);
+  return isNaN(parsed) ? undefined : parsed;
+};
+
+run();
