@@ -26,10 +26,10 @@ const run = async () => {
       hostname,
       serviceDid,
       port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000, // Add port
-      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost', // Add listenhost
-      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':memory:', // Add sqliteLocation
+      listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'black-transmen-feed.vercel.app', // Add listenhost
+      sqliteLocation: maybeStr(process.env.FEEDGEN_SQLITE_LOCATION) ?? ':db.sqlite:', // Add sqliteLocation
       subscriptionEndpoint: maybeStr(process.env.FEEDGEN_SUBSCRIPTION_ENDPOINT) ?? 'wss://bsky.network', // Add subscriptionEndpoint
-      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:example:alice', // Add publisherDid
+      publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:plc:upiws74afv3ixs64dwleecmu', // Add publisherDid
       subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000, // Add subscriptionReconnectDelay
     },
     db, // Include the database instance
