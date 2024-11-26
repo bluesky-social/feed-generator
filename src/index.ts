@@ -17,7 +17,10 @@ const run = async () => {
   // Create database, DID resolver, and agent instances
   const db = new Database(process.env.FEEDGEN_SQLITE_LOCATION || ':memory:'); // Initialize with the correct DB path
   const didResolver = new DidResolver();
-  const agent = new BskyAgent({ /* Add config options if needed */ }); // Initialize the BskyAgent
+  const agent = new BskyAgent({
+    service: 'https://bsky.social',
+});
+
 
   // Context for well-known route and FeedGenerator
   const ctx = {
