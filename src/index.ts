@@ -2,9 +2,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 import makeRouter from './well-known'; // Import your well-known route handler
 import FeedGenerator from './server';
-import Database from 'better-sqlite3'; // Correct import for Database
+import { Kysely, SqliteDialect } from 'kysely'; // Import Kysely and SqliteDialect
 import { DidResolver } from '@atproto/identity'; 
 import { BskyAgent } from '@atproto/api'; // Add BskyAgent import if you're using this for interaction
+import sqlite3 from 'sqlite3'; // SQLite driver for Kysely
 
 // Define the AppContext type if not already defined
 interface AppContext {
@@ -18,7 +19,7 @@ interface AppContext {
     publisherDid: string;
     subscriptionReconnectDelay: number;
   };
-  db: Database;
+  db: Kysely<any>; // Use Kysely type for db
   didResolver: DidResolver;
   agent: BskyAgent;
 }
@@ -30,8 +31,14 @@ const run = async () => {
   const hostname = 'example.com'; // Use your specific hostname
   const serviceDid = 'did:web:example.com'; // Use your specific service DID
 
-  // Create database, DID resolver, and agent instances
-  const db = new Database(process.env.FEEDGEN_SQLITE_LOCATION || ':memory:'); // Initialize with the correct DB path
+  // Create Kysely database instance
+  const db = new Kysely({
+    dialect: new SqliteDialect({
+      sqlite: sqlite3, // Pass in the SQLite driver
+      databasePath: process.env.FEEDGEN_SQLITE_LOCATION || ':memory:', // Initialize with the correct DB path
+    }),
+  });
+
   const didResolver = new DidResolver();
   const agent = new BskyAgent({
     service: 'https://bsky.social',
@@ -49,7 +56,7 @@ const run = async () => {
       publisherDid: maybeStr(process.env.FEEDGEN_PUBLISHER_DID) ?? 'did:plc:upiws74afv3ixs64dwleecmu', // Add publisherDid
       subscriptionReconnectDelay: maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000, // Add subscriptionReconnectDelay
     },
-    db, // Include the database instance
+    db, // Use Kysely instance here
     didResolver, // Include the DID resolver
     agent, // Include the agent instance
   };
