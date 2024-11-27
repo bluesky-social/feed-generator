@@ -29,7 +29,7 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?beyond the wall(\s*:)?(\s*the)?\s*OSR(\s|\W|$)/im,
   /(^|\s)#?old school essentials(\s|\W|$)/im,
   /(^|\s)#?mausritter(\s|\W|$)/im,
-  /(^|\s)#?osric(\s|\W|$)/im,
+  /(^|\s)#?OSRIC(\s|\W|$)/m,
   /(^|\s)#?osr(\s|\W|$)/im,
   /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
   /(^|\s)#?bastionland(\s|\W|$)/im,
@@ -41,8 +41,6 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?Knave(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?Tunnel Goons(\s|\W|$)/im,
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
-  /(^|\s)#?We Deal In Lead(\s|\W|$)/im,
-  /(^|\s)#?CRACK!(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
 ]
 
 
