@@ -1,0 +1,11 @@
+{
+  "@context": "https://www.w3.org/ns/did/v1",
+  "id": "did:web:black-transmen-feed.vercel.app",
+  "service": [
+    {
+      "id": "#black-transmen-feed", 
+      "type": "BskyFeedGenerator",
+      "serviceEndpoint": "https://black-transmen-feed.vercel.app/xrpc/app.bsky.feed.getFeedSkeleton"
+    }
+  ]
+}
