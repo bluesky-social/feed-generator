@@ -1,3 +1,6 @@
+# Database
+.db.sqlite
+
 # Logs
 logs
 *.log
@@ -129,4 +132,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-.db.sqlite
+# intellij
+.idea/
+*.iml
