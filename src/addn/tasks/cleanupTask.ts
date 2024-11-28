@@ -7,7 +7,6 @@ export class CleanupTask implements ITask {
 
   public run = (interval: number, db: Database) => {
     const timer = async () => {
-      console.log('Cleanup Task: running now')
       try {
         // Clean old posts from database
         await this.cleanupOldPosts(db)
