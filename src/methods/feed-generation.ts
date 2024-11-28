@@ -3,7 +3,7 @@ import { Server } from '../lexicon'
 import { AppContext } from '../config'
 import algos from '../algos'
 import { validateAuth } from '../auth'
-import { AtUri } from '@atproto/uri'
+import { AtUri } from '@atproto/syntax'
 
 export default function (server: Server, ctx: AppContext) {
   server.app.bsky.feed.getFeedSkeleton(async ({ params, req }) => {

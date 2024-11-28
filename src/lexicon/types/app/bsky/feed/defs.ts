@@ -12,6 +12,7 @@ import * as AppBskyEmbedRecord from '../embed/record'
 import * as AppBskyEmbedRecordWithMedia from '../embed/recordWithMedia'
 import * as ComAtprotoLabelDefs from '../../../com/atproto/label/defs'
 import * as AppBskyRichtextFacet from '../richtext/facet'
+import * as AppBskyGraphDefs from '../graph/defs'
 
 export interface PostView {
   uri: string
@@ -30,6 +31,7 @@ export interface PostView {
   indexedAt: string
   viewer?: ViewerState
   labels?: ComAtprotoLabelDefs.Label[]
+  threadgate?: ThreadgateView
   [k: string]: unknown
 }
 
@@ -135,6 +137,7 @@ export interface ThreadViewPost {
     | BlockedPost
     | { $type: string; [k: string]: unknown }
   )[]
+  viewer?: ViewerThreadState
   [k: string]: unknown
 }
 
@@ -171,6 +174,7 @@ export function validateNotFoundPost(v: unknown): ValidationResult {
 export interface BlockedPost {
   uri: string
   blocked: true
+  author: BlockedAuthor
   [k: string]: unknown
 }
 
@@ -186,12 +190,47 @@ export function validateBlockedPost(v: unknown): ValidationResult {
   return lexicons.validate('app.bsky.feed.defs#blockedPost', v)
 }
 
+export interface BlockedAuthor {
+  did: string
+  viewer?: AppBskyActorDefs.ViewerState
+  [k: string]: unknown
+}
+
+export function isBlockedAuthor(v: unknown): v is BlockedAuthor {
+  return (
+    isObj(v) &&
+    hasProp(v, '$type') &&
+    v.$type === 'app.bsky.feed.defs#blockedAuthor'
+  )
+}
+
+export function validateBlockedAuthor(v: unknown): ValidationResult {
+  return lexicons.validate('app.bsky.feed.defs#blockedAuthor', v)
+}
+
+export interface ViewerThreadState {
+  canReply?: boolean
+  [k: string]: unknown
+}
+
+export function isViewerThreadState(v: unknown): v is ViewerThreadState {
+  return (
+    isObj(v) &&
+    hasProp(v, '$type') &&
+    v.$type === 'app.bsky.feed.defs#viewerThreadState'
+  )
+}
+
+export function validateViewerThreadState(v: unknown): ValidationResult {
+  return lexicons.validate('app.bsky.feed.defs#viewerThreadState', v)
+}
+
 export interface GeneratorView {
   uri: string
   cid: string
-  did?: string
+  did: string
   creator: AppBskyActorDefs.ProfileView
-  displayName?: string
+  displayName: string
   description?: string
   descriptionFacets?: AppBskyRichtextFacet.Main[]
   avatar?: string
@@ -214,7 +253,6 @@ export function validateGeneratorView(v: unknown): ValidationResult {
 }
 
 export interface GeneratorViewerState {
-  saved?: boolean
   like?: string
   [k: string]: unknown
 }
@@ -264,4 +302,24 @@ export function isSkeletonReasonRepost(v: unknown): v is SkeletonReasonRepost {
 
 export function validateSkeletonReasonRepost(v: unknown): ValidationResult {
   return lexicons.validate('app.bsky.feed.defs#skeletonReasonRepost', v)
+}
+
+export interface ThreadgateView {
+  uri?: string
+  cid?: string
+  record?: {}
+  lists?: AppBskyGraphDefs.ListViewBasic[]
+  [k: string]: unknown
+}
+
+export function isThreadgateView(v: unknown): v is ThreadgateView {
+  return (
+    isObj(v) &&
+    hasProp(v, '$type') &&
+    v.$type === 'app.bsky.feed.defs#threadgateView'
+  )
+}
+
+export function validateThreadgateView(v: unknown): ValidationResult {
+  return lexicons.validate('app.bsky.feed.defs#threadgateView', v)
 }
