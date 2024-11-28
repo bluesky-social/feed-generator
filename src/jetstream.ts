@@ -167,7 +167,7 @@ export class JetStreamManager {
 
     // only beyonce/beyhive posts
     const re =
-      /^(?!.*(beyboons|haghive|hasbeyn)).*\b(beyhive|beyoncé|beyonce|sasha fierce|yonce)\b.*$/imu
+      /^(?!.*(beyboons|haghive|hasbeyn)).*\b(beyhive|beyoncé|beyonce|sasha fierce|yonce|cowboy carter)\b.*$/imu
 
     let match = false
 
