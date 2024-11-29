@@ -39,6 +39,7 @@ jobs:
           TRIGGER_API_URL: ${{ secrets.TRIGGER_API_URL }}
         # deploy with additional flags
         run: |
+          npx trigger.dev@latest login -a https://trigger.darkraven.space
           npx trigger.dev@latest deploy --env staging --self-hosted --push
 
       - name: Dump docker logs on failure
