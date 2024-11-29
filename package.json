@@ -11,6 +11,7 @@
     "publishBeyhive": "tsx scripts/publishBeyhive.ts",
     "publishFeed": "tsx scripts/publishFeedGen.ts",
     "unpublishFeed": "tsx scripts/unpublishFeedGen.ts",
+    "trigger:dev": "npx trigger.dev@latest dev",
     "start": "node --no-warnings ./dist/index.js",
     "build": "tsc && tsc-alias"
   },
@@ -23,6 +24,7 @@
     "@atproto/xrpc-server": "^0.6.3",
     "@jimp/plugin-print": "^1.6.0",
     "@skyware/jetstream": "^0.2.0",
+    "@trigger.dev/sdk": "^3.3.1",
     "better-sqlite3": "^11.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -41,6 +43,7 @@
   "devDependencies": {
     "@atcute/bluesky": "1.0.8",
     "@atcute/client": "^2.0.4",
+    "@trigger.dev/build": "^3.3.1",
     "@types/better-sqlite3": "^7.6.11",
     "@types/express": "^4.17.17",
     "@types/node": "^20.1.2",

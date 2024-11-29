@@ -1,0 +1,42 @@
+name: Build and Push Docker Image to Docker Registry
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  push_to_registry:
+    name: push docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: check repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      # docker setup - part 1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # docker setup - part 2
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.darkraven.space
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_PASSWORD}}
+
+      - name: 🚀 Deploy Trigger.dev
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+          # required when self-hosting
+          TRIGGER_API_URL: ${{ secrets.TRIGGER_API_URL }}
+        # deploy with additional flags
+        run: |
+          npx trigger.dev@latest deploy --self-hosted --push

@@ -1,16 +1,16 @@
 FROM node:20 AS build
 WORKDIR /app
 COPY ./package.json .
-COPY ./yarn.lock .
-RUN yarn install
+COPY ./package-lock.json .
+RUN npm install
 COPY . .
-RUN yarn build
+RUN npm run build
 
 FROM node:20 AS deps
 WORKDIR /app
 COPY --from=build /app/package.json .
-COPY --from=build /app/yarn.lock .
-RUN yarn install --production
+COPY --from=build /app/package-lock.json .
+RUN npm install --production
 
 FROM node:20
 RUN apt-get update && apt-get install -y -q --no-install-recommends libfontconfig1
@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/images ./images
 COPY --from=deps /app/package.json .
-COPY --from=deps /app/yarn.lock .
+COPY --from=deps /app/package-lock.json .
 COPY --from=deps /app/node_modules ./node_modules
 EXPOSE 3000
-CMD ["yarn","start"]
+CMD ["npm","start"]

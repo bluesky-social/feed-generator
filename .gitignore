@@ -140,3 +140,4 @@ dist
 
 #data
 db.sqlite
+.trigger
