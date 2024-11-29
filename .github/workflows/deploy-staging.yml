@@ -9,6 +9,10 @@ jobs:
     name: push docker image to hub
     runs-on: ubuntu-latest
     steps:
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2
+
       - name: check repository
         uses: actions/checkout@v4
 
