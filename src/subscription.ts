@@ -67,24 +67,23 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
-      .filter((create) => {
-        const txt = create.record.text.toLowerCase()
-        return (
-          (matchText.some((term) => txt.includes(term)) ||
-            matchPatterns.some((pattern) => pattern.test(txt)) ||
-            matchUsers.includes(create.author)) &&
-          !bannedUsers.includes(create.author)
-        )
-      })
-      .map((create) => {
-        console.log(`Found post by ${create.author}: ${create.record.text}`)
+  .filter((create) => {
+    const txt = create.record.text.toLowerCase()
+    return (
+      !matchText.some((term) => txt.includes(term)) && // Exclude posts containing matchText terms
+      matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
+      !bannedUsers.includes(create.author) // Exclude posts by banned users
+    )
+  })
+  .map((create) => {
+    console.log(`Found post by ${create.author}: ${create.record.text}`)
 
-        return {
-          uri: create.uri,
-          cid: create.cid,
-          indexedAt: new Date().toISOString(),
-        }
-      })
+    return {
+      uri: create.uri,
+      cid: create.cid,
+      indexedAt: new Date().toISOString(),
+    }
+  })
 
     if (postsToDelete.length > 0) {
       await this.db
