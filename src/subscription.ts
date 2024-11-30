@@ -5,15 +5,27 @@ import {
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
 const matchText: string[] = [
+  '1 like',
+  'get to know me',
+  'TTRPGRising',
+  'introduce yourself',
+  '5 faves',
+  'self-promo',
+  'get to know my',
+  'nft',
+  'critical role',
+  'hottake',
+  'hot take',
+  'pathfinder',
 ]
 
 const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
+  /(^|\s)#?old school rpg(\s|\W|$)(?!.*(computer|video game|pc|console))/im, // Exclude "computer" or "video game" context
+  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console))/im, // Exclude similar context
   /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
-  /(^|\s)#?whitebox(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
-  /(^|\s)#?whitebox(\s*:)?(\s*the)?\s*OSR(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
   /(^|\s)#?DCCRPG(\s|\W|$)/im,
   /(^|\s)#?MCCRPG(\s|\W|$)/im,
@@ -24,12 +36,9 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?ad&d(\s|\W|$)/im,
   /(^|\s)#?bfrpg(\s|\W|$)/im,
   /(^|\s)#?old school roleplaying(\s|\W|$)/im,
-  /(^|\s)#?old school rpg(\s|\W|$)/im,
   /(^|\s)#?beyond the wall(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
-  /(^|\s)#?beyond the wall(\s*:)?(\s*the)?\s*OSR(\s|\W|$)/im,
   /(^|\s)#?old school essentials(\s|\W|$)/im,
   /(^|\s)#?mausritter(\s|\W|$)/im,
-  /(^|\s)#?osr(\s|\W|$)/im,
   /(^|\s)#?dungeon crawl classics(\s|\W|$)/im,
   /(^|\s)#?bastionland(\s|\W|$)/im,
   /(^|\s)#?into the odd(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
@@ -42,12 +51,10 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
 ]
 
-
 const matchUsers: string[] = [
   //
 ]
 
-// Exclude posts from these users
 const bannedUsers: string[] = [
   //
 ]
