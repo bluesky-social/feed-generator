@@ -5,6 +5,10 @@ import {
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
 const matchText: string[] = [
+  'intropost',
+  'trump',
+  'for each like',
+  'elon',
   '1 like',
   'get to know me',
   'TTRPGRising',
@@ -22,8 +26,8 @@ const matchText: string[] = [
 const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
-  /(^|\s)#?old school rpg(\s|\W|$)(?!.*(computer|video game|pc|console))/im, // Exclude "computer" or "video game" context
-  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console))/im, // Exclude similar context
+  /(^|\s)#?old school rpg(\s|\W|$)(?!.*(computer|video game|pc|console))/im, 
+  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console))/im,
   /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
@@ -55,8 +59,12 @@ const matchUsers: string[] = [
   //
 ]
 
+
 const bannedUsers: string[] = [
-  //
+  'did:plc:d2tbgpia4htooeiu6v2fvp2o', // some dude writing about birds
+  'did:plc:7zsy53saorz6cu3slp6omqwf', // rpgnet
+  'did:plc:lxwpf6wyc6fzzz4kxbzu4dcd', // zak s
+  'did:plc:uorlan6bddicresbarn5fto5', // taylor lane
 ]
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
