@@ -3,8 +3,9 @@ import {
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
+import fs from 'fs'
 
-const matchText: string[] = [
+const excludedText: string[] = [
   'intropost',
   'trump',
   'for each like',
@@ -55,17 +56,14 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
 ]
 
-const matchUsers: string[] = [
-  //
-]
-
-
-const bannedUsers: string[] = [
-  'did:plc:d2tbgpia4htooeiu6v2fvp2o', // some dude writing about birds
-  'did:plc:7zsy53saorz6cu3slp6omqwf', // rpgnet
-  'did:plc:lxwpf6wyc6fzzz4kxbzu4dcd', // zak s
-  'did:plc:uorlan6bddicresbarn5fto5', // taylor lane
-]
+// Load banned DIDs from a local JSON file
+const bannedUsersFile = './bannedUsers.json'
+let bannedUsers: string[] = []
+try {
+  bannedUsers = JSON.parse(fs.readFileSync(bannedUsersFile, 'utf8'))
+} catch (err) {
+  console.error(`Failed to load banned users from ${bannedUsersFile}:`, err)
+}
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
@@ -75,23 +73,23 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
-  .filter((create) => {
-    const txt = create.record.text.toLowerCase()
-    return (
-      !matchText.some((term) => txt.includes(term)) && // Exclude posts containing matchText terms
-      matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
-      !bannedUsers.includes(create.author) // Exclude posts by banned users
-    )
-  })
-  .map((create) => {
-    console.log(`Found post by ${create.author}: ${create.record.text}`)
+      .filter((create) => {
+        const txt = create.record.text.toLowerCase()
+        return (
+          !excludedText.some((term) => txt.includes(term)) && // Exclude posts containing excludedText terms
+          matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
+          !bannedUsers.includes(create.author) // Exclude posts by banned users
+        )
+      })
+      .map((create) => {
+        console.log(`Found post by ${create.author}: ${create.record.text}`)
 
-    return {
-      uri: create.uri,
-      cid: create.cid,
-      indexedAt: new Date().toISOString(),
-    }
-  })
+        return {
+          uri: create.uri,
+          cid: create.cid,
+          indexedAt: new Date().toISOString(),
+        }
+      })
 
     if (postsToDelete.length > 0) {
       await this.db
