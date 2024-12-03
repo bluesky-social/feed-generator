@@ -1,4 +1,3 @@
-import { InvalidRequestError } from '@atproto/xrpc-server'
 import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
 import { AppContext } from '../config'
 
@@ -18,12 +17,8 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     if (!indexedAt || !cid) {
       throw new InvalidRequestError('malformed cursor')
     }
-    const timeStr = new Date(parseInt(indexedAt, 10)).toISOString()
-    builder = builder
-      .where('post.indexedAt', '<', timeStr)
-      .orWhere((qb) => qb.where('post.indexedAt', '=', timeStr))
-      .where('post.cid', '<', cid)
-      .where('post.postText', 'like', '%alf%')
+    const timeStr = new Date(parseInt(params.cursor, 10)).toISOString()
+    builder = builder.where('post.indexedAt', '<', timeStr)
   }
   const res = await builder.execute()
 
@@ -34,7 +29,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   let cursor: string | undefined
   const last = res.at(-1)
   if (last) {
-    cursor = `${new Date(last.indexedAt).getTime()}::${last.cid}`
+    cursor = new Date(last.indexedAt).getTime().toString(10)
   }
 
   return {

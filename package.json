@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
+    "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
@@ -17,18 +18,23 @@
     "@atproto/lexicon": "^0.2.2",
     "@atproto/repo": "^0.3.2",
     "@atproto/syntax": "^0.1.2",
-    "@atproto/xrpc-server": "^0.3.2",
-    "better-sqlite3": "^8.3.0",
+    "@atproto/xrpc-server": "^0.6.0",
+    "better-sqlite3": "^11.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "kysely": "^0.22.0",
+    "kysely": "^0.27.4",
     "multiformats": "^9.9.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.4",
+    "@types/better-sqlite3": "^7.6.11",
     "@types/express": "^4.17.17",
     "@types/node": "^20.1.2",
+    "inquirer": "^12.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">= 18",
+    "yarn": "1"
   }
 }
