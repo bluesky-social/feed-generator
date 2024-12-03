@@ -44,6 +44,7 @@ const terms = [
   'evil hat productions',
   'r.? talsorian',
   'darrington press',
+  'free league',
 
   // creators
   'bob the world builder',
@@ -77,7 +78,6 @@ const terms = [
   'pirate borg',
   'death in space',
   'the one ring',
-  'vast grimm',
   'cy_borg',
   'mutant year zero',
   'tales from the loop',
@@ -128,6 +128,13 @@ const terms = [
   'eco mofos',
   'monsters and counselors',
   '(Æ|æ|ae)lf',
+  'triangle agency',
+  'mork sol',
+  'the beckoning dream',
+  'kill engn',
+  'old school essentials',
+  'dungeon crawl classics',
+  'vast grimm',
 
   // looser terms
   'worldbuilding',

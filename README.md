@@ -64,6 +64,7 @@ This feed also removes any posts tagged as being a Critical Role spoiler or with
 - evil hat productions
 - r. talsorian
 - darrington press
+- kobold press
 
 ##### Creators
 
@@ -101,7 +102,6 @@ This feed also removes any posts tagged as being a Critical Role spoiler or with
 - pirate borg
 - death in space
 - the one ring
-- vast grimm
 - cy_borg
 - mutant year zero
 - tales from the loop
@@ -151,6 +151,14 @@ This feed also removes any posts tagged as being a Critical Role spoiler or with
 - daggerheart
 - monster hearts
 - eco mofos
+- triangle agency
+- aelf
+- mork sol
+- the beckoning dream
+- kill engn
+- old school essentials
+- dungeon crawl classics
+- vast grimm
 
 ##### Looser terms
 
@@ -163,6 +171,7 @@ This feed also removes any posts tagged as being a Critical Role spoiler or with
 ##### Awards
 
 - ennies
+- crit awards
 
 </details>
 
