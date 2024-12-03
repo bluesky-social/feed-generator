@@ -22,13 +22,14 @@ const excludedText: string[] = [
   'hottake',
   'hot take',
   'pathfinder',
+  'osréalacha', 
 ]
 
 const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
   /(^|\s)#?old school rpg(\s|\W|$)(?!.*(computer|video game|pc|console))/im, 
-  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console))/im,
+  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console|osréalacha))/im, // Prevent false positives
   /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
@@ -112,4 +113,3 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     }
   }
 }
-
