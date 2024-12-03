@@ -56,6 +56,11 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?The Black Hack(\s|\W|$)/im,
 ]
 
+const prohibitedUrls: string[] = [
+  'https://osr.statisticsauthority.gov.uk',
+  'osr.statisticsauthority.gov.uk', // To catch variations without "https://"
+]
+
 // Load banned DIDs from a local JSON file
 const bannedUsersFile = './bannedUsers.json'
 let bannedUsers: string[] = []
@@ -78,7 +83,8 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         return (
           !excludedText.some((term) => txt.includes(term)) && // Exclude posts containing excludedText terms
           matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
-          !bannedUsers.includes(create.author) // Exclude posts by banned users
+          !bannedUsers.includes(create.author) && // Exclude posts by banned users
+          !prohibitedUrls.some((url) => txt.includes(url)) // Exclude posts containing prohibited URLs
         )
       })
       .map((create) => {
@@ -106,3 +112,4 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     }
   }
 }
+
