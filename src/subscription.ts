@@ -11,9 +11,9 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
   constructor(public db: Database, public service: string) {
     super(db, service)
-    algoClasses.forEach((algo) => {
-      algo.initFeed(db)
-    })
+    for (const algo in algoClasses) {
+      algoClasses[algo].initFeed(db)
+    }
   }
 
   async handleEvent(evt: RepoEvent) {
@@ -22,21 +22,40 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const ops = await getOpsByType(evt)
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
-    const postsToCreate = ops.posts.creates
-      .filter((create) => { // User filter
-        return create.author.includes("did:plc:wc2nljklaywqr4axivpddo4i") // hardcoded for now
+    const opp = await Promise.all(ops.posts.creates.map(async (create) => {
+      var anyMatch = false
+      for (const alg in algoClasses) {
+        anyMatch = await algoClasses[alg].applyFeedFilter({
+          post: create.record.text,
+          authorInclude: create.author
+        })
+        if (anyMatch == true) {
+          break
+        }
+      }
+      
+      return {
+        uri: create.uri,
+        cid: create.cid,
+        indexedAt: new Date().toISOString(),
+        match: anyMatch,
+      }
+    }))
+    const postsToCreate = opp
+      .filter((create) => {
+        return create.match == true
       })
-      // .filter((create) => {
-      //   return create.record
-      // })
       .map((create) => {
         return {
           uri: create.uri,
           cid: create.cid,
-          indexedAt: new Date().toISOString(),
+          indexedAt: create.indexedAt,
         }
       })
-
+    if (postsToCreate.length > 0) {
+      postsToCreate.forEach((post) => {console.log(post)})
+    }
+      
     if (postsToDelete.length > 0) {
       await this.db
         .deleteFrom('post')

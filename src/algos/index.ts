@@ -5,11 +5,13 @@ import {
 } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
 import { AlgoBase } from './algo-base'
 import { ClaeAnadenArtAlgo as claeAndn } from './clae-andn'
+import { ClaeTestAlgo as claeTest } from './clae-test'
 
 type AlgoHandler = (ctx: AppContext, params: QueryParams) => Promise<AlgoOutput>
 
 export const algoClasses : Array<AlgoBase> = [
   new claeAndn(0),
+  new claeTest(1),
 ]
 
 // thanks to this SO answer:
