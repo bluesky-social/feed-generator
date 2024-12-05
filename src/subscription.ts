@@ -29,7 +29,7 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?cairn(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?cairnrpg(\s|\W|$)/im,
   /(^|\s)#?old school rpg(\s|\W|$)(?!.*(computer|video game|pc|console))/im, 
-  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console|osréalacha))/im, // Prevent false positives
+  /(^|\s)#?osr(\s|\W|$)(?!.*(computer|video game|pc|console|osréalacha))/im,
   /(^|\s)#?bx(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
   /(^|\s)#?whitebox(\s|\W|$)/im,
   /(^|\s)#?BECMI(\s|\W|$)/im,
@@ -39,7 +39,7 @@ const matchPatterns: RegExp[] = [
   /(^|\s)#?Index Card RPG(\s|\W|$)/im,
   /(^|\s)#?ICRPG(\s|\W|$)/im,
   /(^|\s)#?odnd(\s|\W|$)/im,
-  /(^|\s)#?ad&d(\s|\W|$)/im,
+  /(^|\s)#?ad&d(\s|\W|$)(?!.*(computer|video game|pc|console))/im,
   /(^|\s)#?bfrpg(\s|\W|$)/im,
   /(^|\s)#?old school roleplaying(\s|\W|$)/im,
   /(^|\s)#?beyond the wall(\s*:)?(\s*the)?\s*RPG(\s|\W|$)/im,
@@ -59,10 +59,10 @@ const matchPatterns: RegExp[] = [
 
 const prohibitedUrls: string[] = [
   'https://osr.statisticsauthority.gov.uk',
-  'osr.statisticsauthority.gov.uk', // To catch variations without "https://"
+  'osr.statisticsauthority.gov.uk', 
 ]
 
-// Load banned DIDs from a local JSON file
+// Load banned DIDs 
 const bannedUsersFile = './bannedUsers.json'
 let bannedUsers: string[] = []
 try {
@@ -82,8 +82,8 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       .filter((create) => {
         const txt = create.record.text.toLowerCase()
         return (
-          !excludedText.some((term) => txt.includes(term)) && // Exclude posts containing excludedText terms
-          matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
+      	  matchPatterns.some((pattern) => pattern.test(txt)) && // Include posts matching matchPatterns
+	  !excludedText.some((term) => txt.includes(term)) && // Exclude posts containing excludedText terms
           !bannedUsers.includes(create.author) && // Exclude posts by banned users
           !prohibitedUrls.some((url) => txt.includes(url)) // Exclude posts containing prohibited URLs
         )
