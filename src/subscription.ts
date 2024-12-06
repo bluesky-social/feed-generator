@@ -22,7 +22,8 @@ const excludedText: string[] = [
   'hottake',
   'hot take',
   'pathfinder',
-  'osréalacha', 
+  'osréalacha',
+  'about me', 
 ]
 
 const matchPatterns: RegExp[] = [
