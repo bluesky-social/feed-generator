@@ -10,21 +10,21 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
     const ops = await getOpsByType(evt)
 
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        // Match posts containing "#survivor" and exclude outlier hashtags
+        const text = create.record.text.toLowerCase()
+
+        // Match posts containing "#survivor" followed by optional digits (e.g., #survivor, #survivor7, #survivorcbs)
+        const includeHashtagsRegex = /#survivor(\d*|cbs)?/;
+        const excludeHashtagsRegex = /#survivorseries|#survivorgameplay|#deadbydaylight|#survivorslike|#rainworld|#survivorlike|#survivorsguilt|#survivorguilt|#csasurvivor|#survivorsempowered|#mentalhealth|#excult/;
+
+        // Only include posts that have #survivor followed by optional numbers or 'cbs', and do not contain excluded hashtags
+        return includeHashtagsRegex.test(text) && !excludeHashtagsRegex.test(text)
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        // map Survivor-related posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
