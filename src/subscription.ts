@@ -18,19 +18,55 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     }
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
+        
     const postsToCreate = ops.posts.creates
-      .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
-      })
-      .map((create) => {
-        // map alf-related posts to a db row
-        return {
-          uri: create.uri,
-          cid: create.cid,
-          indexedAt: new Date().toISOString(),
-        }
-      })
+        .filter((create) => {
+          if (!create.record.langs?.includes('fr') && !create.record.langs?.includes('en'))
+            return false;
+  
+          const normalText = [
+            "vtubing",
+            "vtubbing",
+            "vtuber",
+            "vtubeur",
+            "vtb",
+            "vtuberfr",
+            "vtbfr",
+            "vtubeurfr",
+            "vtubeur français",
+            "vtuber français",
+            "vtuber française"
+          ];
+          
+          const keywords = [
+            /\bvtuberfr\b/,
+            /\bfrvtubers\b/,
+            /\bvtuberqc\b/,
+            /\bqcvtuber\b/,
+            /\bvtubeurfr\b/,
+            /\bvtubersfr\b/,
+            /\bfrvtuber\b/,
+          ]
+  
+          const excludedKeywords = [
+            "ririmiaou",
+          ]
+          
+  
+          return ((keywords.some((key) => key.test(create.record.text))
+    ||	normalText.some((key) => create.record.text.toLowerCase().includes(key))
+    )
+      && !excludedKeywords.some((key) => create.record.text.toLowerCase().includes(key))
+    )
+        })
+        .map((create) => {
+          // map alf-related posts to a db row
+          return {
+            uri: create.uri,
+            cid: create.cid,
+            indexedAt: new Date().toISOString(),
+          }
+        });
 
     if (postsToDelete.length > 0) {
       await this.db
