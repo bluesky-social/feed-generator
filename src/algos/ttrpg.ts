@@ -153,18 +153,19 @@ const excludeTerms = ['crit(ical)? role spoilers?', 'nofeed', 'nottrpgfeed']
 const emojis = ['🎲']
 
 import buildRegex from './buildRegex'
+import { CreateOp } from '../subscription'
 
 export const matchRegex = buildRegex(terms)
 const excludeRegex = buildRegex(excludeTerms)
 
-export const matcher = (post) => {
+export const matcher = (post: CreateOp) => {
   const matchTerms = matchRegex.test(post.record.text.toLowerCase())
   const matchEmoji = emojis.some((emoji) => post.record.text.includes(emoji))
   const optout = excludeRegex.test(post.record.text.toLowerCase())
   return !optout && (matchTerms || matchEmoji)
 }
 
-export const filterAndMap = (posts) =>
+export const filterAndMap = (posts: CreateOp[]) =>
   posts.filter(matcher).map((create) => {
     return {
       uri: create.uri,

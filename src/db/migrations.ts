@@ -79,3 +79,33 @@ migrations['004'] = {
     await db.schema.alterTable('post_tag').dropColumn('id').execute()
   },
 }
+
+migrations['005'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('post_tag')
+      .alterColumn('id', (ac) => ac.setDataType('bigint'))
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('post_tag')
+      .alterColumn('id', (ac) => ac.setDataType('serial'))
+      .execute()
+  },
+}
+
+migrations['006'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('sub_state')
+      .alterColumn('cursor', (ac) => ac.setDataType('bigint'))
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('sub_state')
+      .alterColumn('cursor', (ac) => ac.setDataType('integer'))
+      .execute()
+  },
+}

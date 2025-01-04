@@ -22,6 +22,10 @@ import {
 } from './algos/itch'
 // import { filterAndMap as filterAndMapTTRPGTest } from './algos/ttrpg-testing'
 
+export type CreateOp = Awaited<
+  ReturnType<typeof getOpsByType>
+>['posts']['creates'][0]
+
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
@@ -83,12 +87,16 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       ...itchPostTags,
     ]
 
-    if (createPosts.length > 0) {
-      await this.db
-        .insertInto('post')
-        .onConflict((oc) => oc.constraint('post_pkey').doNothing())
-        .values(createPosts)
-        .execute()
+    try {
+      if (createPosts.length > 0) {
+        await this.db
+          .insertInto('post')
+          .onConflict((oc) => oc.constraint('post_pkey').doNothing())
+          .values(createPosts)
+          .execute()
+      }
+    } catch (err) {
+      console.error(err)
     }
     if (createPostTags.length > 0) {
       await this.db
