@@ -49,7 +49,6 @@
             inherit (pkgs)
               app
               image
-              skopeo
               ;
           };
 
