@@ -12,9 +12,11 @@ migrations['001'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
       .createTable('post')
-      .addColumn('uri', 'varchar', (col) => col.primaryKey())
+      .addColumn('uri', 'varchar', (col) => col.notNull())
+      .addColumn('filter', 'varchar', (col) => col.notNull())
       .addColumn('cid', 'varchar', (col) => col.notNull())
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addPrimaryKeyConstraint('primary_key',['uri', 'filter'])
       .execute()
     await db.schema
       .createTable('sub_state')
