@@ -1,0 +1,15 @@
+gversion: "3.2"
+services:
+
+  swefeed:
+    build: .
+    image: feed
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+# Uncomment if you want to use a persitent sqlite database
+#    volumes:
+#      - type: bind
+#        source: ./db.sqlite
+#        target: /app/db.sqlite
+
