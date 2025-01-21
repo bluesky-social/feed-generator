@@ -114,6 +114,10 @@ const run = async () => {
           description: description,
           avatar: avatarRef,
           createdAt: new Date().toISOString(),
+          contentMode:
+            recordName === ttrpgVideoShortname
+              ? 'app.bsky.feed.defs#contentModeVideo'
+              : undefined,
         },
       })
     }),
