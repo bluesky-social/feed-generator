@@ -9,7 +9,7 @@ import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 import { AppContext, Config } from './config'
 import wellKnown from './well-known'
-import { handler as testingHandler } from './algos/ttrpg-testing'
+import algos from './algos'
 
 export class FeedGenerator {
   public app: express.Application
@@ -63,12 +63,22 @@ export class FeedGenerator {
       res.send('Hello TTRPG!')
     })
 
-    app.get('/algo/testing', async (req, res) => {
-      const { feed } = await testingHandler(ctx, {
-        limit: 30,
-        feed: 'at://did:plc:iuk433sj23ncu2oo2pfnw7fw/app.bsky.feed.generator/ttrpgfolkstest',
-      })
-      res.json(feed)
+    app.get('/algo/:shortname', async (req, res) => {
+      const shortname = req.params.shortname
+      const handler = algos[shortname]
+      if (handler) {
+        const { feed } = await handler(ctx, {
+          limit: 30,
+          feed:
+            'at://did:plc:iuk433sj23ncu2oo2pfnw7fw/app.bsky.feed.generator/' +
+            shortname,
+        })
+        res.json(feed)
+      } else {
+        res.send(
+          `No feed: ${shortname}. Expected: ${Object.keys(algos).join(',')}`,
+        )
+      }
     })
 
     return new FeedGenerator(app, db, firehose, cfg)
