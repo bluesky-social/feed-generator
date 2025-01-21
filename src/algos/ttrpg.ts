@@ -173,6 +173,7 @@ export const filterAndMap = (posts: CreateOp[]) =>
       replyParent: create.record?.reply?.parent.uri ?? null,
       replyRoot: create.record?.reply?.root.uri ?? null,
       indexedAt: new Date().toISOString(),
+      hasVideo: create.record.embed?.$type === 'app.bsky.embed.video',
     }
   })
 

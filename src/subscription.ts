@@ -3,7 +3,7 @@ import {
   isCommit,
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
-import { uniqBy } from 'lodash'
+import { uniqBy, omit } from 'lodash'
 import {
   filterAndMap as filterAndMapTTRPG,
   shortname as ttrpgShortname,
@@ -20,7 +20,7 @@ import {
   filterAndMap as filterAndMapItch,
   shortname as itchShortname,
 } from './algos/itch'
-// import { filterAndMap as filterAndMapTTRPGTest } from './algos/ttrpg-testing'
+import { shortname as ttrpgVideoShortname } from './algos/ttrpg-videos'
 
 export type CreateOp = Awaited<
   ReturnType<typeof getOpsByType>
@@ -44,6 +44,13 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       tag: ttrpgShortname,
       indexedAt: post.indexedAt,
     }))
+    const ttrpgVideoPostTags = ttrpgCreatePosts
+      .filter((post) => post.hasVideo)
+      .map((post) => ({
+        post_uri: post.uri,
+        tag: ttrpgVideoShortname,
+        indexedAt: post.indexedAt,
+      }))
     const critRoleSpoilerPostTags = critRoleSpoilerCreatePosts.map((post) => ({
       post_uri: post.uri,
       tag: critRoleSpoilerShortname,
@@ -73,7 +80,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     }
     const createPosts = uniqBy(
       [
-        ...ttrpgCreatePosts,
+        ...ttrpgCreatePosts.map((post) => omit(post, 'hasVideo')),
         ...critRoleSpoilerCreatePosts,
         ...ttrpgIntroCreatePosts,
         ...itchCreatePosts,
@@ -85,6 +92,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
       ...critRoleSpoilerPostTags,
       ...ttrpgIntroPostTags,
       ...itchPostTags,
+      ...ttrpgVideoPostTags,
     ]
 
     try {

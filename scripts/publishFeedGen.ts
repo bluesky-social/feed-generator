@@ -4,6 +4,7 @@ import fs from 'fs/promises'
 import { ids } from '../src/lexicon/lexicons'
 import path from 'path'
 import { shortname as ttrpgShortname } from '../src/algos/ttrpg'
+import { shortname as ttrpgVideoShortname } from '../src/algos/ttrpg-videos'
 import { shortname as ttrpgTestingShortname } from '../src/algos/ttrpg-testing'
 import { shortname as ttrpgIntroShortName } from '../src/algos/ttrpg-intro'
 import { shortname as critRoleSpoilerShortname } from '../src/algos/critrole-spoilers'
@@ -20,9 +21,19 @@ const feeds = [
   //     avatar: path.resolve(__dirname, '../images/ttrpgAvatar.png'),
   //   },
   {
+    recordName: ttrpgVideoShortname,
+    displayName: 'TTRPG Videos',
+    description: `The most comprehensive video feed of tabletop RPG posts!
+  🎉 Covers all the posts from the TTRPG Folks feed that have videos.
+  ❌ Opt out with #nofeed or #nottrpgfeed.
+  Have a request? Hit up @lich.dad!
+  `,
+    avatar: path.resolve(__dirname, '../images/ttrpgVideoAvatar.png'),
+  },
+  {
     recordName: ttrpgShortname,
     displayName: 'TTRPG Folks',
-    description: `A comprehensive feed of TTRPG posts!
+    description: `The most comprehensive tabletop RPG feed on Bluesky!
   🎉 Filters out Critical Role Spoilers!
   ⚔️ Tons of terms matching games and systems, large and small!
   🏆 Matches for Ennies, a bunch of APs, and lots of creators.
