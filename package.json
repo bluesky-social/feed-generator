@@ -18,7 +18,7 @@
     "@atproto/lexicon": "^0.2.2",
     "@atproto/repo": "^0.3.2",
     "@atproto/syntax": "^0.1.2",
-    "@atproto/xrpc-server": "^0.6.0",
+    "@atproto/xrpc-server": "^0.7.9",
     "better-sqlite3": "^11.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -36,5 +36,6 @@
   "engines": {
     "node": ">= 18",
     "yarn": "1"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
