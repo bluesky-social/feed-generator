@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import inquirer from 'inquirer'
-import { AtpAgent, BlobRef } from '@atproto/api'
+import { AtpAgent, BlobRef, AppBskyFeedDefs } from '@atproto/api'
 import fs from 'fs/promises'
 import { ids } from '../src/lexicon/lexicons'
 
@@ -55,9 +55,15 @@ const run = async () => {
         message: 'Optionally, enter a local path to an avatar that will be used for the feed:',
         required: false,
       },
+      {
+        type: 'confirm',
+        name: 'videoOnly',
+        message: 'Is this a video-only feed? If so, do you want to set the content mode to video? This will allow for an "immersive" video experience within the app.',
+        default: false,
+      }
     ])
 
-  const { handle, password, recordName, displayName, description, avatar, service } = answers
+  const { handle, password, recordName, displayName, description, avatar, service, videoOnly } = answers
 
   const feedGenDid =
     process.env.FEEDGEN_SERVICE_DID ?? `did:web:${process.env.FEEDGEN_HOSTNAME}`
@@ -93,6 +99,7 @@ const run = async () => {
       description: description,
       avatar: avatarRef,
       createdAt: new Date().toISOString(),
+      contentMode: videoOnly ? AppBskyFeedDefs.CONTENTMODEVIDEO : AppBskyFeedDefs.CONTENTMODEUNSPECIFIED,
     },
   })
 
