@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'primary-dark': '#4A49B0',
+                        'primary-light': '#7E7DE6',
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 1.5s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-72 bg-gray-100 dark:bg-gray-800 h-full border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all lg:translate-x-0 -translate-x-full absolute lg:relative z-10">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                <h1 class="text-xl font-bold text-primary dark:text-primary-light">AI Chat Platform</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Select a model to chat with</p>
+            </div>
+            <div class="overflow-y-auto flex-1">
+                <div class="p-2">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 px-2 py-1 uppercase font-semibold">Models</div>
+                    <div id="modelList" class="space-y-1 mt-1">
+                        <!-- Model list will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div class="text-xs text-gray-500 dark:text-gray-400">© 2023 AI Chat Platform</div>
+                <button id="toggleTheme" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 dark:hidden" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div class="flex items-center">
+                    <!-- Mobile menu button -->
+                    <button id="menuToggle" class="mr-3 p-2 rounded-md lg:hidden hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <div id="currentModel" class="text-lg font-medium">Select a model</div>
+                </div>
+                <button id="newChat" class="text-primary dark:text-primary-light hover:underline">
+                    New Chat
+                </button>
+            </div>
+
+            <!-- Chat Area -->
+            <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="flex justify-center">
+                    <div class="max-w-md text-center p-6">
+                        <h2 class="text-xl font-bold mb-2">Welcome to AI Chat Platform</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            Select a model from the sidebar to start chatting with different AI assistants.
+                        </p>
+                        <p class="text-gray-500 dark:text-gray-500 text-sm">
+                            This platform uses Poe's embedded AI models. Messages are processed through Poe's API.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+                <div class="relative">
+                    <textarea 
+                        id="userInput" 
+                        placeholder="Type your message..." 
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-light focus:border-transparent bg-white dark:bg-gray-800 text-base"
+                        rows="2"
+                        disabled
+                    ></textarea>
+                    <button 
+                        id="sendButton"
+                        disabled
+                        class="absolute right-2 bottom-2 p-2 rounded-full bg-primary text-white hover:bg-primary-dark disabled:opacity-50 disabled:hover:bg-primary transition"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 flex justify-between">
+                    <span>Press Enter to send, Shift+Enter for new line</span>
+                    <span id="modelStatus" class="text-primary dark:text-primary-light"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize dark mode based on user preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const toggleTheme = document.getElementById('toggleTheme');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatContainer = document.getElementById('chatContainer');
+        const currentModelEl = document.getElementById('currentModel');
+        const modelList = document.getElementById('modelList');
+        const newChatButton = document.getElementById('newChat');
+        const modelStatus = document.getElementById('modelStatus');
+
+        // Available AI models
+        const models = [
+            { id: 'Claude-3.7-Sonnet', name: 'Claude 3.7 Sonnet', description: 'Anthropic\'s most capable model', type: 'text' },
+            { id: 'GPT-4o', name: 'GPT-4o', description: 'OpenAI\'s most advanced model', type: 'text' },
+            { id: 'FLUX-pro-1.1', name: 'FLUX Pro', description: 'Image generation model', type: 'image' },
+            { id: 'Runway', name: 'Runway', description: 'Video generation model', type: 'video' },
+            { id: 'ElevenLabs', name: 'ElevenLabs', description: 'Text-to-speech model', type: 'audio' }
+        ];
+
+        // App state
+        let currentModel = null;
+        let currentConversation = [];
+        let isWaitingForResponse = false;
+        let handlerId = 'chat-handler-' + Date.now();
+
+        // Initialize the app
+        function init() {
+            populateModelList();
+            setupEventListeners();
+            registerHandler();
+        }
+
+        // Populate the model list in the sidebar
+        function populateModelList() {
+            modelList.innerHTML = '';
+            models.forEach(model => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition flex flex-col';
+                button.innerHTML = `
+                    <div class="font-medium">${model.name}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">${model.description}</div>
+                `;
+                button.addEventListener('click', () => selectModel(model));
+                modelList.appendChild(button);
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Toggle theme
+            toggleTheme.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+
+            // Send message on button click
+            sendButton.addEventListener('click', sendMessage);
+
+            // Send message on Enter, new line on Shift+Enter
+            userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // New chat button
+            newChatButton.addEventListener('click', () => {
+                if (currentModel) {
+                    startNewChat();
+                }
+            });
+        }
+
+        // Register handler for bot responses
+        function registerHandler() {
+            if (window.Poe) {
+                window.Poe.registerHandler(handlerId, (result) => {
+                    if (result.responses && result.responses.length > 0) {
+                        const response = result.responses[0];
+                        
+                        // Update or add the bot message
+                        const existingMessage = document.getElementById(`response-${response.messageId}`);
+                        
+                        if (existingMessage) {
+                            // Update existing message
+                            const contentDiv = existingMessage.querySelector('.message-content');
+                            
+                            if (response.status === 'error') {
+                                contentDiv.innerHTML = `<div class="text-red-500">Error: ${response.statusText || 'Failed to generate response'}</div>`;
+                                existingMessage.querySelector('.message-loading').style.display = 'none';
+                            } 
+                            else {
+                                // For text responses, render markdown
+                                if (currentModel.type === 'text') {
+                                    contentDiv.innerHTML = marked.parse(response.content);
+                                    
+                                    // Apply syntax highlighting for code blocks
+                                    contentDiv.querySelectorAll('pre code').forEach(block => {
+                                        block.className = 'p-4 rounded bg-gray-100 dark:bg-gray-800 overflow-auto';
+                                    });
+                                }
+                                
+                                // For attachments (images, videos, audio)
+                                if (response.attachments && response.attachments.length > 0) {
+                                    const attachment = response.attachments[0];
+                                    if (attachment.mimeType.startsWith('image/')) {
+                                        contentDiv.innerHTML = `<img src="${attachment.url}" alt="Generated image" class="max-w-full rounded-lg mt-2">`;
+                                    } 
+                                    else if (attachment.mimeType.startsWith('video/')) {
+                                        contentDiv.innerHTML = `<video src="${attachment.url}" controls class="max-w-full rounded-lg mt-2"></video>`;
+                                    }
+                                    else if (attachment.mimeType.startsWith('audio/')) {
+                                        contentDiv.innerHTML = `<audio src="${attachment.url}" controls class="max-w-full w-full mt-2"></audio>`;
+                                    }
+                                }
+                                
+                                // Hide or show loading indicator
+                                if (response.status === 'complete') {
+                                    existingMessage.querySelector('.message-loading').style.display = 'none';
+                                    isWaitingForResponse = false;
+                                    userInput.disabled = false;
+                                    sendButton.disabled = false;
+                                    modelStatus.textContent = '';
+                                }
+                            }
+                        } 
+                        else {
+                            // Create new bot message
+                            addBotMessage(response);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Select an AI model
+        function selectModel(model) {
+            currentModel = model;
+            currentModelEl.textContent = model.name;
+            
+            // Enable input elements
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            userInput.focus();
+            
+            // Clear chat if needed
+            startNewChat();
+            
+            // Close mobile sidebar
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.add('lg:translate-x-0');
+        }
+
+        // Start a new chat
+        function startNewChat() {
+            currentConversation = [];
+            chatContainer.innerHTML = '';
+            
+            // Add welcome message for the selected model
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.className = 'flex flex-col max-w-3xl mx-auto';
+            welcomeMsg.innerHTML = `
+                <div class="flex justify-center mb-6">
+                    <div class="max-w-md text-center p-4">
+                        <h2 class="text-xl font-bold mb-2">Chat with ${currentModel.name}</h2>
+                        <p class="text-gray-600 dark:text-gray-400">
+                            ${getModelInstructions(currentModel)}
+                        </p>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(welcomeMsg);
+        }
+
+        // Get model-specific instructions
+        function getModelInstructions(model) {
+            switch(model.type) {
+                case 'image':
+                    return 'Describe the image you want to generate. You can specify style, subject, and scene details.';
+                case 'video':
+                    return 'Describe the video you want to generate. You can specify camera movement, scene details, and actions.';
+                case 'audio':
+                    return 'Type the text you want converted to speech. You can specify voice by adding "--voice Voice Name" at the end.';
+                default:
+                    return 'Ask questions, request information, or have a conversation.';
+            }
+        }
+
+        // Add user message to chat
+        function addUserMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-end mb-4';
+            messageDiv.innerHTML = `
+                <div class="max-w-[80%] bg-primary text-white rounded-lg p-3 shadow">
+                    <div class="whitespace-pre-wrap">${text}</div>
+                </div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Save to conversation
+            currentConversation.push({ role: 'user', content: text });
+        }
+
+        // Add bot message to chat (initial or updated)
+        function addBotMessage(response) {
+            const messageDiv = document.createElement('div');
+            messageDiv.id = `response-${response.messageId}`;
+            messageDiv.className = 'flex mb-4';
+            
+            let avatar = '';
+            switch(currentModel.id) {
+                case 'Claude-3.7-Sonnet':
+                    avatar = '<div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-2 text-purple-600 dark:text-purple-300 font-bold">C</div>';
+                    break;
+                case 'GPT-4o':
+                    avatar = '<div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-2 text-green-600 dark:text-green-300 font-bold">G</div>';
+                    break;
+                case 'FLUX-pro-1.1':
+                    avatar = '<div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-2 text-blue-600 dark:text-blue-300 font-bold">F</div>';
+                    break;
+                case 'Runway':
+                    avatar = '<div class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center mr-2 text-orange-600 dark:text-orange-300 font-bold">R</div>';
+                    break;
+                case 'ElevenLabs':
+                    avatar = '<div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mr-2 text-red-600 dark:text-red-300 font-bold">E</div>';
+                    break;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="flex items-start">
+                    ${avatar}
+                    <div class="max-w-[80%] bg-gray-100 dark:bg-gray-800 rounded-lg p-3 shadow">
+                        <div class="message-content whitespace-pre-wrap"></div>
+                        <div class="message-loading mt-2 flex items-center">
+                            <div class="dot-typing flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                                <div class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                <di
