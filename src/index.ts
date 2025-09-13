@@ -19,6 +19,8 @@ const run = async () => {
       maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
     hostname,
     serviceDid,
+    handle: maybeStr(process.env.FEEDGEN_HANDLE),
+    appPassword: maybeStr(process.env.FEEDGEN_APP_PASSWORD),
   })
   await server.start()
   console.log(
