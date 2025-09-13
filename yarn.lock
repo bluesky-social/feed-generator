@@ -61,7 +61,7 @@
     multiformats "^9.9.0"
     pino "^8.21.0"
 
-"@atproto/crypto@^0.2.2":
+"@atproto/crypto@^0.2.0", "@atproto/crypto@^0.2.2":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@atproto/crypto/-/crypto-0.2.3.tgz#845400bed48434c2312621f29c63d7701f22f103"
   integrity sha512-tJeFIOOblvknlhkgIYbnAG3P/KBXwgXQAEPG2LPGmqMD0F65uUGChLfoIJGSLmq9OaR5IQtKgbCTZ9Q6yxzy8A==

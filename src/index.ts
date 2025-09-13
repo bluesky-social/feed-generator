@@ -1,11 +1,17 @@
 import dotenv from 'dotenv'
 import FeedGenerator from './server'
+import { P256Keypair } from '@atproto/crypto'
 
 const run = async () => {
   dotenv.config()
   const hostname = maybeStr(process.env.FEEDGEN_HOSTNAME) ?? 'example.com'
-  const serviceDid =
-    maybeStr(process.env.FEEDGEN_SERVICE_DID) ?? `did:web:${hostname}`
+  let serviceDid = maybeStr(process.env.FEEDGEN_SERVICE_DID)
+  if (!serviceDid) {
+    // If no service DID is provided, generate a did:key
+    const keypair = await P256Keypair.create({ exportable: true })
+    serviceDid = keypair.did()
+    console.log(`Generated did:key for service DID: ${serviceDid}`)
+  }
   const server = FeedGenerator.create({
     port: maybeInt(process.env.FEEDGEN_PORT) ?? 3000,
     listenhost: maybeStr(process.env.FEEDGEN_LISTENHOST) ?? 'localhost',
@@ -18,7 +24,7 @@ const run = async () => {
     subscriptionReconnectDelay:
       maybeInt(process.env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY) ?? 3000,
     hostname,
-    serviceDid,
+    serviceDid: serviceDid as string,
     handle: maybeStr(process.env.FEEDGEN_HANDLE),
     appPassword: maybeStr(process.env.FEEDGEN_APP_PASSWORD),
   })
