@@ -2,7 +2,7 @@ import { type QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton
 import { type AppContext } from '../util/config'
 
 // max 15 chars
-export const shortname = 'whats-alf'
+export const shortname = 'ja-posts'
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
