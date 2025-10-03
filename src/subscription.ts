@@ -30,7 +30,7 @@ export const handleEvent = async (evt: IngesterEvent, db: Database): Promise<voi
       if (isImages(evt.record.embed)) {
         for (const image of evt.record.embed.images) searchtext += `\n${image.alt}`
       }
-      if (isRecordWithMedia(evt.record.embed) && 'images' in evt.record.embed.media && isImages(evt.record.embed.media.images)) {
+      if (isRecordWithMedia(evt.record.embed) && 'images' in evt.record.embed.media) {
         for (const image of evt.record.embed.media.images) searchtext += `\n${image.alt}`
       }
       if (isVideo(evt.record.embed)) {
@@ -43,7 +43,7 @@ export const handleEvent = async (evt: IngesterEvent, db: Database): Promise<voi
             uri: evt.uri.toString(),
             cid: evt.cid.toString(),
             indexedAt: new Date().toISOString(),
-            isVideo: isVideo(evt.record.embed) ? 'true' : 'false',
+            isVideo: `${isVideo(evt.record.embed)}`,
           })
           .onConflict((oc) => oc.doNothing())
           .execute()
