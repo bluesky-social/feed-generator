@@ -27,26 +27,33 @@ export const handleEvent = async (evt: IngesterEvent, db: Database): Promise<voi
   if (evt.event === 'create') {
     if (evt.collection === ids.AppBskyFeedPost && isPost(evt.record)) {
       let searchtext: string = evt.record.text
+      let isMedia: boolean = false
       if (isImages(evt.record.embed)) {
+        isMedia = true
         for (const image of evt.record.embed.images) searchtext += `\n${image.alt}`
       }
       if (isRecordWithMedia(evt.record.embed) && 'images' in evt.record.embed.media) {
+        isMedia = true
         for (const image of evt.record.embed.media.images) searchtext += `\n${image.alt}`
       }
       if (isVideo(evt.record.embed)) {
+        isMedia = true
         searchtext += `\n${evt.record.embed.alt}`
       }
       if (evt.record.langs?.includes('ja') || searchtext.match(/^.*[ぁ-んァ-ヶｱ-ﾝﾞﾟー]+.*$/)) {
-        await db
-          .insertInto('post')
-          .values({
-            uri: evt.uri.toString(),
-            cid: evt.cid.toString(),
-            indexedAt: new Date().toISOString(),
-            isVideo: `${isVideo(evt.record.embed)}`,
-          })
-          .onConflict((oc) => oc.doNothing())
-          .execute()
+        if (typeof evt.record.reply === 'undefined') {
+          await db
+            .insertInto('post')
+            .values({
+              uri: evt.uri.toString(),
+              cid: evt.cid.toString(),
+              indexedAt: new Date().toISOString(),
+              isMedia: `${isMedia}`,
+              isVideo: `${isVideo(evt.record.embed)}`,
+            })
+            .onConflict((oc) => oc.doNothing())
+            .execute()
+        }
       }
     } else if (evt.collection === ids.AppBskyFeedRepost && isRepost(evt.record)) {
     } else if (evt.collection === ids.AppBskyFeedLike && isLike(evt.record)) {

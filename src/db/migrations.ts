@@ -15,6 +15,7 @@ migrations['001'] = {
       .addColumn('uri', 'varchar', (col) => col.primaryKey())
       .addColumn('cid', 'varchar', (col) => col.notNull())
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addColumn('isMedia', 'varchar', (col) => col.notNull())
       .addColumn('isVideo', 'varchar', (col) => col.notNull())
       .execute()
   },

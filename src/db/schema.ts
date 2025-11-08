@@ -6,5 +6,6 @@ export type Post = {
   uri: string
   cid: string
   indexedAt: string
+  isMedia: 'true' | 'false'
   isVideo: 'true' | 'false'
 }
