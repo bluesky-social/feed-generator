@@ -1,8 +1,8 @@
 import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
 import { AppContext } from '../config'
-import { BskyAgent } from '@atproto/api'
+import { AtpAgent } from '@atproto/api'
 import { Database } from '../db'
-import axios from 'axios'
+import axios from 'axios';
 
 export type Filter = (queryTerm : string | undefined) => boolean
 export type PostFilterQuery = {
@@ -17,7 +17,7 @@ export abstract class AlgoBase {
 	public shortname: string
 	public feed: number
 
-	public agent : BskyAgent
+	public agent : AtpAgent
 
 	includedAuthors : String[]
 	excludedAuthors : String[]
@@ -26,7 +26,7 @@ export abstract class AlgoBase {
 
 	constructor(feed: number) {
 		this.feed = feed
-		this.agent = new BskyAgent({service: "https://api.bsky.app/"})
+		this.agent = new AtpAgent({service: "https://api.bsky.app/"})
 	}
 
 	public async initFeed(db: Database) {
@@ -45,7 +45,7 @@ export abstract class AlgoBase {
 		// For now, grabbing the data from the user is done using Axios API
 		const response = await axios.get('app.bsky.feed.searchPosts',
 			{
-				baseURL: 'https://public.api.bsky.app/xrpc/',
+				baseURL: 'https://api.bsky.app/xrpc/',
 				params: {
 					author: this.includedAuthors[0], // TODO search multiple users
 					q: this.includedKeywords[0], // TODO query using or

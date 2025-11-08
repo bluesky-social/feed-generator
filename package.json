@@ -13,19 +13,18 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@atproto/api": "^0.6.20",
-    "@atproto/identity": "^0.2.1",
+    "@atproto/api": "^0.13.28",
+    "@atproto/identity": "^0.4.9",
     "@atproto/lexicon": "^0.2.2",
-    "@atproto/repo": "^0.3.2",
+    "@atproto/repo": "^0.8.10",
     "@atproto/syntax": "^0.1.2",
-    "@atproto/xrpc-server": "^0.6.0",
-    "axios": "^1.7.8",
+    "@atproto/xrpc-server": "^0.7.9",
+    "axios": "1.13.2",
     "better-sqlite3": "^11.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "kysely": "^0.27.4",
-    "multiformats": "^9.9.0",
-    "qs-stringify": "^1.2.1"
+    "multiformats": "^9.9.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
@@ -33,7 +32,7 @@
     "@types/node": "^20.1.2",
     "inquirer": "^12.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.0.4"
   },
   "engines": {
     "node": ">= 18",
