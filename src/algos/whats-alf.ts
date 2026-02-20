@@ -12,6 +12,10 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .limit(params.limit)
 
   if (params.cursor) {
+    const [indexedAt, cid] = params.cursor.split('::')
+    if (!indexedAt || !cid) {
+      throw new InvalidRequestError('malformed cursor')
+    }
     const timeStr = new Date(parseInt(params.cursor, 10)).toISOString()
     builder = builder.where('post.indexedAt', '<', timeStr)
   }
