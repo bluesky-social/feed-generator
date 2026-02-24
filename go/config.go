@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -18,6 +20,9 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
+	// Load .env file if present; ignore error if missing.
+	godotenv.Load()
+
 	hostname := envOrDefault("FEEDGEN_HOSTNAME", "example.com")
 	serviceDID := envOrDefault("FEEDGEN_SERVICE_DID", fmt.Sprintf("did:web:%s", hostname))
 

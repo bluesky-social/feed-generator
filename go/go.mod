@@ -5,6 +5,7 @@ go 1.25.2
 require (
 	github.com/bluesky-social/indigo v0.0.0-20260220055544-bf41e2ee75ab
 	github.com/gorilla/websocket v1.5.3
+	github.com/joho/godotenv v1.5.1
 	modernc.org/sqlite v1.46.1
 )
 
