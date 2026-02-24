@@ -9,6 +9,9 @@ cp .env.example .env
 # Edit .env with your values
 
 go run .
+
+# In another terminal, get some feed items with:
+curl -s "http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf&limit=10" | jq .
 ```
 
 ## Configuration

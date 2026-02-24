@@ -13,9 +13,15 @@ type Database struct {
 }
 
 func OpenDatabase(path string) (*Database, error) {
+	// For :memory: databases, restrict to a single connection so all
+	// goroutines share the same in-memory database.
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, fmt.Errorf("opening database: %w", err)
+	}
+
+	if path == ":memory:" {
+		db.SetMaxOpenConns(1)
 	}
 
 	// Enable WAL mode for better concurrent read/write performance.
@@ -32,16 +38,20 @@ func (d *Database) Close() error {
 }
 
 func (d *Database) CreateTables() error {
-	_, err := d.db.Exec(`
+	if _, err := d.db.Exec(`
 		CREATE TABLE IF NOT EXISTS post (
 			uri TEXT PRIMARY KEY,
 			cid TEXT NOT NULL,
 			indexed_at TEXT NOT NULL
-		);
+		)
+	`); err != nil {
+		return err
+	}
+	_, err := d.db.Exec(`
 		CREATE TABLE IF NOT EXISTS sub_state (
 			service TEXT PRIMARY KEY,
 			cursor INTEGER NOT NULL
-		);
+		)
 	`)
 	return err
 }
