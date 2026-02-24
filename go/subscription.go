@@ -127,7 +127,7 @@ func (s *Subscription) handleCommit(ctx context.Context, evt *comatproto.SyncSub
 				s.logger.Error("failed to parse post record", "err", err)
 				continue
 			}
-
+			fmt.Println(post.Text)
 			if strings.Contains(strings.ToLower(post.Text), "alf") {
 				uri := fmt.Sprintf("at://%s/%s", evt.Repo, op.Path)
 				indexedAt := time.Now().UTC().Format(time.RFC3339Nano)
