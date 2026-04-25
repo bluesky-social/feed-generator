@@ -1,14 +1,15 @@
-FROM node:20
+FROM node:24.15.0
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
 
-RUN yarn install
+RUN npm ci
+
+COPY . .
 
 EXPOSE 3000
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-# Use yarn to start the application
-CMD ["yarn", "start"]
+CMD ["npm", "run", "start"]
