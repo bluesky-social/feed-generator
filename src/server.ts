@@ -2,6 +2,7 @@ import http from 'http'
 import events from 'events'
 import express from 'express'
 import helmet from 'helmet'
+import { AppBskyGraphGetFollows, Agent } from '@atproto/api'
 import { DidResolver, MemoryCache } from '@atproto/identity'
 import { createServer } from './lexicon/index.js'
 import feedGeneration from './methods/feed-generation.js'
@@ -34,7 +35,11 @@ export class FeedGenerator {
     const app = express()
     app.use(helmet())
     const db = createDb(cfg.sqliteLocation)
-    const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
+    const firehose = new FirehoseSubscription(
+      db,
+      cfg.subscriptionEndpoint,
+      cfg.publisherDid,
+    )
 
     const didCache = new MemoryCache()
     const didResolver = new DidResolver({
@@ -65,11 +70,52 @@ export class FeedGenerator {
 
   async start(): Promise<http.Server> {
     await migrateToLatest(this.db)
+    await this.seedFollows()
     this.firehose.run(this.cfg.subscriptionReconnectDelay)
     this.startCleanup()
+    this.startFollowRefresh()
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
     return this.server
+  }
+
+  private async seedFollows() {
+    const agent = new Agent('https://bsky.social')
+    const dids: string[] = [this.cfg.publisherDid]
+
+    let cursor: string | undefined
+    do {
+      const res: { data: AppBskyGraphGetFollows.OutputSchema } =
+        await agent.app.bsky.graph.getFollows({
+          actor: this.cfg.publisherDid,
+          limit: 100,
+          cursor,
+        })
+      for (const follow of res.data.follows) dids.push(follow.did)
+      cursor = res.data.cursor
+    } while (cursor)
+
+    await this.db.transaction().execute(async (trx) => {
+      await trx.deleteFrom('following').execute()
+      await trx
+        .insertInto('following')
+        .values(dids.map((did) => ({ did })))
+        .onConflict((oc) => oc.doNothing())
+        .execute()
+    })
+
+    await this.firehose.loadFollowing()
+    console.log(`following ${dids.length - 1} accounts`)
+  }
+
+  private startFollowRefresh() {
+    setInterval(async () => {
+      try {
+        await this.seedFollows()
+      } catch (err) {
+        console.error('follow refresh failed', err)
+      }
+    }, 15 * 60 * 1000)
   }
 
   private startCleanup() {

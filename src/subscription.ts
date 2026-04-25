@@ -22,15 +22,50 @@ function hasMediaEmbed(record: { embed?: unknown }): boolean {
 }
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
+  private followingSet: Set<string>
+
+  constructor(
+    db: ConstructorParameters<typeof FirehoseSubscriptionBase>[0],
+    service: string,
+    private readonly publisherDid: string,
+  ) {
+    super(db, service)
+    this.followingSet = new Set([publisherDid])
+  }
+
+  async loadFollowing() {
+    const rows = await this.db.selectFrom('following').select('did').execute()
+    this.followingSet = new Set(rows.map((r) => r.did))
+    this.followingSet.add(this.publisherDid)
+  }
+
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
 
     const ops = await getOpsByType(evt)
 
-    // Index media posts
+    // Track follows from the publisher so new follows take effect immediately
+    const newFollowDids = ops.follows.creates
+      .filter((c) => c.author === this.publisherDid)
+      .map((c) => c.record.subject)
+
+    if (newFollowDids.length > 0) {
+      await this.db
+        .insertInto('following')
+        .values(newFollowDids.map((did) => ({ did })))
+        .onConflict((oc) => oc.doNothing())
+        .execute()
+      for (const did of newFollowDids) this.followingSet.add(did)
+    }
+
+    // Index media posts from followed accounts
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
-      .filter((create) => hasMediaEmbed(create.record))
+      .filter(
+        (create) =>
+          this.followingSet.has(create.author) &&
+          hasMediaEmbed(create.record),
+      )
       .map((create) => ({
         uri: create.uri,
         cid: create.cid,
@@ -68,7 +103,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     })
 
     if (likesToDelete.length > 0) {
-      // Look up which posts are being un-liked so we can decrement counts
       const likeRows = await this.db
         .selectFrom('like')
         .selectAll()
@@ -77,7 +111,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
 
       if (likeRows.length > 0) {
         const subjectUris = likeRows.map((r) => r.subjectUri)
-        // Decrement likeCount for each affected post (floor at 0)
         for (const subjectUri of subjectUris) {
           await this.db
             .updateTable('post')
@@ -93,7 +126,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     }
 
     if (likesToCreate.length > 0) {
-      // Only track likes for posts we've indexed
       const subjectUris = likesToCreate.map((l) => l.subjectUri)
       const indexedPosts = await this.db
         .selectFrom('post')

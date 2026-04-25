@@ -28,6 +28,18 @@ migrations['001'] = {
   },
 }
 
+migrations['003'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .createTable('following')
+      .addColumn('did', 'varchar', (col) => col.primaryKey())
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema.dropTable('following').execute()
+  },
+}
+
 migrations['002'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
