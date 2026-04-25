@@ -1,0 +1,7 @@
+.env
+*.sqlite
+node_modules
+dist
+.git
+.gitignore
+.dockerignore
