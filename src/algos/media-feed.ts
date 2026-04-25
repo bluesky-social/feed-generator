@@ -1,13 +1,18 @@
-import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
-import { AppContext } from '../config'
+import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton.js'
+import { AppContext } from '../config.js'
 
 export const shortname = 'media-feed'
 
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
+
 export const handler = async (ctx: AppContext, params: QueryParams) => {
+  const oneWeekAgo = new Date(Date.now() - ONE_WEEK_MS).toISOString()
+
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
     .where('likeCount', '<', 300)
+    .where('indexedAt', '>', oneWeekAgo)
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)

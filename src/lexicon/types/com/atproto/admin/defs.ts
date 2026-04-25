@@ -2,13 +2,13 @@
  * GENERATED CODE - DO NOT MODIFY
  */
 import { ValidationResult, BlobRef } from '@atproto/lexicon'
-import { lexicons } from '../../../../lexicons'
-import { isObj, hasProp } from '../../../../util'
+import { lexicons } from '../../../../lexicons.js'
+import { isObj, hasProp } from '../../../../util.js'
 import { CID } from 'multiformats/cid'
-import * as ComAtprotoRepoStrongRef from '../repo/strongRef'
-import * as ComAtprotoModerationDefs from '../moderation/defs'
-import * as ComAtprotoServerDefs from '../server/defs'
-import * as ComAtprotoLabelDefs from '../label/defs'
+import * as ComAtprotoRepoStrongRef from '../repo/strongRef.js'
+import * as ComAtprotoModerationDefs from '../moderation/defs.js'
+import * as ComAtprotoServerDefs from '../server/defs.js'
+import * as ComAtprotoLabelDefs from '../label/defs.js'
 
 export interface ActionView {
   id: number

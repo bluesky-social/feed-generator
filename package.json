@@ -6,10 +6,11 @@
   "repository": "git@github.com:bluesky-social/feed-generator.git",
   "author": "dholms <dtholmgren@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "publishFeed": "ts-node scripts/publishFeedGen.ts",
-    "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
-    "start": "ts-node src/index.ts",
+    "publishFeed": "tsx scripts/publishFeedGen.ts",
+    "unpublishFeed": "tsx scripts/unpublishFeedGen.ts",
+    "start": "tsx src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
@@ -22,19 +23,20 @@
     "better-sqlite3": "11.10.0",
     "dotenv": "16.6.1",
     "express": "4.22.1",
+    "helmet": "8.1.0",
     "kysely": "0.28.16",
-    "multiformats": "9.9.0"
+    "multiformats": "13.4.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "7.6.13",
     "@types/express": "4.17.25",
     "@types/node": "24.12.2",
     "inquirer": "12.11.1",
-    "ts-node": "10.9.2",
-    "typescript": "5.9.3"
+    "tsx": "4.21.0",
+    "typescript": "6.0.3"
   },
   "engines": {
     "node": ">= 24"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "npm@11.12.1"
 }

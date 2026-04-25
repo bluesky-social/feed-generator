@@ -1,5 +1,5 @@
 import express from 'express'
-import { AppContext } from './config'
+import { AppContext } from './config.js'
 
 const makeRouter = (ctx: AppContext) => {
   const router = express.Router()
@@ -8,7 +8,7 @@ const makeRouter = (ctx: AppContext) => {
     if (!ctx.cfg.serviceDid.endsWith(ctx.cfg.hostname)) {
       return res.sendStatus(404)
     }
-    res.json({
+    return res.json({
       '@context': ['https://www.w3.org/ns/did/v1'],
       id: ctx.cfg.serviceDid,
       service: [
