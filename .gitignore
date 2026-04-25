@@ -135,3 +135,5 @@ dist
 
 # Go build output
 go/go
+
+db.sqlite

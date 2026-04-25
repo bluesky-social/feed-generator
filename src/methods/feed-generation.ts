@@ -1,4 +1,4 @@
-import { InvalidRequestError } from '@atproto/xrpc-server'
+import { InvalidRequestError, AuthRequiredError } from '@atproto/xrpc-server'
 import { Server } from '../lexicon'
 import { AppContext } from '../config'
 import algos from '../algos'
@@ -19,15 +19,17 @@ export default function (server: Server, ctx: AppContext) {
         'UnsupportedAlgorithm',
       )
     }
-    /**
-     * Example of how to check auth if giving user-specific results:
-     *
-     * const requesterDid = await validateAuth(
-     *   req,
-     *   ctx.cfg.serviceDid,
-     *   ctx.didResolver,
-     * )
-     */
+
+    // Private feed: only serve to the publisher
+    let requesterDid: string
+    try {
+      requesterDid = await validateAuth(req, ctx.cfg.serviceDid, ctx.didResolver)
+    } catch {
+      throw new AuthRequiredError()
+    }
+    if (requesterDid !== ctx.cfg.publisherDid) {
+      return { encoding: 'application/json', body: { feed: [] } }
+    }
 
     const body = await algo(ctx, params)
     return {

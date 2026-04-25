@@ -27,3 +27,30 @@ migrations['001'] = {
     await db.schema.dropTable('sub_state').execute()
   },
 }
+
+migrations['002'] = {
+  async up(db: Kysely<unknown>) {
+    await db.schema
+      .alterTable('post')
+      .addColumn('likeCount', 'integer', (col) => col.notNull().defaultTo(0))
+      .execute()
+    await db.schema
+      .createTable('like')
+      .addColumn('uri', 'varchar', (col) => col.primaryKey())
+      .addColumn('subjectUri', 'varchar', (col) => col.notNull())
+      .execute()
+    await db.schema
+      .createIndex('like_subject_uri')
+      .on('like')
+      .column('subjectUri')
+      .execute()
+  },
+  async down(db: Kysely<unknown>) {
+    await db.schema.dropIndex('like_subject_uri').execute()
+    await db.schema.dropTable('like').execute()
+    await db.schema
+      .alterTable('post')
+      .dropColumn('likeCount')
+      .execute()
+  },
+}
