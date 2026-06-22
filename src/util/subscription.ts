@@ -58,9 +58,9 @@ export abstract class FirehoseSubscriptionBase {
 
   async updateCursor(cursor: number) {
     await this.db
-      .updateTable('sub_state')
-      .set({ cursor })
-      .where('service', '=', this.service)
+      .insertInto('sub_state')
+      .values({ service: this.service, cursor })
+      .onConflict((oc) => oc.column('service').doUpdateSet({ cursor }))
       .execute()
   }
 
