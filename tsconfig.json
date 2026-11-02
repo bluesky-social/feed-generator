@@ -7,7 +7,7 @@
     "target": "ES6",
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "alwaysStrict": true,
     "allowUnreachableCode": false,
     "strictNullChecks": true,
