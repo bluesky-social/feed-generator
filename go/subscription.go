@@ -106,7 +106,6 @@ func (s *Subscription) handleCommit(ctx context.Context, evt *comatproto.SyncSub
 		return nil
 	}
 
-	var postsToDelete []string
 	for _, op := range evt.Ops {
 		// Example URI: at://did:plc:aoza4myjywbvl53obgcoh6e4/app.bsky.feed.post/3mo4a4wxqgs2i
 		uri := fmt.Sprintf("at://%s/%s", evt.Repo, op.Path)
@@ -152,13 +151,11 @@ func (s *Subscription) handleCommit(ctx context.Context, evt *comatproto.SyncSub
 			switch collection {
 			case "app.bsky.feed.post":
 				uri := fmt.Sprintf("at://%s/%s", evt.Repo, op.Path)
-				postsToDelete = append(postsToDelete, uri)
+				if err := s.db.DeletePosts([]string{uri}); err != nil {
+					s.logger.Error("deleting posts", "err", err)
+				}
 			}
 		}
-	}
-
-	if err := s.db.DeletePosts(postsToDelete); err != nil {
-		s.logger.Error("deleting posts", "err", err)
 	}
 
 	// Update cursor every 20 events.
