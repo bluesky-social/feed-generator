@@ -9,6 +9,7 @@
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
     "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
+    "listAppUsers": "ts-node src/app-users/sync-authors.ts",
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
@@ -19,6 +20,7 @@
     "@atproto/repo": "^0.3.2",
     "@atproto/syntax": "^0.1.2",
     "@atproto/xrpc-server": "^0.7.9",
+    "@supabase/supabase-js": "^2.118.0",
     "better-sqlite3": "^11.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

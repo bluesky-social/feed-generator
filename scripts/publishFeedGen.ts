@@ -35,12 +35,14 @@ const run = async () => {
         type: 'input',
         name: 'recordName',
         message: 'Enter a short name or the record. This will be shown in the feed\'s URL:',
+        default: 'vn-politics',
         required: true,
       },
       {
         type: 'input',
         name: 'displayName',
         message: 'Enter a display name for your feed:',
+        default: 'Home(VN)',
         required: true,
       },
       {

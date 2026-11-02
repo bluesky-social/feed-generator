@@ -39,9 +39,7 @@ export abstract class FirehoseSubscriptionBase {
   async run(subscriptionReconnectDelay: number) {
     try {
       for await (const evt of this.sub) {
-        this.handleEvent(evt).catch((err) => {
-          console.error('repo subscription could not handle message', err)
-        })
+        await this.handleEvent(evt)
         // update stored cursor every 20 events or so
         if (isCommit(evt) && evt.seq % 20 === 0) {
           await this.updateCursor(evt.seq)
@@ -58,9 +56,11 @@ export abstract class FirehoseSubscriptionBase {
 
   async updateCursor(cursor: number) {
     await this.db
-      .updateTable('sub_state')
-      .set({ cursor })
-      .where('service', '=', this.service)
+      .insertInto('sub_state')
+      .values({ service: this.service, cursor })
+      .onConflict((conflict) =>
+        conflict.column('service').doUpdateSet({ cursor }),
+      )
       .execute()
   }
 
@@ -87,9 +87,7 @@ export const getOpsByType = async (evt: Commit): Promise<OperationsByType> => {
     const uri = `at://${evt.repo}/${op.path}`
     const [collection] = op.path.split('/')
 
-    if (op.action === 'update') continue // updates not supported yet
-
-    if (op.action === 'create') {
+    if (op.action === 'create' || op.action === 'update') {
       if (!op.cid) continue
       const recordBytes = car.blocks.get(op.cid)
       if (!recordBytes) continue
