@@ -1,8 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": ["@tsconfig/node22/tsconfig.json"],
   "compilerOptions": {
-    "checkJs": true,
+    "composite": true,
 
+    "checkJs": true,
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
@@ -10,7 +12,7 @@
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "noUnusedParameters": false,
 
     "skipLibCheck": true,
@@ -19,12 +21,13 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "preserveSymlinks": false,
-    "useDefineForClassFields": false,
+    "useDefineForClassFields": true,
 
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["node"],
     "moduleResolution": "node16",
     "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+    "types": [],
 
     "noErrorTruncation": true,
     "declaration": true,
@@ -33,13 +36,13 @@
     "sourceMap": true,
     "jsx": "preserve",
     "module": "Node20",
-    "target": "ES2022",
+    "target": "ES2023",
 
     "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "./dist"
   },
   "typeAcquisition": {
-    "enable": false,
+    "enable": false
   },
-  "include": ["./src"],
+  "include": ["./src"]
 }

@@ -1,21 +1,20 @@
-import algos from '../algos'
-import { validateAuth } from '../auth'
-import { Server } from '../lexicon'
-import { ids } from '../lexicon/lexicons'
-import type { AppContext } from '../util/config'
+import algos from '../algos/index.js'
+//import { validateAuth } from '../auth.js'
+import { app } from '../lexicons/index.js'
+import { type AppContext } from '../util/config.js'
 import { AtUri } from '@atproto/syntax'
-import { InvalidRequestError } from '@atproto/xrpc-server'
+import * as xrpc from '@atproto/xrpc-server'
 
-export default function (server: Server, ctx: AppContext) {
-  server.app.bsky.feed.getFeedSkeleton(async ({ params, req }) => {
-    const feedUri = new AtUri(params.feed)
+export default function (server: xrpc.Server, ctx: AppContext) {
+  server.method(app.bsky.feed.getFeedSkeleton.$nsid, async (hCtx: any): Promise<app.bsky.feed.getFeedSkeleton.$Output> => {
+    const feedUri = new AtUri(hCtx.params.feed)
     const algo = algos[feedUri.rkey]
     if (
       feedUri.hostname !== ctx.cfg.publisher.did ||
-      feedUri.collection !== ids.AppBskyFeedGenerator ||
+      feedUri.collection !== app.bsky.feed.generator.$nsid ||
       !algo
     ) {
-      throw new InvalidRequestError(
+      throw new xrpc.InvalidRequestError(
         'Unsupported algorithm',
         'UnsupportedAlgorithm',
       )
@@ -30,7 +29,7 @@ export default function (server: Server, ctx: AppContext) {
      * )
      */
 
-    const body = await algo(ctx, params)
+    const body = await algo(ctx, hCtx.params)
     return {
       encoding: 'application/json',
       body: body,

@@ -2,8 +2,7 @@ import { type DidString } from '@atproto/syntax'
 import dotenv from 'dotenv'
 import { cleanEnv, host, num, port, str, testOnly, url } from 'envalid'
 import { DidResolver } from '@atproto/identity'
-import { type Database } from '../db'
-import { type Logger } from './logger'
+import { type Database } from '../db/index.js'
 
 export type AppContext = {
   cfg: FeedGeneratorConfig
@@ -39,6 +38,13 @@ export interface SubscriptionConfig {
 
 export interface PublisherConfig {
   did: DidString
+}
+
+type Logger = {
+  debug(message: string): void
+  info(message: string): void
+  warn(message: string): void
+  error(message: string): void
 }
 
 console.log(`Reading environment variables...`)

@@ -1,17 +1,20 @@
 import { Ingester } from 'atingester'
 import events from 'events'
 import express from 'express'
+import { readFile } from 'node:fs/promises'
 import http from 'http'
 import { IdResolver } from '@atproto/identity'
-import { createDb, migrateToLatest } from './db'
-import { createServer } from './lexicon'
-import { ids } from './lexicon/lexicons'
-import describeGenerator from './methods/describe-generator'
-import feedGeneration from './methods/feed-generation'
-import { handleEvent } from './subscription'
-import type { AppContext, FeedGeneratorConfig } from './util/config'
-import { createLogger } from './util/logger'
-import wellKnown from './well-known'
+import { type NsidString } from '@atproto/lex'
+import { type LexiconDoc } from '@atproto/lexicon'
+import { createServer } from '@atproto/xrpc-server'
+import { createDb, migrateToLatest } from './db/index.js'
+import * as lex from './lexicons/index.js'
+import describeGenerator from './methods/describe-generator.js'
+import feedGeneration from './methods/feed-generation.js'
+import { handleEvent } from './subscription.js'
+import { type AppContext, type FeedGeneratorConfig } from './util/config.js'
+import { createLogger } from './util/logger.js'
+import wellKnown from './well-known.js'
 
 export class FeedGenerator {
   public app: express.Application
@@ -58,23 +61,32 @@ export class FeedGenerator {
         const res = await db
           .selectFrom('sub_state')
           .selectAll()
-          .where('service', '=', `${cfg.subscription.mode}:${cfg[cfg.subscription.mode.toLowerCase()].endpoint}`)
+          .where('service', '=', `${cfg.subscription.mode}:${cfg.subscription[cfg.subscription.mode.toLowerCase()].endpoint}`)
           .executeTakeFirst()
         return res?.cursor
       },
-      service: cfg[cfg.subscription.mode.toLowerCase()].endpoint,
+      service: cfg.subscription[cfg.subscription.mode.toLowerCase()].endpoint,
       subscriptionReconnectDelay: cfg.subscription.reconnectDelay,
       unauthenticatedCommits: false,
       unauthenticatedHandles: false,
       compress: true,
-      filterCollections: [ids.AppBskyFeedPost],
+      filterCollections: [lex.app.bsky.feed.post.$nsid],
       excludeIdentity: true,
       excludeAccount: true,
       excludeCommit: false,
       excludeSync: true,
     })
 
-    const server = createServer({
+    const lexicons: LexiconDoc[] = []
+    const loadedNsids = readAllNsids(lex)
+    for (const nsid of loadedNsids) {
+      const path = `./lexicons/${nsid.split('.').join('/')}.json`
+      const contents = await readFile(path, 'utf8')
+      const lexicon = JSON.parse(contents)
+      lexicons.push(lexicon)
+    }
+
+    const server = createServer(lexicons, {
       validateResponse: true,
       payload: {
         jsonLimit: 100 * 1024, // 100kb
@@ -84,7 +96,7 @@ export class FeedGenerator {
     })
     feedGeneration(server, ctx)
     describeGenerator(server, ctx)
-    app.use(server.xrpc.router)
+    app.use(server.router)
     app.use(wellKnown(ctx))
     
     logger.info('Server has been created!')
@@ -111,6 +123,20 @@ export class FeedGenerator {
       })
     })
   }
+}
+
+const readAllNsids = (lexicons: object): NsidString[] => {
+  const nsids: NsidString[] = []
+  for (const key in lexicons) {
+    const value = lexicons[key]
+    if (typeof value === 'object' && value !== null) {
+      if ('$nsid' in value && typeof value.$nsid === 'string') {
+        nsids.push(value.$nsid)
+      }
+      nsids.push(...readAllNsids(value))
+    }
+  }
+  return nsids
 }
 
 export default FeedGenerator

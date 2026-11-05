@@ -2,11 +2,11 @@ console.log('Starting...')
 
 import { isValidDid } from '@atproto/syntax'
 import { initIngester } from 'atingester'
-import { closeSignal } from './cmds/stop'
-import FeedGenerator from './server'
-import { setupCmd } from './util/cmd'
-import { type FeedGeneratorConfig, env } from './util/config'
-import { createLogger } from './util/logger'
+import { closeSignal } from './cmds/stop.js'
+import FeedGenerator from './server.js'
+import { setupCmd } from './util/cmd.js'
+import { type FeedGeneratorConfig, env } from './util/config.js'
+import { createLogger } from './util/logger.js'
 
 const run = async () => {
   const logger = createLogger(['Runner'])

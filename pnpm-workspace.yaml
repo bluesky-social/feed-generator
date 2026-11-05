@@ -1,3 +1,9 @@
 allowBuilds:
   better-sqlite3: true
-  cbor-extract: true
+minimumReleaseAgeExclude:
+  - '@atproto/common-web@0.5.17'
+  - '@atproto/common@0.8.9'
+  - '@atproto/lex-cbor@0.1.9'
+  - '@atproto/lex-data@0.1.10'
+  - '@atproto/lex-json@0.1.9'
+  - atingester@1.1.1

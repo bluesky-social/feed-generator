@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { env } from './config'
+import { env } from './config.js'
 
 process.stdout.write('Setting up logging file...')
 const logDirPath = env.LOG_PATH

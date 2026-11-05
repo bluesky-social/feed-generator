@@ -57,7 +57,7 @@ There is also an `pnpm run unpublishFeed` that does the opposite of these.
 
 ## Running the Server
 
-Install dependencies with `pnpm i`, `pnpm run codegen` and then run the server with `pnpm run dev`. This will start the server on port 3000, or what's defined in `.env`. You can then watch the firehose output in the console and access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf).
+Install dependencies with `pnpm i`, `pnpm run lex:install`, `pnpm run lex:build`, `pnpm run clean`, `pnpm run build`, and then run the server with `pnpm run start`. This will start the server on port 3000, or what's defined in `.env`. You can then watch the firehose output in the console and access the output of the default custom ALF feed at [http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf](http://localhost:3000/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:example:alice/app.bsky.feed.generator/whats-alf).
 
 ## Some Details
 
