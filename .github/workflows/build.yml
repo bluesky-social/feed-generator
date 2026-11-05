@@ -10,6 +10,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - run: pnpm i
-      - run: pnpm run codegen
+      - run: pnpm run lex:install
+      - run: pnpm run lex:build
       - run: pnpm run clean
       - run: pnpm run build
