@@ -1,10 +1,10 @@
-import { type QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
-import { type AppContext } from '../util/config'
+import type { DatetimeString } from "@atproto/lex"
+import { app } from '../lexicons/index.js'
+import { type AppContext } from '../util/config.js'
 
-// max 15 chars
 export const shortname = 'thinned-ja-posts'
 
-export const handler = async (ctx: AppContext, params: QueryParams) => {
+export const handler = async (ctx: AppContext, params: app.bsky.feed.getFeedSkeleton.$Params) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
@@ -13,7 +13,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .limit(params.limit * 100)
 
   if (params.cursor) {
-    const timeStr = new Date(parseInt(params.cursor, 10)).toISOString()
+    const timeStr = new Date(parseInt(params.cursor, 10)).toISOString() as DatetimeString
     builder = builder.where('post.indexedAt', '<', timeStr)
   }
   const res = await builder.execute()
