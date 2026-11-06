@@ -6,48 +6,33 @@ import { type AppContext } from './util/config.js'
 let i = 0
 export const handleEvent = async (evt: IngesterEvent, ctx: AppContext): Promise<void> => {
   i++
-  if (i % 100 === 0) {
-    const now = new Date()
-    now.setDate(now.getDate() - 1)
-    const timeStr = now.toISOString() as DatetimeString
-    await ctx.db
-      .deleteFrom('post')
-      .where('post.indexedAt', '<', timeStr)
-      .execute()
+  if ('time_us' in evt && i % 20 === 0) {
+    await updateCursor(evt.time_us, ctx)
+  } else if ('seq' in evt && evt.seq % 20 === 0) {
+    await updateCursor(evt.seq, ctx)
+  }
+
+  // This logs the text of every post off the firehose.
+  // Just for fun :)
+  // Delete before actually using
+  if (evt.event === 'create') {
+    if (evt.collection === app.bsky.feed.post.$nsid && isPost(evt.record)) {
+      console.log(evt.record.text)
+    }
   }
 
   if (evt.event === 'create') {
     if (evt.collection === app.bsky.feed.post.$nsid && isPost(evt.record)) {
-      let searchtext: string = evt.record.text
-      let isMedia: boolean = false
-      if (evt.record.embed) {
-        if (isImages(evt.record.embed)) {
-          isMedia = true
-          for (const image of evt.record.embed.images) searchtext += `\n${image.alt}`
-        }
-        if (isRecordWithMedia(evt.record.embed) && 'images' in evt.record.embed.media) {
-          isMedia = true
-          for (const image of evt.record.embed.media.images) searchtext += `\n${image.alt}`
-        }
-        if (isVideo(evt.record.embed)) {
-          isMedia = true
-          searchtext += `\n${evt.record.embed.alt}`
-        }
-      }
-      if (evt.record.langs?.includes('ja') || searchtext.match(/^.*[ぁ-んァ-ヶｱ-ﾝﾞﾟー]+.*$/)) {
-        if (typeof evt.record.reply === 'undefined') {
-          await ctx.db
-            .insertInto('post')
-            .values({
-              uri: evt.uri.toString(),
-              cid: evt.cid.toString(),
-              indexedAt: new Date().toISOString() as DatetimeString,
-              isMedia: `${isMedia}`,
-              isVideo: `${isVideo(evt.record.embed ?? {})}`,
-            })
-            .onConflict((oc) => oc.doNothing())
-            .execute()
-        }
+      if (evt.record.text.toLowerCase().includes('alf')) {
+        await ctx.db
+          .insertInto('post')
+          .values({
+            uri: evt.uri.toString(),
+            cid: evt.cid.toString(),
+            indexedAt: new Date().toISOString() as DatetimeString,
+          })
+          .onConflict((oc) => oc.doNothing())
+          .execute()
       }
     } else if (evt.collection === app.bsky.feed.repost.$nsid && isRepost(evt.record)) {
     } else if (evt.collection === app.bsky.feed.like.$nsid && isLike(evt.record)) {
@@ -70,16 +55,21 @@ export const handleEvent = async (evt: IngesterEvent, ctx: AppContext): Promise<
   }
 }
 
-export const isImages = (obj: LexMap): obj is app.bsky.embed.images.Main => {
-  return app.bsky.embed.images.$isTypeOf(obj)
-}
-
-export const isRecordWithMedia = (obj: LexMap): obj is app.bsky.embed.recordWithMedia.Main => {
-  return app.bsky.embed.recordWithMedia.$isTypeOf(obj)
-}
-
-export const isVideo = (obj: LexMap): obj is app.bsky.embed.video.Main => {
-  return app.bsky.embed.video.$isTypeOf(obj)
+const updateCursor = async (cursor: number, ctx: AppContext) => {
+  await ctx.db
+    .insertInto('sub_state')
+    .values({
+      service: `${ctx.cfg.subscription.mode}:${ctx.cfg.subscription[ctx.cfg.subscription.mode.toLowerCase()].endpoint}`,
+      cursor,
+    })
+    .onConflict((oc) => oc
+      .column('service')
+      .where('service', '=', `${ctx.cfg.subscription.mode}:${ctx.cfg.subscription[ctx.cfg.subscription.mode.toLowerCase()].endpoint}`)
+      .doUpdateSet({
+        cursor: (eb) => eb.ref('excluded.cursor')
+      })
+    )
+    .execute()
 }
 
 export const isPost = (obj: LexMap): obj is app.bsky.feed.post.Main => {

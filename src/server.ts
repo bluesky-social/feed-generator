@@ -57,6 +57,14 @@ export class FeedGenerator {
       handleEvent: async (evt) => await handleEvent(evt, {...ctx, logger: ingesterLogger}),
       onInfo: ingesterLogger.info,
       onError: (err: Error) => ingesterLogger.error(err.message),
+      getCursor: async () => {
+        const res = await db
+          .selectFrom('sub_state')
+          .selectAll()
+          .where('service', '=', `${cfg.subscription.mode}:${cfg.subscription[cfg.subscription.mode.toLowerCase()].endpoint}`)
+          .executeTakeFirst()
+        return res?.cursor
+      },
       service: cfg.subscription[cfg.subscription.mode.toLowerCase()].endpoint,
       subscriptionReconnectDelay: cfg.subscription.reconnectDelay,
       unauthenticatedCommits: false,
