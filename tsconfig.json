@@ -1,20 +1,48 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": ["@tsconfig/node22/tsconfig.json"],
   "compilerOptions": {
-    "lib": [
-      "ESNext",
-    ],
-    "outDir": "dist",
-    "module": "CommonJS",
-    "target": "ES6",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "alwaysStrict": true,
+    "composite": true,
+
+    "checkJs": true,
+    "strict": true,
+    "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "strictNullChecks": true,
-    "skipLibCheck": true
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "preserveSymlinks": false,
+    "useDefineForClassFields": true,
+
+    "moduleResolution": "node16",
+    "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+    "types": [],
+
+    "noErrorTruncation": true,
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "sourceMap": true,
+    "jsx": "preserve",
+    "module": "Node20",
+    "target": "ES2023",
+
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": [
-    "node_modules"
-  ]
+  "typeAcquisition": {
+    "enable": false
+  },
+  "include": ["./src"]
 }

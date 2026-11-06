@@ -1,17 +1,20 @@
 import { Ingester } from 'atingester'
 import events from 'events'
 import express from 'express'
+import { readFile } from 'node:fs/promises'
 import http from 'http'
 import { IdResolver } from '@atproto/identity'
-import { createDb, migrateToLatest } from './db'
-import { createServer } from './lexicon'
-import { ids } from './lexicon/lexicons'
-import describeGenerator from './methods/describe-generator'
-import feedGeneration from './methods/feed-generation'
-import { handleEvent } from './subscription'
-import { type AppContext, env } from './util/config'
-import { createLogger } from './util/logger'
-import wellKnown from './well-known'
+import { type NsidString } from '@atproto/lex'
+import { type LexiconDoc } from '@atproto/lexicon'
+import { createServer } from '@atproto/xrpc-server'
+import { createDb, migrateToLatest } from './db/index.js'
+import * as lex from './lexicons/index.js'
+import describeGenerator from './methods/describe-generator.js'
+import feedGeneration from './methods/feed-generation.js'
+import { handleEvent } from './subscription.js'
+import { type AppContext, type FeedGeneratorConfig } from './util/config.js'
+import { createLogger } from './util/logger.js'
+import wellKnown from './well-known.js'
 
 export class FeedGenerator {
   public app: express.Application
@@ -29,35 +32,53 @@ export class FeedGenerator {
     this.ingester = ingester
   }
 
-  static async create() {
+  static async create(
+    cfg: FeedGeneratorConfig
+  ) {
     const logger = createLogger(['Runner', 'Server'])
     logger.info('Creating server...')
 
-    logger.info(`Creating DB => ${env.FEEDGEN_SQLITE_LOCATION}`)
-    const db = createDb()
+    logger.info(`Creating DB => ${cfg.db.dbLoc}`)
+    const db = createDb(cfg.db.dbLoc)
 
     const app = express()
     const idResolver = new IdResolver()
 
+    const ctx: AppContext = {
+      cfg,
+      db,
+      didResolver: idResolver.did,
+      logger,
+    }
+
     const ingesterLogger = createLogger(['Runner', 'Server', 'Ingester'])
-    const ingester = new Ingester(env.FEEDGEN_SUBSCRIPTION_MODE, {
+    const ingester = new Ingester(cfg.subscription.mode, {
       idResolver,
-      handleEvent: async (evt) => await handleEvent(evt, db),
+      handleEvent: async (evt) => await handleEvent(evt, {...ctx, logger: ingesterLogger}),
       onInfo: ingesterLogger.info,
       onError: (err: Error) => ingesterLogger.error(err.message),
-      service: env[`FEEDGEN_SUBSCRIPTION_${env.FEEDGEN_SUBSCRIPTION_MODE.toUpperCase()}_ENDPOINT`],
-      subscriptionReconnectDelay: env.FEEDGEN_SUBSCRIPTION_RECONNECT_DELAY,
+      service: cfg.subscription[cfg.subscription.mode.toLowerCase()].endpoint,
+      subscriptionReconnectDelay: cfg.subscription.reconnectDelay,
       unauthenticatedCommits: false,
       unauthenticatedHandles: false,
       compress: true,
-      filterCollections: [ids.AppBskyFeedPost],
+      filterCollections: [lex.app.bsky.feed.post.$nsid],
       excludeIdentity: true,
       excludeAccount: true,
       excludeCommit: false,
       excludeSync: true,
     })
 
-    const server = createServer({
+    const lexicons: LexiconDoc[] = []
+    const loadedNsids = readAllNsids(lex)
+    for (const nsid of loadedNsids) {
+      const path = `./lexicons/${nsid.split('.').join('/')}.json`
+      const contents = await readFile(path, 'utf8')
+      const lexicon = JSON.parse(contents)
+      lexicons.push(lexicon)
+    }
+
+    const server = createServer(lexicons, {
       validateResponse: true,
       payload: {
         jsonLimit: 100 * 1024, // 100kb
@@ -65,15 +86,10 @@ export class FeedGenerator {
         blobLimit: 5 * 1024 * 1024, // 5mb
       },
     })
-    const ctx: AppContext = {
-      db,
-      didResolver: idResolver.did,
-      logger,
-    }
     feedGeneration(server, ctx)
-    describeGenerator(server)
-    app.use(server.xrpc.router)
-    app.use(wellKnown())
+    describeGenerator(server, ctx)
+    app.use(server.router)
+    app.use(wellKnown(ctx))
     
     logger.info('Server has been created!')
 
@@ -84,7 +100,7 @@ export class FeedGenerator {
     this.ctx.logger.info('Starting server...')
     await migrateToLatest(this.ctx.db)
     this.ingester.start()
-    this.server = this.app.listen(env.FEEDGEN_PORT, env.FEEDGEN_LISTENHOST)
+    this.server = this.app.listen(this.ctx.cfg.service.port)
     await events.once(this.server, 'listening')
     this.ctx.logger.info('Server started')
   }
@@ -99,6 +115,20 @@ export class FeedGenerator {
       })
     })
   }
+}
+
+const readAllNsids = (lexicons: object): NsidString[] => {
+  const nsids: NsidString[] = []
+  for (const key in lexicons) {
+    const value = lexicons[key]
+    if (typeof value === 'object' && value !== null) {
+      if ('$nsid' in value && typeof value.$nsid === 'string') {
+        nsids.push(value.$nsid)
+      }
+      nsids.push(...readAllNsids(value))
+    }
+  }
+  return nsids
 }
 
 export default FeedGenerator

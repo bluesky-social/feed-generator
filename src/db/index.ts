@@ -1,13 +1,13 @@
 import SqliteDb from 'better-sqlite3'
-import { Kysely, Migrator, SqliteDialect } from 'kysely'
-import { migrationProvider } from './migrations'
-import { type DatabaseSchema } from './schema'
-import { env } from '../util/config'
+import { Kysely, SqliteDialect } from 'kysely'
+import { Migrator } from 'kysely/migration'
+import { migrationProvider } from './migrations.js'
+import type { DatabaseSchema } from './schema.js'
 
-export const createDb = (): Database => {
+export const createDb = (location: string): Database => {
   return new Kysely<DatabaseSchema>({
     dialect: new SqliteDialect({
-      database: new SqliteDb(env.FEEDGEN_SQLITE_LOCATION),
+      database: new SqliteDb(location),
     }),
   })
 }

@@ -1,48 +1,48 @@
 {
   "name": "feed-generator",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "atproto feed generator starter kit",
-  "main": "./dist/index.js",
-  "scripts": {
-    "publishFeed": "ts-node scripts/publishFeedGen.ts",
-    "unpublishFeed": "ts-node scripts/unpublishFeedGen.ts",
-    "codegen": "atlpm install -y",
-    "dev": "ts-node ./src/index.ts",
-    "clean": "rimraf ./dist",
-    "build": "tsc -p ./",
-    "start": "node ./dist/index.js"
-  },
   "keywords": [],
   "repository": "git@github.com:bluesky-social/feed-generator.git",
   "author": "dholms <dtholmgren@gmail.com>",
-  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "./dist/index.js",
   "dependencies": {
-    "@atproto/api": "^0.16.9",
-    "@atproto/identity": "^0.4.9",
-    "@atproto/lexicon": "^0.4.14",
-    "@atproto/syntax": "^0.4.1",
-    "@atproto/xrpc-server": "^0.9.5",
-    "atingester": "^1.0.0",
-    "better-sqlite3": "^11.10.0",
-    "dotenv": "^16.6.1",
-    "envalid": "^8.1.0",
-    "express": "^4.21.2",
-    "kysely": "^0.27.6",
-    "multiformats": "^9.9.0"
+    "@atproto/api": "^0.30.0",
+    "@atproto/identity": "^0.5.20",
+    "@atproto/lex": "^0.4.4",
+    "@atproto/lexicon": "^0.7.18",
+    "@atproto/syntax": "^0.7.7",
+    "@atproto/xrpc-server": "^0.13.7",
+    "atingester": "^1.1.1",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.9",
+    "envalid": "^8.2.0",
+    "express": "^5.3.0",
+    "kysely": "^0.29.8"
   },
   "devDependencies": {
+    "@tsconfig/node22": "^22.0.6",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^4.17.23",
-    "@types/node": "^20.19.14",
-    "atlpm": "^3.1.2",
-    "inquirer": "^12.9.4",
-    "rimraf": "^6.0.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "inquirer": "^14.2.5",
+    "rimraf": "^6.1.4",
+    "typescript": "^6.0.3"
   },
-  "engines": {
-    "node": ">= 18",
-    "pnpm": ">= 9"
+  "scripts": {
+    "publishFeed": "node scripts/publishFeedGen.ts",
+    "unpublishFeed": "node scripts/unpublishFeedGen.ts",
+    "lex:build": "lex build --clear --indexFile",
+    "lex:install": "lex install",
+    "lex:update": "lex update",
+    "clean": "rimraf ./dist ./tsconfig.tsbuildinfo",
+    "build": "tsc -p ./",
+    "start": "node ./dist/index.js"
   },
-  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
+  "packageManager": "pnpm@11.5.2"
 }

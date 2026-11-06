@@ -43,7 +43,7 @@ node_modules/
 jspm_packages/
 lexicons/app/bsky/
 lexicons/com/atproto/
-src/lexicon/
+src/lexicons/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

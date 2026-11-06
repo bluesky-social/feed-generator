@@ -1,5 +1,5 @@
-import { FeedGenerator } from '../server'
-import { Logger } from '../util/logger'
+import { FeedGenerator } from '../server.js'
+import { type Logger } from '../util/logger.js'
 
 export default async (server: FeedGenerator, logger: Logger, args: string[]): Promise<void> => {
   await closeSignal(server, logger)
